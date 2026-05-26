@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobireach · Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f9f9f9; --card: #fff; --border: #e8e8e8;
+      --text: #111; --text2: #555; --text3: #999;
+      --accent: #0f0f0f; --green: #16a34a; --blue: #2563eb;
+      --orange: #d97706; --red: #dc2626;
+      --font: 'Inter', -apple-system, sans-serif;
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+    /* Login */
+    .login-wrap {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 36px; width: 100%; max-width: 360px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .login-box h1 { font-size: 18px; margin-bottom: 4px; }
+    .login-box p { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+    .login-input {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 14px; font-family: var(--font);
+      outline: none; margin-bottom: 12px;
+    }
+    .login-input:focus { border-color: #aaa; }
+    .login-btn {
+      width: 100%; padding: 10px; background: var(--accent); color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+    }
+    .login-btn:hover { background: #333; }
+    .login-error { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
+
+    /* Dashboard */
+    .dashboard { display: none; max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .dash-header h1 { font-size: 20px; }
+    .dash-header-right { display: flex; align-items: center; gap: 12px; }
+    .badge {
+      font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 600;
+    }
+    .badge-green { background: #dcfce7; color: var(--green); }
+    .badge-orange { background: #fef3c7; color: var(--orange); }
+    .badge-blue { background: #dbeafe; color: var(--blue); }
+    .logout-btn {
+      padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px;
+      background: #fff; font-size: 12px; cursor: pointer; font-family: var(--font);
+    }
+    .logout-btn:hover { background: var(--bg); }
+
+    /* Stats row */
+    .stats-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-card {
+      flex: 1; min-width: 140px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .stat-card .num { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+    .stat-card .lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+    /* Table */
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; text-align: left; font-size: 13px; }
+    th {
+      background: var(--bg); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text3); font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    td { border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+    .mono { font-family: 'SF Mono', 'Consolas', monospace; font-size: 12px; }
+    .status-select {
+      padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 12px; font-family: var(--font); cursor: pointer; background: #fff;
+    }
+    .delete-btn {
+      padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 11px; color: var(--red); cursor: pointer; background: #fff;
+      font-family: var(--font);
+    }
+    .delete-btn:hover { background: #fef2f2; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 3px; }
+    .tag-chip {
+      font-size: 11px; padding: 2px 6px; background: #f0f0f0;
+      border-radius: 3px; color: var(--text2);
+    }
+
+    /* Empty */
+    .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+    .empty svg { margin-bottom: 12px; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 600px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <h1>🔐 Admin Login</h1>
+    <p>Enter your admin password to continue.</p>
+    <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="Password" autofocus />
+    <button class="login-btn" id="pw-btn">Sign in</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-header">
+    <h1>Mobireach · Applications</h1>
+    <div class="dash-header-right">
+      <span class="badge badge-green" id="badge-new">0 new</span>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="num" id="s-total">0</div><div class="lbl">Total</div></div>
+    <div class="stat-card"><div class="num" id="s-new">0</div><div class="lbl">New</div></div>
+    <div class="stat-card"><div class="num" id="s-viewed">0</div><div class="lbl">Viewed</div></div>
+    <div class="stat-card"><div class="num" id="s-contacted">0</div><div class="lbl">Contacted</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Offer</th>
+          <th>Publisher</th>
+          <th>PIDs</th>
+          <th>Emails</th>
+          <th>Comment</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+           fill="none" stroke="#ccc" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <p>No applications yet.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let password = "";
+
+const loginWrap = document.getElementById("login-wrap");
+const dashboard = document.getElementById("dashboard");
+const pwInput = document.getElementById("pw-input");
+const pwBtn = document.getElementById("pw-btn");
+const loginError = document.getElementById("login-error");
+
+// ── Login ──
+function tryLogin() {
+  password = pwInput.value;
+  fetch(`/api/submissions?password=${encodeURIComponent(password)}`)
+    .then(r => {
+      if (!r.ok) throw new Error();
+      loginWrap.style.display = "none";
+      dashboard.style.display = "block";
+      loadData();
+    })
+    .catch(() => {
+      loginError.style.display = "block";
+      pwInput.value = "";
+      pwInput.focus();
+    });
+}
+pwBtn.onclick = tryLogin;
+pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+
+document.getElementById("logout-btn").onclick = () => {
+  password = "";
+  dashboard.style.display = "none";
+  loginWrap.style.display = "flex";
+  pwInput.value = "";
+};
+
+// ── Load Data ──
+async function loadData() {
+  const res = await fetch(`/api/submissions?password=${encodeURIComponent(password)}`);
+  const data = await res.json();
+  renderTable(data);
+  renderStats(data);
+}
+
+function renderStats(data) {
+  const counts = { new: 0, viewed: 0, contacted: 0 };
+  data.forEach(s => counts[s.status] = (counts[s.status] || 0) + 1);
+  document.getElementById("s-total").textContent = data.length;
+  document.getElementById("s-new").textContent = counts.new;
+  document.getElementById("s-viewed").textContent = counts.viewed;
+  document.getElementById("s-contacted").textContent = counts.contacted;
+  document.getElementById("badge-new").textContent = counts.new + " new";
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("tbody");
+  const empty = document.getElementById("empty");
+
+  if (!data.length) {
+    tbody.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  tbody.innerHTML = data.map(s => {
+    const date = new Date(s.timestamp).toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+    const pids = s.pids.map(p => `<span class="tag-chip">${p}</span>`).join("");
+    const emails = s.emails.map(e => `<span class="tag-chip">${e}</span>`).join("");
+    const statusOpts = ["new", "viewed", "contacted"]
+      .map(st => `<option value="${st}" ${st === s.status ? "selected" : ""}>${st}</option>`)
+      .join("");
+
+    return `<tr data-id="${s.id}">
+      <td class="mono">${date}</td>
+      <td><strong>${s.offerName}</strong><br><span style="color:var(--text3);font-size:11px">${s.offerPlatform}</span></td>
+      <td>${s.publisher}</td>
+      <td><div class="tag-list">${pids}</div></td>
+      <td><div class="tag-list">${emails}</div></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment || ''}">${s.comment || "—"}</td>
+      <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
+      <td><button class="delete-btn" onclick="deleteSub('${s.id}')">Delete</button></td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Update Status ──
+async function updateStatus(id, status) {
+  await fetch(`/api/submissions/${id}/status?password=${encodeURIComponent(password)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  });
+  loadData();
+}
+
+// ── Delete ──
+async function deleteSub(id) {
+  if (!confirm("Delete this application?")) return;
+  await fetch(`/api/submissions/${id}?password=${encodeURIComponent(password)}`, {
+    method: "DELETE"
+  });
+  loadData();
+}
+
+// Auto-refresh every 30s
+setInterval(() => {
+  if (password && dashboard.style.display === "block") loadData();
+}, 30000);
+</script>
+</body>
+</html>

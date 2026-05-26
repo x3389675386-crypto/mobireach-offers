@@ -1,0 +1,18 @@
+[
+  {
+    "id": "aad1e7d5-1413-42df-af3b-acbb3d908731",
+    "timestamp": "2026-05-26T03:12:43.441Z",
+    "offerName": "Example App",
+    "offerPlatform": "android",
+    "publisher": "1",
+    "pids": [
+      "1"
+    ],
+    "emails": [
+      "3389675386@qq.com"
+    ],
+    "handshake": true,
+    "comment": "",
+    "status": "new"
+  }
+]
