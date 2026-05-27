@@ -653,7 +653,61 @@ app.get("/api/orders", async (req, res) => {
   res.json(await readOrders());
 });
 
-// Send order email
+// Save order (no email — mailto handled by frontend)
+app.post("/api/orders", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  const {
+    submissionId, publisher, offerName, offerPlatform,
+    platform, customerId, channel, campaignName,
+    prt, pid, externalPrice, realPrice,
+    trackingLink, emailSubject, emailBody, recipients
+  } = req.body;
+
+  const order = {
+    id: crypto.randomUUID(),
+    submissionId: submissionId || "",
+    publisher: publisher || "",
+    offerName: offerName || "",
+    offerPlatform: offerPlatform || "",
+    platform: platform || "",
+    customerId: customerId || "",
+    channel: channel || "",
+    campaignName: campaignName || "",
+    prt: prt || "",
+    pid: pid || "",
+    externalPrice: externalPrice || 0,
+    realPrice: realPrice || 0,
+    trackingLink: trackingLink || "",
+    emailSubject: emailSubject || `Campaign Order: ${campaignName || "New Order"}`,
+    emailBody: emailBody || "",
+    recipients: recipients || [],
+    createdAt: new Date().toISOString(),
+    sentBy: session.username,
+    status: "saved"
+  };
+
+  const orders = await readOrders();
+  orders.unshift(order);
+  await writeOrders(orders);
+
+  // Auto-update submission status to "contacted"
+  if (order.submissionId) {
+    try {
+      const subs = await readSubmissions();
+      const sub = subs.find(s => s.id === order.submissionId);
+      if (sub && sub.status !== "contacted") {
+        sub.status = "contacted";
+        await writeSubmissions(subs);
+      }
+    } catch (e) { /* non-critical */ }
+  }
+
+  res.json({ success: true, order });
+});
+
+// Send order email (SMTP)
 app.post("/api/orders/send", async (req, res) => {
   const session = await checkAuth(req, res);
   if (!session) return;

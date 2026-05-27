@@ -696,7 +696,7 @@
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
           <button type="submit" class="btn-save" id="ord-submit-btn" disabled>
-            📨 提交并发送邮件
+            📨 提交并打开邮件客户端
           </button>
         </div>
       </form>
@@ -1399,7 +1399,8 @@ document.getElementById("order-form").addEventListener("submit", async e => {
   };
 
   try {
-    const res = await fetch("/api/orders/send", {
+    // Save order record
+    const res = await fetch("/api/orders", {
       method: "POST",
       headers: authHeaders(),
       body: JSON.stringify(body)
@@ -1407,23 +1408,24 @@ document.getElementById("order-form").addEventListener("submit", async e => {
     const data = await res.json();
 
     if (res.ok) {
-      if (data.warning) {
-        showToast("Order saved, but " + data.warning, "error");
-      } else if (data.order.status === "sent") {
-        showToast("Order sent! Email delivered to " + recipients.length + " recipient(s) ✅", "success");
-      } else if (data.order.status === "partial") {
-        showToast("Partial delivery: " + data.order.sentCount + "/" + recipients.length + " emails sent ⚠️", "error");
-      } else {
-        showToast("Order saved! Email sending failed — check SMTP config ❌", "error");
-      }
+      showToast("Order saved ✅ — opening your email client...", "success");
       closeOrderModal();
+
+      // Build mailto link and open default email client
+      const to = recipients.join(",");
+      const subject = encodeURIComponent(body.emailSubject);
+      const bodyText = encodeURIComponent(body.emailBody);
+      const mailtoUrl = `mailto:${to}?subject=${subject}&body=${bodyText}`;
+
+      // Open in default email client
+      setTimeout(() => { window.open(mailtoUrl, "_blank"); }, 300);
     } else {
-      showToast(data.error || "Failed to send order", "error");
+      showToast(data.error || "Failed to save order", "error");
     }
   } catch (err) {
     showToast("Network error", "error");
   } finally {
-    btn.innerHTML = "📨 提交并发送邮件";
+    btn.innerHTML = "📨 提交并打开邮件";
   }
 });
 
