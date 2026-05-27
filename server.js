@@ -4,6 +4,12 @@ const path = require("path");
 const crypto = require("crypto");
 const { Octokit } = require("@octokit/rest");
 
+// ── Prevent unhandled rejections from crashing the process ──
+process.on("unhandledRejection", (reason) => {
+  console.error("🔥 Unhandled rejection:", reason);
+  // Don't crash — log and keep running
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "mobireach2026";
@@ -27,17 +33,40 @@ async function ensureDataRepo() {
   if (!useGitHub) return;
   try {
     await octokit.repos.get({ owner: GH_OWNER, repo: GH_REPO });
+    console.log(`✅ GitHub repo verified: ${GH_OWNER}/${GH_REPO}`);
   } catch (e) {
     if (e.status === 404) {
-      await octokit.repos.createForAuthenticatedUser({
-        name: GH_REPO,
-        private: true,
-        description: "Mobireach persistent data storage",
-        auto_init: true,
-      });
-      console.log(`📦 Created data repo: ${GH_OWNER}/${GH_REPO}`);
+      try {
+        await octokit.repos.createForAuthenticatedUser({
+          name: GH_REPO,
+          private: true,
+          description: "Mobireach persistent data storage",
+          auto_init: true,
+        });
+        console.log(`📦 Created data repo: ${GH_OWNER}/${GH_REPO}`);
+      } catch (createErr) {
+        console.warn(`❌ Cannot create data repo: ${createErr.message}. Falling back to local.`);
+        useGitHub = false;
+        octokit = null;
+      }
+    } else if (e.status === 401 || e.status === 403) {
+      console.warn(`❌ GitHub auth failed (${e.status}): ${e.message}. Check GH_TOKEN. Falling back to local.`);
+      useGitHub = false;
+      octokit = null;
     } else {
-      console.warn(`⚠️  Cannot access data repo: ${e.message}`);
+      console.warn(`⚠️  GitHub access issue: ${e.message}`);
+    }
+  }
+
+  // Ensure local fallback files exist
+  if (!useGitHub) {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(LOCAL_OFFERS) && fs.existsSync(OFFERS_SEED)) {
+      fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
+      console.log("📋 Seeded offers from local seed file");
+    }
+    if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
+      fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
     }
   }
 }
@@ -85,27 +114,32 @@ async function ghRead(filename) {
     return JSON.parse(Buffer.from(data.content, "base64").toString("utf-8"));
   } catch (e) {
     if (e.status === 404) return null;
-    throw e;
+    console.warn(`⚠️  ghRead(${filename}) failed: ${e.message} (status ${e.status || "?"})`);
+    return null;
   }
 }
 
 async function ghWrite(filename, jsonData) {
-  let sha;
   try {
-    const { data } = await octokit.repos.getContent({
-      owner: GH_OWNER, repo: GH_REPO, path: filename,
-    });
-    sha = data.sha;
-  } catch (e) { /* first write */ }
+    let sha;
+    try {
+      const { data } = await octokit.repos.getContent({
+        owner: GH_OWNER, repo: GH_REPO, path: filename,
+      });
+      sha = data.sha;
+    } catch (e) { /* first write */ }
 
-  await octokit.repos.createOrUpdateFileContents({
-    owner: GH_OWNER,
-    repo: GH_REPO,
-    path: filename,
-    message: `Update ${filename}`,
-    content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString("base64"),
-    sha,
-  });
+    await octokit.repos.createOrUpdateFileContents({
+      owner: GH_OWNER,
+      repo: GH_REPO,
+      path: filename,
+      message: `Update ${filename}`,
+      content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString("base64"),
+      sha,
+    });
+  } catch (e) {
+    console.warn(`⚠️  ghWrite(${filename}) failed: ${e.message}. Data not persisted to GitHub.`);
+  }
 }
 
 // ── Data access (GitHub first, local fallback) ──
@@ -576,9 +610,36 @@ app.use(express.static(__dirname));
 
 // ── Start ──
 app.listen(PORT, async () => {
-  if (repoReady) await repoReady;
-  // Ensure accounts exist
-  await readAccounts();
+  try {
+    if (repoReady) await repoReady;
+  } catch (e) {
+    console.warn(`❌ GitHub init crashed: ${e.message}. Switching to local storage.`);
+    useGitHub = false;
+    octokit = null;
+  }
+
+  // Final safety net: ensure local files exist
+  if (!useGitHub) {
+    try {
+      if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+      if (!fs.existsSync(LOCAL_OFFERS) && fs.existsSync(OFFERS_SEED)) {
+        fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
+      }
+      if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
+        fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
+      }
+    } catch (e) {
+      console.warn("Failed to initialize local files:", e.message);
+    }
+  }
+
+  try {
+    await readAccounts();
+    console.log(`👤 Accounts initialized (${(accountsCache || []).length} users)`);
+  } catch (e) {
+    console.warn("Failed to load accounts:", e.message);
+  }
+
   console.log(`
   ╔══════════════════════════════════════╗
   ║   Mobireach Server is running!       ║
@@ -586,6 +647,7 @@ app.listen(PORT, async () => {
   ║   🌐  Site:  http://localhost:${PORT}   ║
   ║   📊  Admin: http://localhost:${PORT}/admin ║
   ║   👤  Super Admin: Merlin           ║
+  ║   💾  Storage: ${useGitHub ? `GitHub (${GH_OWNER}/${GH_REPO})` : "Local"}  ║
   ╚══════════════════════════════════════╝
   `);
 });
