@@ -339,7 +339,10 @@
     <div class="tab-content" id="content-apps" style="display:none">
       <div class="stats-row" id="apps-stats"></div>
       <div class="table-wrap">
-        <div class="table-header"><h2>Applications</h2></div>
+        <div class="table-header">
+          <h2>Applications</h2>
+          <button class="btn-secondary" id="refresh-apps-btn" onclick="loadSubmissions()" title="Refresh">↻ Refresh</button>
+        </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
