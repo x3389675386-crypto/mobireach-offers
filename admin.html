@@ -769,8 +769,8 @@
 // ────────────────────────────────────
 // STATE
 // ────────────────────────────────────
-let authToken = "";
-let currentUser = null;
+let authToken = localStorage.getItem("authToken") || "";
+let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 let offers = [];
 let submissions = [];
 let accounts = [];
@@ -1378,6 +1378,22 @@ function authHeaders() {
   return h;
 }
 
+// Global 401 handler: auto-redirect to login when token is invalid/expired
+function handleAuthError(res) {
+  if (res.status === 401) {
+    authToken = "";
+    currentUser = null;
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+    dashboard.style.display = "none";
+    loginWrap.style.display = "flex";
+    document.getElementById("login-error").textContent = t("loginError");
+    document.getElementById("login-error").style.display = "block";
+    return true;
+  }
+  return false;
+}
+
 // ────────────────────────────────────
 // LOGIN
 // ────────────────────────────────────
@@ -1410,6 +1426,8 @@ async function tryLogin() {
 
     authToken = data.token;
     currentUser = { username: data.username, role: data.role };
+    localStorage.setItem("authToken", authToken);
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
     loginWrap.style.display = "none";
     dashboard.style.display = "block";
     applyLanguage();
@@ -1428,6 +1446,8 @@ document.getElementById("logout-btn").onclick = async () => {
   try { await fetch("/api/auth/logout", { method: "POST", headers: authHeaders() }); } catch(e) {}
   authToken = "";
   currentUser = null;
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("currentUser");
   dashboard.style.display = "none";
   loginWrap.style.display = "flex";
   document.getElementById("login-user").value = "";
@@ -1475,6 +1495,7 @@ async function loadOffers() {
 
 async function loadSubmissions() {
   const res = await fetch("/api/submissions", { headers: authHeaders() });
+  if (handleAuthError(res)) return;
   if (!res.ok) return;
   submissions = await res.json();
   renderSubmissions();
@@ -1482,6 +1503,7 @@ async function loadSubmissions() {
 
 async function loadAccounts() {
   const res = await fetch("/api/accounts", { headers: authHeaders() });
+  if (handleAuthError(res)) return;
   if (!res.ok) return;
   accounts = await res.json();
   renderAccounts();
@@ -1852,12 +1874,14 @@ document.getElementById("account-form").addEventListener("submit", async e => {
       };
       if (!body.username || !body.password) { showToast(t("usernamePwRequired"), "error"); btn.disabled = false; return; }
       const res = await fetch("/api/accounts", { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
+      if (handleAuthError(res)) { btn.disabled = false; return; }
       if (res.ok) { showToast(t("accountCreated"), "success"); closeAccountModal(); loadAccounts(); }
       else { const d = await res.json(); showToast(d.error || t("failed"), "error"); btn.disabled = false; }
     } else {
       const role = document.getElementById("ac-role").value;
       const body = { role };
       const res = await fetch(`/api/accounts/${id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
+      if (handleAuthError(res)) { btn.disabled = false; return; }
       if (res.ok) { showToast(t("roleUpdated"), "success"); closeAccountModal(); loadAccounts(); }
       else { const d = await res.json(); showToast(d.error || t("failed"), "error"); btn.disabled = false; }
     }
@@ -1930,6 +1954,33 @@ setInterval(() => {
 
 // Apply language on initial load
 applyLanguage();
+
+// Auto-restore login session from localStorage
+if (authToken && currentUser) {
+  fetch("/api/auth/me", { headers: authHeaders() })
+    .then(res => {
+      if (res.ok) {
+        loginWrap.style.display = "none";
+        dashboard.style.display = "block";
+        applyLanguage();
+        updateUserDisplay();
+        loadAll();
+      } else {
+        // Token expired or invalid — clear and show login
+        authToken = "";
+        currentUser = null;
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("currentUser");
+      }
+    })
+    .catch(() => {
+      // Network error — clear stale token
+      authToken = "";
+      currentUser = null;
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+    });
+}
 
 // ────────────────────────────────────
 // ORDER MODAL
