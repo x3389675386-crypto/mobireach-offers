@@ -291,12 +291,12 @@
     "id": 10,
     "name": "EASY",
     "platform": "android",
-    "payout": 0,
+    "payout": 5,
     "currency": "USD",
     "geos": [
       "TH"
     ],
-    "icon": null,
+    "icon": "https://play-lh.googleusercontent.com/BOpPJGfca98BRMCQmwyarxxrkaeKEPv7AMvEsh7yny-1WPSZoLgOLbvlYJJOaSXm1THY=w480-h960-rw",
     "iconLetter": "E",
     "details": {
       "geo": "Thailand",
@@ -320,7 +320,7 @@
     "geos": [
       "PK"
     ],
-    "icon": null,
+    "icon": "https://play-lh.googleusercontent.com/TIRZn7GOSHnDV5XddOoDaGuTbbm6hncHPaYGIYIkdBY8pheAqqtyA3KXFxgzw-iav9uK=w480-h960-rw",
     "iconLetter": "S",
     "details": {
       "geo": "Pakistan",

@@ -5,9 +5,31 @@ const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, "submissions.json");
-const OFFERS_FILE = path.join(__dirname, "offers.json");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "mobireach2026";
+
+// ── Persistent data directory ──
+// On Render: set DATA_DIR=/var/data and mount a persistent disk there.
+// Locally defaults to ./data/ (gitignored).
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
+const SUBMISSIONS_FILE = path.join(DATA_DIR, "submissions.json");
+const OFFERS_FILE = path.join(DATA_DIR, "offers.json");
+const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
+
+// Initialize data directory on first run
+function initData() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(OFFERS_FILE) && fs.existsSync(OFFERS_SEED)) {
+    fs.copyFileSync(OFFERS_SEED, OFFERS_FILE);
+    console.log("📋 Offers initialized from seed");
+  }
+  if (!fs.existsSync(SUBMISSIONS_FILE)) {
+    fs.writeFileSync(SUBMISSIONS_FILE, "[]", "utf-8");
+    console.log("📋 Submissions initialized (empty)");
+  }
+}
+initData();
 
 // ── Middleware ──
 app.use(express.json());
@@ -15,14 +37,14 @@ app.use(express.json());
 // ── Helpers: Submissions ──
 function readSubmissions() {
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+    return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, "utf-8"));
   } catch {
     return [];
   }
 }
 
 function writeSubmissions(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
 // ── Helpers: Offers ──

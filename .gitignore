@@ -1,3 +1,7 @@
 node_modules/
 dist/
 .submissions.json.bak
+# Runtime data — persisted via Render Disk, never in Git
+data/
+offers.json
+submissions.json
