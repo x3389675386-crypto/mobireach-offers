@@ -1322,7 +1322,7 @@ function applyLanguage() {
   if (ordCancel) ordCancel.textContent = t("cancel");
 
   // Update tracker dropdown options and section header
-  switchTrackerType();
+  try { switchTrackerType(); } catch (e) { console.error("switchTrackerType error:", e); }
 
   // Re-render tables
   if (currentUser) {
@@ -1902,22 +1902,27 @@ applyLanguage();
 // ────────────────────────────────────
 
 function switchTrackerType() {
-  const type = document.getElementById("ord-tracker-type").value;
+  const typeEl = document.getElementById("ord-tracker-type");
+  if (!typeEl) return; // Order modal not in DOM yet
+  const type = typeEl.value;
   const afEl = document.getElementById("ord-af-fields");
   const adjEl = document.getElementById("ord-adjust-fields");
   const otherEl = document.getElementById("ord-other-fields");
 
-  afEl.style.display = type === "appsFlyer" ? "" : "none";
-  adjEl.style.display = type === "adjust" ? "" : "none";
-  otherEl.style.display = type === "other" ? "" : "none";
+  if (afEl) afEl.style.display = type === "appsFlyer" ? "" : "none";
+  if (adjEl) adjEl.style.display = type === "adjust" ? "" : "none";
+  if (otherEl) otherEl.style.display = type === "other" ? "" : "none";
 
   // Update section header
-  const headerMap = {
-    appsFlyer: t("appsFlyerParams"),
-    adjust: t("trackerParamsAdjust"),
-    other: t("trackerParamsOther")
-  };
-  document.getElementById("ord-section-af").textContent = "\u{1F4CA} " + (headerMap[type] || "");
+  const headerEl = document.getElementById("ord-section-af");
+  if (headerEl) {
+    const headerMap = {
+      appsFlyer: t("appsFlyerParams"),
+      adjust: t("trackerParamsAdjust"),
+      other: t("trackerParamsOther")
+    };
+    headerEl.textContent = "\u{1F4CA} " + (headerMap[type] || "");
+  }
 
   generateEmailTemplate();
 }
