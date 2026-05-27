@@ -850,6 +850,9 @@ const L = {
     yourAccount: "你的账号",
     usernamePwRequired: "用户名和密码不能为空",
     accountCreated: "账号已创建！",
+    creating: "创建中...",
+    updating: "更新中...",
+    accountNotFound: "未找到该账号",
     roleUpdated: "角色已更新！",
     passwordReset: "密码已重置！",
     resetFailed: "重置密码失败",
@@ -1022,6 +1025,9 @@ const L = {
     yourAccount: "Your account",
     usernamePwRequired: "Username and password required",
     accountCreated: "Account created!",
+    creating: "Creating...",
+    updating: "Updating...",
+    accountNotFound: "Account not found",
     roleUpdated: "Role updated!",
     passwordReset: "Password reset!",
     resetFailed: "Failed to reset password",
@@ -1681,16 +1687,18 @@ function renderAccounts() {
 
 function openAccountModal(id) {
   if (id) {
-    const ac = accounts.find(a => a.id === id);
-    if (!ac) return;
+    const numId = Number(id);
+    const ac = accounts.find(a => Number(a.id) === numId);
+    if (!ac) { showToast(t("accountNotFound"), "error"); return; }
     document.getElementById("ac-modal-title").textContent = t("editAccountTitle");
-    document.getElementById("ac-id").value = ac.id;
+    document.getElementById("ac-id").value = numId;
     document.getElementById("ac-username").value = ac.username;
     document.getElementById("ac-username").disabled = true;
     document.getElementById("ac-password").style.display = "none";
     document.getElementById("ac-pw-label").style.display = "none";
     document.getElementById("ac-role").value = ac.role;
     document.getElementById("ac-save-btn").textContent = t("updateRole");
+    document.getElementById("ac-save-btn").disabled = false;
   } else {
     document.getElementById("ac-modal-title").textContent = t("addAccountTitle");
     document.getElementById("ac-id").value = "";
@@ -1716,22 +1724,31 @@ document.getElementById("account-form").addEventListener("submit", async e => {
   e.preventDefault();
   const id = document.getElementById("ac-id").value;
   const isNew = !id;
+  const btn = document.getElementById("ac-save-btn");
+  btn.disabled = true;
+  btn.textContent = isNew ? t("creating") : t("updating");
 
-  if (isNew) {
-    const body = {
-      username: document.getElementById("ac-username").value.trim(),
-      password: document.getElementById("ac-password").value,
-      role: document.getElementById("ac-role").value
-    };
-    if (!body.username || !body.password) { showToast(t("usernamePwRequired"), "error"); return; }
-    const res = await fetch("/api/accounts", { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
-    if (res.ok) { showToast(t("accountCreated"), "success"); closeAccountModal(); loadAccounts(); }
-    else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
-  } else {
-    const body = { role: document.getElementById("ac-role").value };
-    const res = await fetch(`/api/accounts/${id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
-    if (res.ok) { showToast(t("roleUpdated"), "success"); closeAccountModal(); loadAccounts(); }
-    else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
+  try {
+    if (isNew) {
+      const body = {
+        username: document.getElementById("ac-username").value.trim(),
+        password: document.getElementById("ac-password").value,
+        role: document.getElementById("ac-role").value
+      };
+      if (!body.username || !body.password) { showToast(t("usernamePwRequired"), "error"); btn.disabled = false; return; }
+      const res = await fetch("/api/accounts", { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
+      if (res.ok) { showToast(t("accountCreated"), "success"); closeAccountModal(); loadAccounts(); }
+      else { const d = await res.json(); showToast(d.error || t("failed"), "error"); btn.disabled = false; }
+    } else {
+      const role = document.getElementById("ac-role").value;
+      const body = { role };
+      const res = await fetch(`/api/accounts/${id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
+      if (res.ok) { showToast(t("roleUpdated"), "success"); closeAccountModal(); loadAccounts(); }
+      else { const d = await res.json(); showToast(d.error || t("failed"), "error"); btn.disabled = false; }
+    }
+  } catch (err) {
+    showToast(t("loginConnError"), "error");
+    btn.disabled = false;
   }
 });
 
