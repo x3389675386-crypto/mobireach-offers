@@ -1776,7 +1776,7 @@ function openAccountModal(id) {
     document.getElementById("ac-username").value = ac.username;
     document.getElementById("ac-username").disabled = true;
     document.getElementById("ac-password").style.display = "none";
-    document.getElementById("ac-pw-label").style.display = "none";
+    document.getElementById("ac-lbl-password").style.display = "none";
     document.getElementById("ac-role").value = ac.role;
     document.getElementById("ac-save-btn").textContent = t("updateRole");
     document.getElementById("ac-save-btn").disabled = false;
@@ -1786,7 +1786,7 @@ function openAccountModal(id) {
     document.getElementById("ac-username").value = "";
     document.getElementById("ac-username").disabled = false;
     document.getElementById("ac-password").style.display = "";
-    document.getElementById("ac-pw-label").style.display = "";
+    document.getElementById("ac-lbl-password").style.display = "";
     document.getElementById("ac-password").value = "";
     document.getElementById("ac-role").value = "admin";
     document.getElementById("ac-save-btn").textContent = t("createAccount");
