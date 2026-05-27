@@ -1,0 +1,899 @@
+[
+  {
+    "id": 1,
+    "name": "Bingoplus",
+    "platform": "ios",
+    "payout": 9,
+    "currency": "USD",
+    "geos": [
+      "PH"
+    ],
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/51/31/0b/51310b44-fba9-a9e2-9979-37342c0c1908/Placeholder.mill/400x400bb-75.webp",
+    "iconLetter": "B",
+    "details": {
+      "geo": "PH",
+      "payout": "$9.00 CPA",
+      "storeUrl": "https://apps.apple.com/ph/app/bingoplus-54m-jackpot/id1612030383",
+      "payableEvent": "bingoplus_first_deposit",
+      "flow": "—",
+      "kpi": "Event Name - bingoplus_first_deposit. Billing will now be based on CRM number. Please note that we are closely monitoring traffic quality, including click activity and fraud signals flagged by P360. We will remove PIDs and PRTs that show excessively high click volumes or suspicious behavior. 1. FD with AF source ods_af_blocked_inapps 2. No-bet FDs will be deducted from billing to ensure FD quality.",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "RT",
+        "Onelink",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Bingoplus",
+    "platform": "android",
+    "payout": 9,
+    "currency": "USD",
+    "geos": [
+      "PH"
+    ],
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/51/31/0b/51310b44-fba9-a9e2-9979-37342c0c1908/Placeholder.mill/400x400bb-75.webp",
+    "iconLetter": "B",
+    "details": {
+      "geo": "PH",
+      "payout": "$9.00 CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.intech.c66app",
+      "payableEvent": "bingoplus_first_deposit",
+      "flow": "—",
+      "kpi": "Event Name - bingoplus_first_deposit. Billing will now be based on CRM number. Please note that we are closely monitoring traffic quality, including click activity and fraud signals flagged by P360. We will remove PIDs and PRTs that show excessively high click volumes or suspicious behavior. 1. FD with AF source ods_af_blocked_inapps 2. No-bet FDs will be deducted from billing to ensure FD quality.",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "RT",
+        "Onelink",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Gate.io",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "CN",
+      "KR",
+      "TW",
+      "TR",
+      "UA",
+      "VN",
+      "AE",
+      "KSA",
+      "BR",
+      "PK",
+      "PH",
+      "MX"
+    ],
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/7c/d9/0c/7cd90c53-9064-393f-a755-b99c707adf00/Placeholder.mill/400x400bb-75.webp",
+    "iconLetter": "G",
+    "details": {
+      "geo": "CN, KR, TW, TR, UA, VN, UAE, KSA, BR, PK, PH, MX & more",
+      "payout": "CPA (BI panel billing, AF for reference only)",
+      "storeUrl": "https://apps.apple.com/pt/app/gate-io-buy-bitcoin-crypto/id1294998195",
+      "payableEvent": "sign_up",
+      "flow": "—",
+      "kpi": "Soft KPI: Install-to-registration ratio must be >1%, invalid activations must not exceed 1%. Hard KPI: CPA registration cost. Trading fee ROI > 10% of registration cost (e.g. CPA $20,000, trading fee must exceed $2,000).",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "VTA",
+        "RT",
+        "Onelink",
+        "P360 (PA≤20%)"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Gate.io",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "CN",
+      "KR",
+      "TW",
+      "TR",
+      "UA",
+      "VN",
+      "AE",
+      "KSA",
+      "BR",
+      "PK",
+      "PH",
+      "MX"
+    ],
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/7c/d9/0c/7cd90c53-9064-393f-a755-b99c707adf00/Placeholder.mill/400x400bb-75.webp",
+    "iconLetter": "G",
+    "details": {
+      "geo": "CN, KR, TW, TR, UA, VN, UAE, KSA, BR, PK, PH, MX & more",
+      "payout": "CPA (BI panel billing, AF for reference only)",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.gateio.gateio",
+      "payableEvent": "sign_up",
+      "flow": "—",
+      "kpi": "Soft KPI: Install-to-registration ratio must be >1%, invalid activations must not exceed 1%. Hard KPI: CPA registration cost. Trading fee ROI > 10% of registration cost (e.g. CPA $20,000, trading fee must exceed $2,000).",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "VTA",
+        "RT",
+        "Onelink",
+        "P360 (PA≤20%)"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "name": "Betwinner",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "KE",
+      "NG",
+      "ZM",
+      "CM",
+      "CD",
+      "MZ"
+    ],
+    "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/10/52/22/10522219-b1e7-71f2-036e-b3ea6cb85986/Placeholder.mill/400x400bb-75.webp",
+    "iconLetter": "B",
+    "details": {
+      "geo": "Kenya, Nigeria, Zambia, Cameroon, DR Congo, Mozambique",
+      "payout": "CPA",
+      "storeUrl": "https://apps.apple.com/KE/app/id1527055586?mt=8",
+      "payableEvent": "—",
+      "flow": "—",
+      "kpi": "250 players / per day for all PIDs",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "Onelink",
+        "BI+P360"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Melbet",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "SN",
+      "IN",
+      "CI",
+      "EG",
+      "MA",
+      "VN",
+      "TH",
+      "UZ"
+    ],
+    "icon": "https://assets.sensortower-china.com/NAZz-_7ICEL9NWKMF9NITudczsC_4m044qoC-faJ0HoslIfybb1UqXuQ6hKDrO5x5OQliSgv4Ue0ZWs3buzG=s150",
+    "iconLetter": "M",
+    "details": {
+      "geo": "SN, IN, CI, EG, MA, VN, TH, UZ",
+      "payout": "CPA / CPI",
+      "storeUrl": "—",
+      "payableEvent": "registration, first deposit, install",
+      "flow": "—",
+      "kpi": "No specific KPI",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "Onelink",
+        "BI+P360"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "name": "Melbet",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "BD",
+      "EG",
+      "PK",
+      "UZ",
+      "IN",
+      "CI",
+      "CM",
+      "SN"
+    ],
+    "icon": "https://assets.sensortower-china.com/NAZz-_7ICEL9NWKMF9NITudczsC_4m044qoC-faJ0HoslIfybb1UqXuQ6hKDrO5x5OQliSgv4Ue0ZWs3buzG=s150",
+    "iconLetter": "M",
+    "details": {
+      "geo": "BD, EG, PK, UZ, IN, CI, CM, SN",
+      "payout": "CPA / CPI",
+      "storeUrl": "—",
+      "payableEvent": "registration, first deposit, install",
+      "flow": "—",
+      "kpi": "No specific KPI",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "Onelink",
+        "BI+P360"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "name": "VTmarket",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "FR",
+      "BE",
+      "CA",
+      "UK",
+      "ES",
+      "MX",
+      "VN",
+      "HK",
+      "CN"
+    ],
+    "icon": "https://play-lh.googleusercontent.com/4ZIzw_7VgwKIEOudSb0yhh4_HDuokXMfCC7II718yC5Ku9PABRUw_LFufUmYl4sVQ4pYGgyX22xKVOx5Aiht=w480-h960-rw",
+    "iconLetter": "V",
+    "details": {
+      "geo": "FR, BE, CA, UK, ES, MX, VN, HK, CN",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=cn.com.vtmarkets&hl=en_IN",
+      "payableEvent": "trades_APP_FTT",
+      "flow": "—",
+      "kpi": "Deposit amount + number of transactions",
+      "prt": "mobirichcn453",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "Onelink",
+        "BI"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "name": "MexiCash",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "MX"
+    ],
+    "icon": "https://assets.sensortower-china.com/udJlqNXm3CpjOL8BTAq4EbvnNo3qzDDLjrHNEMRgVUVcx29vGNHDAgv8vx1zl7pxROw=s150",
+    "iconLetter": "M",
+    "details": {
+      "geo": "Mexico",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.mexicash.app&hl=es-419&gl=mx",
+      "payableEvent": "PASS_CX",
+      "flow": "—",
+      "kpi": "Soft KPI: Install → Registration ≥ 4%",
+      "prt": "—",
+      "integrations": [
+        "Onelink",
+        "BI"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "name": "EASY",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "TH"
+    ],
+    "icon": null,
+    "iconLetter": "E",
+    "details": {
+      "geo": "Thailand",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.thai.credit.finance.reliable.loan.android&hl=th&gl=th",
+      "payableEvent": "COMPLETE_REGISTRATION_CX / AUDIT_CX / PASS_CX",
+      "flow": "—",
+      "kpi": "Soft KPI: Install-to-registration ≥ 4%",
+      "prt": "quanharborhk654",
+      "integrations": [
+        "No P360"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "name": "SmartQarza",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "PK"
+    ],
+    "icon": null,
+    "iconLetter": "S",
+    "details": {
+      "geo": "Pakistan",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.creditcat.tech.app",
+      "payableEvent": "PASS_CX",
+      "flow": "—",
+      "kpi": "Soft KPI: Install → Registration > 4%. Fraud traffic will not be billed.",
+      "prt": "—",
+      "integrations": [
+        "BI"
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "name": "MocaMoca",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "PH"
+    ],
+    "icon": null,
+    "iconLetter": "M",
+    "details": {
+      "geo": "Philippines",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.mocamoca&hl=en-gb&gl=ph",
+      "payableEvent": "PASS_CX",
+      "flow": "—",
+      "kpi": "Hard KPI: Registration → Pass requirement 12%; 6%-12% pass rate reduced by 20%; <6% pass rate reduced by 50%. Soft KPI: Installation → Registration ≥ 4%.",
+      "prt": "—",
+      "integrations": [
+        "AF+PA"
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "name": "1688",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "JP",
+      "KR",
+      "HK",
+      "TW",
+      "KH",
+      "MY",
+      "SG",
+      "GH",
+      "NG",
+      "SA",
+      "TR",
+      "VN",
+      "TH"
+    ],
+    "icon": null,
+    "iconLetter": "1",
+    "details": {
+      "geo": "JP, KR, HK, TW, KH, MY, SG, GH, NG, SA, TR, VN, TH",
+      "payout": "CPA",
+      "storeUrl": "https://apps.apple.com/app/id507097717",
+      "payableEvent": "CPA",
+      "flow": "—",
+      "kpi": "ROI target ≥ 1 (higher is better); low ROI may lead to price reduction; artificially inflating events/purchases is strictly prohibited and will result in immediate deduction; daily budget of 30 events per region for testing; PID can only run one instance, otherwise no billing.",
+      "prt": "—",
+      "integrations": [
+        "BI"
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "name": "Luckyplata",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "CO"
+    ],
+    "icon": null,
+    "iconLetter": "L",
+    "details": {
+      "geo": "Colombia",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=credit.cash.prestamo.profin.loan.efectivo.luckyplata&gl=mx",
+      "payableEvent": "af_purchase",
+      "flow": "—",
+      "kpi": "Deduction based on CRM",
+      "prt": "—",
+      "integrations": [
+        "—"
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "name": "Bharat Loan (CPD)",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "India",
+      "payout": "CPD",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.devmunifin.bharatloan&hl=en_IN",
+      "payableEvent": "lms_loan_application_disbursed",
+      "flow": "—",
+      "kpi": "CRM-based billing. Approved PIN codes only. Salaried employees only (no self-employed/business owners). Monthly salary ≥ ₹30,000. Age 21-56. Salary must be deposited into bank account (no cash/cheque).",
+      "prt": "—",
+      "integrations": [
+        "CRM"
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "name": "Bharat Loan (CPR)",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "India",
+      "payout": "CPR",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.devmunifin.bharatloan&hl=en_IN",
+      "payableEvent": "lms_loan_creadu_hit",
+      "flow": "—",
+      "kpi": "CRM-based billing. Approved PIN codes only. Salaried employees only (no self-employed/business owners). Monthly salary ≥ ₹30,000. Age 21-56. Salary must be deposited into bank account (no cash/cheque).",
+      "prt": "—",
+      "integrations": [
+        "CRM"
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "name": "Rupee112",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "R",
+    "details": {
+      "geo": "India",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.vrindafinlease.rupee112",
+      "payableEvent": "lms_loan_application_disbursed / lms_loan_creadu_hit",
+      "flow": "—",
+      "kpi": "Age 21-56. Monthly salary ≥ ₹25,000. Salaried employees only. PIN code must be in service area. eKYC & selfie verification required (liveness ≥70%, selfie match ≥70%). P360 anti-fraud. Final CRM verification.",
+      "prt": "—",
+      "integrations": [
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "name": "Loan112",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "L",
+    "details": {
+      "geo": "India",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.personalLoan.loan112&hl=en_IN",
+      "payableEvent": "lms_loan_application_disbursed",
+      "flow": "—",
+      "kpi": "—",
+      "prt": "—",
+      "integrations": [
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "name": "Bybit",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "KR",
+      "AE",
+      "IL",
+      "EG",
+      "SA",
+      "KW",
+      "AU",
+      "CN",
+      "TW",
+      "HK",
+      "RU",
+      "UA",
+      "KZ",
+      "ID",
+      "TR",
+      "VN",
+      "NG",
+      "GH",
+      "ZA",
+      "CM",
+      "CO",
+      "MX",
+      "AR",
+      "BR",
+      "PK",
+      "BD",
+      "IN",
+      "KH",
+      "PL",
+      "DE",
+      "HU",
+      "ES",
+      "PT",
+      "BE",
+      "CH",
+      "IT",
+      "SE"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "KR, AE, IL, EG, SA, KW, AU, CN, TW, HK, RU, UA, KZ, ID, TR, VN, NG, GH, ZA, CM, CO, MX, AR, BR, PK, BD, IN, KH & more",
+      "payout": "CPA",
+      "storeUrl": "https://apps.apple.com/us/app/bybit-buy-bitcoin-crypto/id1488296980",
+      "payableEvent": "eFTD",
+      "flow": "—",
+      "kpi": "CRM billing",
+      "prt": "mobirichcn453 / mdquanmobisg566",
+      "integrations": [
+        "RT",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "name": "Bybit",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "KR",
+      "AE",
+      "IL",
+      "EG",
+      "SA",
+      "KW",
+      "AU",
+      "CN",
+      "TW",
+      "HK",
+      "RU",
+      "UA",
+      "KZ",
+      "ID",
+      "TR",
+      "VN",
+      "NG",
+      "GH",
+      "ZA",
+      "CM",
+      "CO",
+      "MX",
+      "AR",
+      "BR",
+      "PK",
+      "BD",
+      "IN",
+      "KH",
+      "PL",
+      "DE",
+      "HU",
+      "ES",
+      "PT",
+      "BE",
+      "CH",
+      "IT",
+      "SE"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "KR, AE, IL, EG, SA, KW, AU, CN, TW, HK, RU, UA, KZ, ID, TR, VN, NG, GH, ZA, CM, CO, MX, AR, BR, PK, BD, IN, KH & more",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.bybit.app",
+      "payableEvent": "eFTD",
+      "flow": "—",
+      "kpi": "CRM billing",
+      "prt": "mobirichcn453 / mdquanmobisg566",
+      "integrations": [
+        "RT",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "name": "Mpokket",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "M",
+    "details": {
+      "geo": "India",
+      "payout": "CPD",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.mpokket.app&hl=en_IN&gl=IN",
+      "payableEvent": "Loan Disbursal",
+      "flow": "—",
+      "kpi": "Non-incentive traffic. Unique advertising ID. Student/salaried loan disbursement is paid event. Install-to-disbursement ratio ≥ 12-15% (Soft KPI). No Facebook/Google UAC traffic. 7-day click lookback. Final based on AppsFlyer minus P360. Target: 18-35 students, 21-45 salaried. Loan ₹1,000-50,000.",
+      "prt": "—",
+      "integrations": [
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "name": "FatakPay",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "F",
+    "details": {
+      "geo": "India (excluding non-service PIN codes)",
+      "payout": "CPD",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.fatakpay&gl=in",
+      "payableEvent": "Disbursement_card",
+      "flow": "—",
+      "kpi": "CRM-based verification. Loan amount ₹1,500–₹20,000.",
+      "prt": "—",
+      "integrations": [
+        "RT",
+        "Onelink",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "name": "Youhodler",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "ES",
+      "PT",
+      "CH",
+      "BE"
+    ],
+    "icon": null,
+    "iconLetter": "Y",
+    "details": {
+      "geo": "ES, PT, CH, BE",
+      "payout": "CPA",
+      "storeUrl": "https://apps.apple.com/us/app/youhodler-bitcoin-wallet/id1469351696",
+      "payableEvent": "Verification-Identity-Success",
+      "flow": "—",
+      "kpi": "Install to sign-up ≥ 10%. KYC to deposit ≥ 20%. Test budget: 50 KYC. Test install cap: 3K/month. Direct clients paused due to low CR/high install cost.",
+      "prt": "—",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "Onelink",
+        "PA+AF"
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "name": "Youhodler",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "ES",
+      "PT",
+      "CH",
+      "BE"
+    ],
+    "icon": null,
+    "iconLetter": "Y",
+    "details": {
+      "geo": "ES, PT, CH, BE",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.youhodler.youhodler",
+      "payableEvent": "Verification-Identity-Success",
+      "flow": "—",
+      "kpi": "Install to sign-up ≥ 10%. KYC to deposit ≥ 20%. Test budget: 50 KYC. Test install cap: 3K/month. Direct clients paused due to low CR/high install cost.",
+      "prt": "—",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "Onelink",
+        "PA+AF"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "name": "ShemarooMe OTT",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "IN"
+    ],
+    "icon": null,
+    "iconLetter": "S",
+    "details": {
+      "geo": "India",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.saranyu.shemarooworld",
+      "payableEvent": "Subscription",
+      "flow": "—",
+      "kpi": "User path: Install → Register → Select Plan → Checkout → Purchase. All paid transactions CRM-verified. Only legitimate purchases count. Quarterly plan: ₹449 INR.",
+      "prt": "—",
+      "integrations": [
+        "RT",
+        "CRM billing"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "name": "Bybit EU",
+    "platform": "ios",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "KR",
+      "AE",
+      "IL",
+      "EG",
+      "SA",
+      "KW",
+      "AU",
+      "CN",
+      "TW",
+      "HK",
+      "RU",
+      "UA",
+      "KZ",
+      "ID",
+      "TR",
+      "VN",
+      "NG",
+      "GH",
+      "ZA",
+      "CM",
+      "CO",
+      "MX",
+      "AR",
+      "BR",
+      "PK",
+      "BD",
+      "IN",
+      "KH",
+      "PL",
+      "DE",
+      "HU",
+      "ES",
+      "PT",
+      "BE",
+      "CH",
+      "IT",
+      "SE"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "KR, AE, IL, EG, SA, KW, AU, CN, TW, HK, RU, UA, KZ, ID, TR, VN, NG, GH, ZA, CM, CO, MX, AR, BR, PK, BD, IN, KH, PL, DE, HU, ES, PT, BE, CH, IT, SE & more",
+      "payout": "CPA",
+      "storeUrl": "https://apps.apple.com/us/app/bybit-buy-bitcoin-crypto/id1488296980",
+      "payableEvent": "eFTD",
+      "flow": "—",
+      "kpi": "CRM billing",
+      "prt": "mobirichcn453 / mdquanmobisg566",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "P360"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "name": "Bybit EU",
+    "platform": "android",
+    "payout": 0,
+    "currency": "USD",
+    "geos": [
+      "KR",
+      "AE",
+      "IL",
+      "EG",
+      "SA",
+      "KW",
+      "AU",
+      "CN",
+      "TW",
+      "HK",
+      "RU",
+      "UA",
+      "KZ",
+      "ID",
+      "TR",
+      "VN",
+      "NG",
+      "GH",
+      "ZA",
+      "CM",
+      "CO",
+      "MX",
+      "AR",
+      "BR",
+      "PK",
+      "BD",
+      "IN",
+      "KH",
+      "PL",
+      "DE",
+      "HU",
+      "ES",
+      "PT",
+      "BE",
+      "CH",
+      "IT",
+      "SE"
+    ],
+    "icon": null,
+    "iconLetter": "B",
+    "details": {
+      "geo": "KR, AE, IL, EG, SA, KW, AU, CN, TW, HK, RU, UA, KZ, ID, TR, VN, NG, GH, ZA, CM, CO, MX, AR, BR, PK, BD, IN, KH, PL, DE, HU, ES, PT, BE, CH, IT, SE & more",
+      "payout": "CPA",
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.bybit.app",
+      "payableEvent": "eFTD",
+      "flow": "—",
+      "kpi": "CRM billing",
+      "prt": "mobirichcn453 / mdquanmobisg566",
+      "integrations": [
+        "CTV",
+        "VTA",
+        "P360"
+      ]
+    }
+  }
+]

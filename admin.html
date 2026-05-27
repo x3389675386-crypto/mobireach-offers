@@ -3,279 +3,840 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mobireach · Admin</title>
+  <title>Mobireach · Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f9f9f9; --card: #fff; --border: #e8e8e8;
-      --text: #111; --text2: #555; --text3: #999;
-      --accent: #0f0f0f; --green: #16a34a; --blue: #2563eb;
-      --orange: #d97706; --red: #dc2626;
+      --bg: #f5f7fa; --card: #ffffff; --border: #e2e8f0;
+      --text: #0f172a; --text2: #475569; --text3: #94a3b8;
+      --accent: #6366f1; --accent-hover: #4f46e5; --accent-light: #eef2ff;
+      --nav-bg: #0f172a; --nav-text: #e2e8f0;
+      --green: #10b981; --green-light: #ecfdf5;
+      --orange: #f59e0b; --orange-light: #fffbeb;
+      --red: #ef4444; --red-light: #fef2f2;
       --font: 'Inter', -apple-system, sans-serif;
+      --radius: 10px; --radius-sm: 6px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
     }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.6; }
 
-    /* Login */
+    /* ── LOGIN ── */
     .login-wrap {
       min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     }
     .login-box {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 36px; width: 100%; max-width: 360px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      background: var(--card); border-radius: 16px; padding: 40px; width: 100%; max-width: 380px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
     }
-    .login-box h1 { font-size: 18px; margin-bottom: 4px; }
-    .login-box p { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+    .login-box h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .login-box .sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; }
+    .login-box .logo-mark {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 18px; margin-bottom: 20px;
+    }
     .login-input {
-      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-      border-radius: 8px; font-size: 14px; font-family: var(--font);
-      outline: none; margin-bottom: 12px;
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font);
+      outline: none; margin-bottom: 12px; transition: all 0.2s;
     }
-    .login-input:focus { border-color: #aaa; }
+    .login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
     .login-btn {
-      width: 100%; padding: 10px; background: var(--accent); color: #fff;
-      border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+      width: 100%; padding: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+      border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
       cursor: pointer; font-family: var(--font);
+      box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+      transition: all 0.2s;
     }
-    .login-btn:hover { background: #333; }
+    .login-btn:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.4); transform: translateY(-1px); }
     .login-error { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
 
-    /* Dashboard */
-    .dashboard { display: none; max-width: 1100px; margin: 0 auto; padding: 24px; }
-    .dash-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-    }
-    .dash-header h1 { font-size: 20px; }
-    .dash-header-right { display: flex; align-items: center; gap: 12px; }
-    .badge {
-      font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 600;
-    }
-    .badge-green { background: #dcfce7; color: var(--green); }
-    .badge-orange { background: #fef3c7; color: var(--orange); }
-    .badge-blue { background: #dbeafe; color: var(--blue); }
-    .logout-btn {
-      padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px;
-      background: #fff; font-size: 12px; cursor: pointer; font-family: var(--font);
-    }
-    .logout-btn:hover { background: var(--bg); }
+    /* ── DASHBOARD ── */
+    .dashboard { display: none; }
 
-    /* Stats row */
+    /* ── NAV ── */
+    .admin-nav {
+      background: var(--nav-bg); color: var(--nav-text);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 52px;
+    }
+    .admin-nav-left { display: flex; align-items: center; gap: 20px; }
+    .admin-nav .logo { font-weight: 700; font-size: 15px; color: #fff; }
+    .admin-nav .logo span { color: #818cf8; }
+    .tab-nav { display: flex; gap: 4px; }
+    .tab-nav button {
+      background: transparent; border: none; color: #94a3b8;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px;
+      font-weight: 500; cursor: pointer; font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .tab-nav button:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+    .tab-nav button.active { color: #fff; background: rgba(99,102,241,0.3); }
+    .logout-btn {
+      padding: 6px 14px; border: 1px solid #334155; border-radius: 8px;
+      background: transparent; color: #94a3b8; font-size: 12px;
+      cursor: pointer; font-family: var(--font); transition: all 0.2s;
+    }
+    .logout-btn:hover { color: #fff; border-color: #6366f1; }
+
+    /* ── CONTENT ── */
+    .content { max-width: 1300px; margin: 0 auto; padding: 24px; }
+
+    /* ── STATS ── */
     .stats-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card {
       flex: 1; min-width: 140px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; padding: 16px;
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
     }
     .stat-card .num { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
     .stat-card .lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
-    /* Table */
+    /* ── TABLE ── */
     .table-wrap {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden;
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
     }
+    .table-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .table-header h2 { font-size: 15px; font-weight: 600; }
+    .btn-primary {
+      padding: 8px 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+      border: none; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+      box-shadow: 0 2px 6px rgba(99,102,241,0.25);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { box-shadow: 0 4px 12px rgba(99,102,241,0.35); transform: translateY(-1px); }
+    .btn-secondary {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--card); font-size: 12px; cursor: pointer; font-family: var(--font);
+      transition: all 0.15s; color: var(--text2);
+    }
+    .btn-secondary:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    .btn-danger {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--card); font-size: 12px; color: var(--red); cursor: pointer;
+      font-family: var(--font); transition: all 0.15s;
+    }
+    .btn-danger:hover { background: var(--red-light); border-color: var(--red); }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px 16px; text-align: left; font-size: 13px; }
+    th, td { padding: 10px 16px; text-align: left; font-size: 12px; }
     th {
-      background: var(--bg); font-size: 11px; text-transform: uppercase;
+      background: #f8fafc; font-size: 11px; text-transform: uppercase;
       letter-spacing: 0.5px; color: var(--text3); font-weight: 600;
       border-bottom: 1px solid var(--border);
     }
     td { border-bottom: 1px solid var(--border); }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fafafa; }
-    .mono { font-family: 'SF Mono', 'Consolas', monospace; font-size: 12px; }
-    .status-select {
-      padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 12px; font-family: var(--font); cursor: pointer; background: #fff;
-    }
-    .delete-btn {
-      padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 11px; color: var(--red); cursor: pointer; background: #fff;
-      font-family: var(--font);
-    }
-    .delete-btn:hover { background: #fef2f2; }
+    tr:hover td { background: #f8fafc; }
+
+    .mono { font-family: 'SF Mono', 'Consolas', monospace; font-size: 11px; }
     .tag-list { display: flex; flex-wrap: wrap; gap: 3px; }
     .tag-chip {
-      font-size: 11px; padding: 2px 6px; background: #f0f0f0;
+      font-size: 10px; padding: 2px 6px; background: #f1f5f9;
       border-radius: 3px; color: var(--text2);
     }
+    .status-select {
+      padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 11px; font-family: var(--font); cursor: pointer; background: #fff;
+    }
+    .badge {
+      display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 600;
+    }
+    .badge-ios { background: #e0e7ff; color: #4338ca; }
+    .badge-android { background: #d1fae5; color: #059669; }
+    .empty { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 13px; display: none; }
 
-    /* Empty */
-    .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
-    .empty svg { margin-bottom: 12px; }
+    /* ── INLINE EDIT ── */
+    .inline-input {
+      padding: 4px 8px; border: 1px solid transparent; border-radius: 4px;
+      font-size: 12px; font-family: var(--font); width: 100%;
+      background: transparent; outline: none; transition: all 0.15s;
+    }
+    .inline-input:hover { border-color: var(--border); background: #fff; }
+    .inline-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+    .icon-preview {
+      width: 32px; height: 32px; border-radius: 6px; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent-light); vertical-align: middle; margin-right: 8px;
+    }
+    .icon-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .icon-preview span { font-size: 13px; font-weight: 700; color: var(--text2); }
+    .offer-name-cell { display: flex; align-items: center; gap: 10px; }
+    .offer-name-cell strong { font-size: 13px; }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card); border-radius: 14px; width: 100%; max-width: 560px;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      transform: translateY(12px) scale(0.98); transition: transform 0.2s;
+    }
+    .overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    }
+    .modal-header h3 { font-size: 15px; font-weight: 700; }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent-light); border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 16px;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: var(--accent); color: #fff; }
+    .modal-body { padding: 20px 24px 24px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 11px; font-weight: 600; color: var(--text2);
+      margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .form-input, .form-textarea {
+      width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font);
+      color: var(--text); background: #fafbfc; outline: none; transition: all 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
+    .form-textarea { resize: vertical; min-height: 60px; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row > * { flex: 1; }
+    .form-hint { font-size: 10px; color: var(--text3); margin-top: 3px; }
+    .tag-edit-wrap {
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+      background: #fafbfc; cursor: text; transition: all 0.2s;
+    }
+    .tag-edit-wrap:focus-within { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
+    .tag-edit-pill {
+      background: var(--accent-light); border-radius: 4px; padding: 2px 7px;
+      font-size: 11px; font-weight: 500; color: var(--accent);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .tag-edit-remove { cursor: pointer; font-size: 13px; line-height: 1; color: var(--text3); }
+    .tag-edit-remove:hover { color: var(--red); }
+    .tag-edit-input { border: none; outline: none; flex: 1; min-width: 60px; font-size: 12px; font-family: var(--font); background: transparent; }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-save {
+      flex: 1; padding: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+      border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+      box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+      transition: all 0.2s;
+    }
+    .btn-save:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.4); transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-cancel {
+      flex: 1; padding: 10px; background: var(--card); color: var(--text2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font);
+    }
+    .btn-cancel:hover { background: var(--accent-light); }
+
+    /* Spinner */
+    .spinner {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed; top: 20px; right: 20px; z-index: 500;
+      padding: 12px 20px; border-radius: 8px; font-size: 13px;
+      font-weight: 500; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 8px;
+      transform: translateX(120%); transition: transform 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--red); }
 
     /* Responsive */
-    @media (max-width: 700px) {
+    @media (max-width: 768px) {
+      .admin-nav { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
       .table-wrap { overflow-x: auto; }
-      table { min-width: 600px; }
+      table { min-width: 900px; }
+      .form-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-<!-- Login -->
+<!-- ── LOGIN ── -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-box">
-    <h1>🔐 Admin Login</h1>
-    <p>Enter your admin password to continue.</p>
-    <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+    <div class="logo-mark">M</div>
+    <h1>Admin Panel</h1>
+    <p class="sub">Manage offers & view applications</p>
+    <div class="login-error" id="login-error">Incorrect password</div>
     <input class="login-input" type="password" id="pw-input" placeholder="Password" autofocus />
     <button class="login-btn" id="pw-btn">Sign in</button>
   </div>
 </div>
 
-<!-- Dashboard -->
+<!-- ── DASHBOARD ── -->
 <div class="dashboard" id="dashboard">
-  <div class="dash-header">
-    <h1>Mobireach · Applications</h1>
-    <div class="dash-header-right">
-      <span class="badge badge-green" id="badge-new">0 new</span>
-      <button class="logout-btn" id="logout-btn">Logout</button>
+  <nav class="admin-nav">
+    <div class="admin-nav-left">
+      <div class="logo">Mobi<span>reach</span> Admin</div>
+      <div class="tab-nav">
+        <button class="active" data-tab="offers" id="tab-offers">Offers</button>
+        <button data-tab="applications" id="tab-apps">Applications</button>
+      </div>
+    </div>
+    <button class="logout-btn" id="logout-btn">Logout</button>
+  </nav>
+
+  <div class="content">
+    <!-- ── OFFERS TAB ── -->
+    <div class="tab-content" id="content-offers">
+      <div class="stats-row" id="offers-stats"></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2>All Offers</h2>
+          <button class="btn-primary" onclick="openOfferModal()">+ New Offer</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:200px">Offer</th>
+                <th>Platform</th>
+                <th style="width:90px">Payout</th>
+                <th>GEOs</th>
+                <th style="width:280px">Icon URL</th>
+                <th style="width:80px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="offers-tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="offers-empty">No offers yet. Create one!</div>
+      </div>
+    </div>
+
+    <!-- ── APPLICATIONS TAB ── -->
+    <div class="tab-content" id="content-apps" style="display:none">
+      <div class="stats-row" id="apps-stats"></div>
+      <div class="table-wrap">
+        <div class="table-header"><h2>Applications</h2></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Offer</th>
+                <th>Publisher</th>
+                <th>PIDs</th>
+                <th>Emails</th>
+                <th>Comment</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="apps-tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="apps-empty">No applications yet.</div>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="stats-row">
-    <div class="stat-card"><div class="num" id="s-total">0</div><div class="lbl">Total</div></div>
-    <div class="stat-card"><div class="num" id="s-new">0</div><div class="lbl">New</div></div>
-    <div class="stat-card"><div class="num" id="s-viewed">0</div><div class="lbl">Viewed</div></div>
-    <div class="stat-card"><div class="num" id="s-contacted">0</div><div class="lbl">Contacted</div></div>
-  </div>
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Offer</th>
-          <th>Publisher</th>
-          <th>PIDs</th>
-          <th>Emails</th>
-          <th>Comment</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty" id="empty" style="display:none">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-           fill="none" stroke="#ccc" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      <p>No applications yet.</p>
+<!-- ── OFFER EDIT MODAL ── -->
+<div class="overlay" id="offer-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="offer-modal-title">Edit Offer</h3>
+      <button class="modal-close" onclick="closeOfferModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="offer-form">
+        <input type="hidden" id="of-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input class="form-input" id="of-name" placeholder="Offer name" />
+          </div>
+          <div class="form-group" style="flex:0.6">
+            <label class="form-label">Platform</label>
+            <select class="form-input" id="of-platform">
+              <option value="ios">iOS</option>
+              <option value="android">Android</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Payout ($)</label>
+            <input class="form-input" id="of-payout" type="number" step="0.01" min="0" placeholder="0.00" />
+          </div>
+          <div class="form-group" style="flex:0.6">
+            <label class="form-label">Currency</label>
+            <select class="form-input" id="of-currency">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="INR">INR</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon URL</label>
+          <input class="form-input" id="of-icon" placeholder="https://..." />
+          <div class="form-hint">Leave empty to show letter placeholder</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">GEOs</label>
+          <div class="tag-edit-wrap" id="of-geos-wrap">
+            <input class="tag-edit-input" id="of-geos-input" placeholder="Type a GEO code and press Enter" />
+          </div>
+          <div class="form-hint">Press Enter or comma to add</div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent)">Details</h4>
+
+        <div class="form-group">
+          <label class="form-label">Detail GEO</label>
+          <input class="form-input" id="of-dgeo" placeholder="e.g. PH, CN, KR" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Detail Payout Text</label>
+          <input class="form-input" id="of-dpayout" placeholder="e.g. $9.00 CPA" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Store URL</label>
+          <input class="form-input" id="of-durl" placeholder="App Store / Google Play URL" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payable Event</label>
+          <input class="form-input" id="of-devent" placeholder="e.g. sign_up" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">KPI</label>
+          <textarea class="form-textarea" id="of-dkpi" placeholder="KPI details..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">PRT</label>
+            <input class="form-input" id="of-dprt" placeholder="PRT code" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Flow</label>
+            <input class="form-input" id="of-dflow" placeholder="Flow description" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Integrations</label>
+          <div class="tag-edit-wrap" id="of-int-wrap">
+            <input class="tag-edit-input" id="of-int-input" placeholder="Type integration name and press Enter" />
+          </div>
+          <div class="form-hint">e.g. CTV, VTA, Onelink, P360</div>
+        </div>
+
+        <input type="hidden" id="of-iconLetter" value="N" />
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeOfferModal()">Cancel</button>
+          <button type="submit" class="btn-save" id="of-save-btn">Save Offer</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script>
+// ────────────────────────────────────
+// STATE
+// ────────────────────────────────────
 let password = "";
+let offers = [];
+let submissions = [];
+let currentTab = "offers";
+let editGeos = [];
+let editIntegrations = [];
 
+// ────────────────────────────────────
+// LOGIN
+// ────────────────────────────────────
 const loginWrap = document.getElementById("login-wrap");
 const dashboard = document.getElementById("dashboard");
-const pwInput = document.getElementById("pw-input");
-const pwBtn = document.getElementById("pw-btn");
-const loginError = document.getElementById("login-error");
 
-// ── Login ──
 function tryLogin() {
-  password = pwInput.value;
+  password = document.getElementById("pw-input").value;
   fetch(`/api/submissions?password=${encodeURIComponent(password)}`)
     .then(r => {
       if (!r.ok) throw new Error();
       loginWrap.style.display = "none";
       dashboard.style.display = "block";
-      loadData();
+      loadAll();
     })
     .catch(() => {
-      loginError.style.display = "block";
-      pwInput.value = "";
-      pwInput.focus();
+      document.getElementById("login-error").style.display = "block";
+      document.getElementById("pw-input").value = "";
     });
 }
-pwBtn.onclick = tryLogin;
-pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+document.getElementById("pw-btn").onclick = tryLogin;
+document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 
 document.getElementById("logout-btn").onclick = () => {
   password = "";
   dashboard.style.display = "none";
   loginWrap.style.display = "flex";
-  pwInput.value = "";
+  document.getElementById("pw-input").value = "";
 };
 
-// ── Load Data ──
-async function loadData() {
+// ────────────────────────────────────
+// TAB SWITCHING
+// ────────────────────────────────────
+document.querySelectorAll(".tab-nav button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentTab = btn.dataset.tab;
+    document.querySelectorAll(".tab-nav button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("content-offers").style.display = currentTab === "offers" ? "block" : "none";
+    document.getElementById("content-apps").style.display = currentTab === "applications" ? "block" : "none";
+  });
+});
+
+// ────────────────────────────────────
+// LOAD ALL
+// ────────────────────────────────────
+async function loadAll() {
+  await Promise.all([loadOffers(), loadSubmissions()]);
+}
+
+async function loadOffers() {
+  const res = await fetch("/api/offers");
+  offers = await res.json();
+  renderOffers();
+}
+
+async function loadSubmissions() {
   const res = await fetch(`/api/submissions?password=${encodeURIComponent(password)}`);
-  const data = await res.json();
-  renderTable(data);
-  renderStats(data);
+  submissions = await res.json();
+  renderSubmissions();
 }
 
-function renderStats(data) {
-  const counts = { new: 0, viewed: 0, contacted: 0 };
-  data.forEach(s => counts[s.status] = (counts[s.status] || 0) + 1);
-  document.getElementById("s-total").textContent = data.length;
-  document.getElementById("s-new").textContent = counts.new;
-  document.getElementById("s-viewed").textContent = counts.viewed;
-  document.getElementById("s-contacted").textContent = counts.contacted;
-  document.getElementById("badge-new").textContent = counts.new + " new";
+// ────────────────────────────────────
+// TOAST
+// ────────────────────────────────────
+function showToast(msg, type = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-function renderTable(data) {
-  const tbody = document.getElementById("tbody");
-  const empty = document.getElementById("empty");
+// ────────────────────────────────────
+// RENDER OFFERS
+// ────────────────────────────────────
+function renderOffers() {
+  const tbody = document.getElementById("offers-tbody");
+  const empty = document.getElementById("offers-empty");
+  const stats = document.getElementById("offers-stats");
 
-  if (!data.length) {
-    tbody.innerHTML = "";
-    empty.style.display = "block";
-    return;
+  const iosCount = offers.filter(o => o.platform === "ios").length;
+  const adrCount = offers.filter(o => o.platform === "android").length;
+  const topPayout = Math.max(...offers.map(o => o.payout));
+  const withIcon = offers.filter(o => o.icon).length;
+  stats.innerHTML = `
+    <div class="stat-card"><div class="num">${offers.length}</div><div class="lbl">Total Offers</div></div>
+    <div class="stat-card"><div class="num">${iosCount}</div><div class="lbl">iOS</div></div>
+    <div class="stat-card"><div class="num">${adrCount}</div><div class="lbl">Android</div></div>
+    <div class="stat-card"><div class="num">${topPayout > 0 ? '$'+topPayout.toFixed(2) : '—'}</div><div class="lbl">Top Payout</div></div>
+    <div class="stat-card"><div class="num">${withIcon}/${offers.length}</div><div class="lbl">With Icon</div></div>
+  `;
+
+  if (!offers.length) {
+    tbody.innerHTML = ""; empty.style.display = "block"; return;
   }
   empty.style.display = "none";
 
-  tbody.innerHTML = data.map(s => {
-    const date = new Date(s.timestamp).toLocaleDateString("en-GB", {
-      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
-    });
-    const pids = s.pids.map(p => `<span class="tag-chip">${p}</span>`).join("");
-    const emails = s.emails.map(e => `<span class="tag-chip">${e}</span>`).join("");
-    const statusOpts = ["new", "viewed", "contacted"]
-      .map(st => `<option value="${st}" ${st === s.status ? "selected" : ""}>${st}</option>`)
-      .join("");
+  tbody.innerHTML = offers.map(o => {
+    const iconHtml = o.icon
+      ? `<div class="icon-preview"><img src="${o.icon}" alt="" /></div>`
+      : `<div class="icon-preview"><span>${o.iconLetter || o.name[0]}</span></div>`;
+    const badgeClass = o.platform === "ios" ? "badge-ios" : "badge-android";
+    const platformLabel = o.platform === "ios" ? "iOS" : "Android";
+    const geos = (o.geos || []).slice(0, 6);
+    const moreGeo = (o.geos || []).length > 6 ? ` +${o.geos.length - 6}` : "";
 
-    return `<tr data-id="${s.id}">
-      <td class="mono">${date}</td>
-      <td><strong>${s.offerName}</strong><br><span style="color:var(--text3);font-size:11px">${s.offerPlatform}</span></td>
-      <td>${s.publisher}</td>
-      <td><div class="tag-list">${pids}</div></td>
-      <td><div class="tag-list">${emails}</div></td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment || ''}">${s.comment || "—"}</td>
-      <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
-      <td><button class="delete-btn" onclick="deleteSub('${s.id}')">Delete</button></td>
+    return `<tr>
+      <td>
+        <div class="offer-name-cell">
+          ${iconHtml}
+          <strong>${o.name}</strong>
+        </div>
+      </td>
+      <td><span class="badge ${badgeClass}">${platformLabel}</span></td>
+      <td>
+        <input class="inline-input" type="number" step="0.01" min="0"
+               value="${o.payout}" style="width:80px;text-align:right"
+               onchange="quickUpdate(${o.id}, 'payout', parseFloat(this.value)||0)" />
+      </td>
+      <td style="font-size:11px;max-width:160px">${geos.join(", ")}${moreGeo}</td>
+      <td>
+        <input class="inline-input" type="text" value="${o.icon || ''}"
+               placeholder="Icon URL..."
+               onchange="quickUpdate(${o.id}, 'icon', this.value)" />
+      </td>
+      <td>
+        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="Edit">Edit</button>
+        <button class="btn-danger btn-sm" onclick="deleteOffer(${o.id})" title="Delete">×</button>
+      </td>
     </tr>`;
   }).join("");
 }
 
-// ── Update Status ──
+async function quickUpdate(id, field, value) {
+  const body = { [field]: value };
+  const res = await fetch(`/api/offers/${id}?password=${encodeURIComponent(password)}`, {
+    method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (res.ok) {
+    showToast("Updated!", "success");
+    loadOffers();
+  } else {
+    showToast("Update failed", "error");
+  }
+}
+
+async function deleteOffer(id) {
+  if (!confirm("Delete this offer? This cannot be undone.")) return;
+  const res = await fetch(`/api/offers/${id}?password=${encodeURIComponent(password)}`, { method: "DELETE" });
+  if (res.ok) {
+    showToast("Offer deleted", "success");
+    loadOffers();
+  } else {
+    showToast("Delete failed", "error");
+  }
+}
+
+// ────────────────────────────────────
+// OFFER MODAL
+// ────────────────────────────────────
+function makeTagEdit(wrapId, inputId, arrayRef) {
+  const wrap = document.getElementById(wrapId);
+  const input = document.getElementById(inputId);
+
+  function render() {
+    wrap.querySelectorAll(".tag-edit-pill").forEach(el => el.remove());
+    arrayRef.forEach(v => {
+      const pill = document.createElement("span");
+      pill.className = "tag-edit-pill";
+      pill.innerHTML = `${v}<span class="tag-edit-remove" data-v="${v}">×</span>`;
+      wrap.insertBefore(pill, input);
+    });
+    wrap.querySelectorAll(".tag-edit-remove").forEach(el => {
+      el.onclick = () => {
+        const idx = arrayRef.indexOf(el.dataset.v);
+        if (idx > -1) { arrayRef.splice(idx, 1); render(); }
+      };
+    });
+  }
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const v = input.value.trim();
+      if (v && !arrayRef.includes(v)) { arrayRef.push(v); render(); }
+      input.value = "";
+    } else if (e.key === "Backspace" && input.value === "" && arrayRef.length) {
+      arrayRef.pop(); render();
+    }
+  });
+  input.addEventListener("blur", () => {
+    const v = input.value.trim();
+    if (v && !arrayRef.includes(v)) { arrayRef.push(v); render(); }
+    input.value = "";
+  });
+  wrap.addEventListener("click", () => input.focus());
+  return render;
+}
+
+const renderGeos = makeTagEdit("of-geos-wrap", "of-geos-input", editGeos);
+const renderInts = makeTagEdit("of-int-wrap", "of-int-input", editIntegrations);
+
+function openOfferModal(id) {
+  editGeos.length = 0;
+  editIntegrations.length = 0;
+
+  if (id) {
+    const offer = offers.find(o => o.id === id);
+    if (!offer) return;
+    document.getElementById("offer-modal-title").textContent = "Edit Offer";
+    document.getElementById("of-id").value = offer.id;
+    document.getElementById("of-name").value = offer.name;
+    document.getElementById("of-platform").value = offer.platform;
+    document.getElementById("of-payout").value = offer.payout;
+    document.getElementById("of-currency").value = offer.currency || "USD";
+    document.getElementById("of-icon").value = offer.icon || "";
+    document.getElementById("of-iconLetter").value = offer.iconLetter || "N";
+    editGeos.push(...(offer.geos || []));
+    // details
+    const d = offer.details || {};
+    document.getElementById("of-dgeo").value = d.geo || "";
+    document.getElementById("of-dpayout").value = d.payout || "";
+    document.getElementById("of-durl").value = d.storeUrl || "";
+    document.getElementById("of-devent").value = d.payableEvent || "";
+    document.getElementById("of-dkpi").value = d.kpi || "";
+    document.getElementById("of-dprt").value = d.prt || "";
+    document.getElementById("of-dflow").value = d.flow || "—";
+    editIntegrations.push(...(d.integrations || []));
+  } else {
+    document.getElementById("offer-modal-title").textContent = "New Offer";
+    document.getElementById("of-id").value = "";
+    document.getElementById("offer-form").reset();
+    document.getElementById("of-platform").value = "ios";
+    document.getElementById("of-currency").value = "USD";
+    document.getElementById("of-dflow").value = "—";
+  }
+
+  renderGeos();
+  renderInts();
+  document.getElementById("offer-overlay").classList.add("open");
+}
+
+function closeOfferModal() {
+  document.getElementById("offer-overlay").classList.remove("open");
+}
+
+document.getElementById("offer-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeOfferModal();
+});
+
+document.getElementById("offer-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("of-id").value;
+  const isNew = !id;
+
+  const body = {
+    name: document.getElementById("of-name").value.trim(),
+    platform: document.getElementById("of-platform").value,
+    payout: parseFloat(document.getElementById("of-payout").value) || 0,
+    currency: document.getElementById("of-currency").value,
+    icon: document.getElementById("of-icon").value.trim() || null,
+    iconLetter: (document.getElementById("of-name").value.trim() || "N")[0].toUpperCase(),
+    geos: [...editGeos],
+    details: {
+      geo: document.getElementById("of-dgeo").value.trim(),
+      payout: document.getElementById("of-dpayout").value.trim(),
+      storeUrl: document.getElementById("of-durl").value.trim(),
+      payableEvent: document.getElementById("of-devent").value.trim(),
+      flow: document.getElementById("of-dflow").value.trim() || "—",
+      kpi: document.getElementById("of-dkpi").value.trim() || "—",
+      prt: document.getElementById("of-dprt").value.trim() || "—",
+      integrations: [...editIntegrations]
+    }
+  };
+
+  const url = isNew
+    ? `/api/offers?password=${encodeURIComponent(password)}`
+    : `/api/offers/${id}?password=${encodeURIComponent(password)}`;
+  const method = isNew ? "POST" : "PUT";
+
+  const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (res.ok) {
+    showToast(isNew ? "Offer created!" : "Offer updated!", "success");
+    closeOfferModal();
+    loadOffers();
+  } else {
+    showToast("Save failed", "error");
+  }
+});
+
+// ────────────────────────────────────
+// RENDER SUBMISSIONS
+// ────────────────────────────────────
+function renderSubmissions() {
+  const tbody = document.getElementById("apps-tbody");
+  const empty = document.getElementById("apps-empty");
+  const stats = document.getElementById("apps-stats");
+
+  const counts = { new: 0, viewed: 0, contacted: 0 };
+  submissions.forEach(s => counts[s.status] = (counts[s.status] || 0) + 1);
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="num">${submissions.length}</div><div class="lbl">Total</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">New</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--orange)">${counts.viewed}</div><div class="lbl">Viewed</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--green)">${counts.contacted}</div><div class="lbl">Contacted</div></div>
+  `;
+
+  if (!submissions.length) {
+    tbody.innerHTML = ""; empty.style.display = "block"; return;
+  }
+  empty.style.display = "none";
+
+  tbody.innerHTML = submissions.map(s => {
+    const date = new Date(s.timestamp).toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+    const pids = (s.pids||[]).map(p => `<span class="tag-chip">${p}</span>`).join("");
+    const emails = (s.emails||[]).map(e => `<span class="tag-chip">${e}</span>`).join("");
+    const statusOpts = ["new","viewed","contacted"]
+      .map(st => `<option value="${st}" ${st===s.status?"selected":""}>${st}</option>`).join("");
+
+    return `<tr data-id="${s.id}">
+      <td class="mono">${date}</td>
+      <td><strong>${s.offerName||"—"}</strong><br><span style="color:var(--text3);font-size:11px">${s.offerPlatform||"—"}</span></td>
+      <td>${s.publisher||"—"}</td>
+      <td><div class="tag-list">${pids}</div></td>
+      <td><div class="tag-list">${emails}</div></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment||''}">${s.comment||"—"}</td>
+      <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
+      <td><button class="btn-danger btn-sm" onclick="deleteSub('${s.id}')">×</button></td>
+    </tr>`;
+  }).join("");
+}
+
 async function updateStatus(id, status) {
   await fetch(`/api/submissions/${id}/status?password=${encodeURIComponent(password)}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status })
+    method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status })
   });
-  loadData();
+  showToast("Status updated", "success");
+  loadSubmissions();
 }
 
-// ── Delete ──
 async function deleteSub(id) {
   if (!confirm("Delete this application?")) return;
-  await fetch(`/api/submissions/${id}?password=${encodeURIComponent(password)}`, {
-    method: "DELETE"
-  });
-  loadData();
+  await fetch(`/api/submissions/${id}?password=${encodeURIComponent(password)}`, { method: "DELETE" });
+  showToast("Deleted", "success");
+  loadSubmissions();
 }
 
-// Auto-refresh every 30s
+// Auto-refresh
 setInterval(() => {
-  if (password && dashboard.style.display === "block") loadData();
+  if (password && dashboard.style.display === "block") {
+    if (currentTab === "offers") loadOffers();
+    else loadSubmissions();
+  }
 }, 30000);
 </script>
 </body>

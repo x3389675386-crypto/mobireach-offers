@@ -6,13 +6,13 @@ const crypto = require("crypto");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, "submissions.json");
+const OFFERS_FILE = path.join(__dirname, "offers.json");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "mobireach2026";
 
 // ── Middleware ──
 app.use(express.json());
-app.use(express.static(__dirname));
 
-// ── Helpers ──
+// ── Helpers: Submissions ──
 function readSubmissions() {
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
@@ -23,6 +23,28 @@ function readSubmissions() {
 
 function writeSubmissions(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+// ── Helpers: Offers ──
+function readOffers() {
+  try {
+    return JSON.parse(fs.readFileSync(OFFERS_FILE, "utf-8"));
+  } catch {
+    return [];
+  }
+}
+
+function writeOffers(data) {
+  fs.writeFileSync(OFFERS_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+function checkAdmin(req, res) {
+  const pw = req.query.password || req.headers["x-admin-password"] || "";
+  if (pw !== ADMIN_PASSWORD) {
+    res.status(401).json({ error: "Unauthorized" });
+    return false;
+  }
+  return true;
 }
 
 // ── API: Submit Application ──
@@ -57,20 +79,13 @@ app.post("/api/apply", (req, res) => {
 
 // ── API: List Submissions (admin) ──
 app.get("/api/submissions", (req, res) => {
-  const pw = req.query.password || req.headers["x-admin-password"] || "";
-  if (pw !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const submissions = readSubmissions();
-  res.json(submissions);
+  if (!checkAdmin(req, res)) return;
+  res.json(readSubmissions());
 });
 
 // ── API: Update Status (admin) ──
 app.patch("/api/submissions/:id/status", (req, res) => {
-  const pw = req.query.password || req.headers["x-admin-password"] || "";
-  if (pw !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  if (!checkAdmin(req, res)) return;
   const { status } = req.body;
   if (!["new", "viewed", "contacted"].includes(status)) {
     return res.status(400).json({ error: "Invalid status" });
@@ -85,13 +100,77 @@ app.patch("/api/submissions/:id/status", (req, res) => {
 
 // ── API: Delete Submission (admin) ──
 app.delete("/api/submissions/:id", (req, res) => {
-  const pw = req.query.password || req.headers["x-admin-password"] || "";
-  if (pw !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  if (!checkAdmin(req, res)) return;
   let submissions = readSubmissions();
   submissions = submissions.filter(s => s.id !== req.params.id);
   writeSubmissions(submissions);
+  res.json({ success: true });
+});
+
+// ── API: Get All Offers (public) ──
+app.get("/api/offers", (req, res) => {
+  res.json(readOffers());
+});
+
+// ── API: Get Single Offer (public) ──
+app.get("/api/offers/:id", (req, res) => {
+  const offers = readOffers();
+  const offer = offers.find(o => o.id === parseInt(req.params.id));
+  if (!offer) return res.status(404).json({ error: "Not found" });
+  res.json(offer);
+});
+
+// ── API: Update Offer (admin) ──
+app.put("/api/offers/:id", (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const offers = readOffers();
+  const idx = offers.findIndex(o => o.id === parseInt(req.params.id));
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+
+  const allowedFields = ["name", "platform", "payout", "currency", "geos", "icon", "iconLetter", "details"];
+  const updates = req.body;
+  allowedFields.forEach(field => {
+    if (updates[field] !== undefined) {
+      offers[idx][field] = updates[field];
+    }
+  });
+
+  writeOffers(offers);
+  res.json({ success: true, offer: offers[idx] });
+});
+
+// ── API: Create Offer (admin) ──
+app.post("/api/offers", (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const offers = readOffers();
+  const maxId = offers.reduce((max, o) => Math.max(max, o.id), 0);
+  const newOffer = {
+    id: maxId + 1,
+    name: req.body.name || "New Offer",
+    platform: req.body.platform || "ios",
+    payout: req.body.payout || 0,
+    currency: req.body.currency || "USD",
+    geos: req.body.geos || [],
+    icon: req.body.icon || null,
+    iconLetter: req.body.iconLetter || "N",
+    details: req.body.details || {
+      geo: "", payout: "", storeUrl: "", payableEvent: "",
+      flow: "—", kpi: "—", prt: "—", integrations: []
+    }
+  };
+  offers.push(newOffer);
+  writeOffers(offers);
+  res.status(201).json({ success: true, offer: newOffer });
+});
+
+// ── API: Delete Offer (admin) ──
+app.delete("/api/offers/:id", (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  let offers = readOffers();
+  const before = offers.length;
+  offers = offers.filter(o => o.id !== parseInt(req.params.id));
+  if (offers.length === before) return res.status(404).json({ error: "Not found" });
+  writeOffers(offers);
   res.json({ success: true });
 });
 
@@ -99,6 +178,9 @@ app.delete("/api/submissions/:id", (req, res) => {
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
+
+// ── Static files (after API routes) ──
+app.use(express.static(__dirname));
 
 // ── Start ──
 app.listen(PORT, () => {
