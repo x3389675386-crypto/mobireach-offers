@@ -180,7 +180,7 @@ async function readOffers() {
     }
     return [];
   }
-  try { return JSON.parse(fs.readFileSync(LOCAL_OFFERS, "utf-8")); }
+  try { const data = JSON.parse(fs.readFileSync(LOCAL_OFFERS, "utf-8")); offersCache = data; return data; }
   catch { return []; }
 }
 
@@ -203,7 +203,7 @@ async function readSubmissions() {
     submissionsCache = [];
     return [];
   }
-  try { return JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8")); }
+  try { const data = JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8")); submissionsCache = data; return data; }
   catch { return []; }
 }
 
@@ -229,7 +229,7 @@ async function readAccounts() {
     accountsCache = def;
     return def;
   }
-  try { return JSON.parse(fs.readFileSync(LOCAL_ACCOUNTS, "utf-8")); }
+  try { const data = JSON.parse(fs.readFileSync(LOCAL_ACCOUNTS, "utf-8")); accountsCache = data; return data; }
   catch { return []; }
 }
 
