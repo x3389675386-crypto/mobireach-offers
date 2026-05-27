@@ -1425,12 +1425,11 @@ document.getElementById("order-form").addEventListener("submit", async e => {
   } catch (err) {
     showToast("Network error", "error");
   } finally {
+    btn.disabled = false;
     btn.innerHTML = "📨 提交并打开邮件";
   }
 });
 
-// Enter key for login (moved to end)
-document.getElementById("login-pw").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 </script>
 </body>
 </html>
