@@ -89,6 +89,13 @@
       cursor: pointer; font-family: var(--font); transition: all 0.2s;
     }
     .logout-btn:hover { color: #fff; border-color: #6366f1; }
+    .lang-toggle {
+      padding: 6px 12px; border: 1px solid #334155; border-radius: 8px;
+      background: transparent; color: #94a3b8; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font); transition: all 0.2s; margin-right: 8px;
+      white-space: nowrap;
+    }
+    .lang-toggle:hover { color: #fff; border-color: #6366f1; }
 
     /* ── CONTENT ── */
     .content { max-width: 1300px; margin: 0 auto; padding: 24px; }
@@ -300,12 +307,12 @@
 <div class="login-wrap" id="login-wrap">
   <div class="login-box">
     <div class="logo-mark">M</div>
-    <h1>Admin Panel</h1>
-    <p class="sub">Manage offers, applications & accounts</p>
-    <div class="login-error" id="login-error">Invalid username or password</div>
-    <input class="login-input" type="text" id="login-user" placeholder="Username" autofocus />
-    <input class="login-input" type="password" id="login-pw" placeholder="Password" />
-    <button class="login-btn" id="pw-btn">Sign in</button>
+    <h1>管理后台</h1>
+    <p class="sub">管理 Offers、Applications 与 Accounts</p>
+    <div class="login-error" id="login-error">用户名或密码错误</div>
+    <input class="login-input" type="text" id="login-user" placeholder="用户名" autofocus />
+    <input class="login-input" type="password" id="login-pw" placeholder="密码" />
+    <button class="login-btn" id="pw-btn">登录</button>
   </div>
 </div>
 
@@ -313,17 +320,18 @@
 <div class="dashboard" id="dashboard">
   <nav class="admin-nav">
     <div class="admin-nav-left">
-      <div class="logo">Mobi<span>reach</span> Admin</div>
+      <div class="logo">Mobi<span>reach</span> 管理后台</div>
       <div class="tab-nav">
         <button class="active" data-tab="offers" id="tab-offers">Offers</button>
         <button data-tab="applications" id="tab-apps">Applications</button>
-        <button data-tab="accounts" id="tab-accounts" style="display:none">Accounts</button>
+        <button data-tab="accounts" id="tab-accounts" style="display:none">账号管理</button>
       </div>
     </div>
     <div class="admin-nav-right">
+      <button class="lang-toggle" id="lang-toggle" onclick="switchLang()">中</button>
       <span class="user-info" id="user-info-display"></span>
-      <button class="btn-secondary btn-xs" id="change-pw-btn" style="font-size:11px">Change PW</button>
-      <button class="logout-btn" id="logout-btn">Logout</button>
+      <button class="btn-secondary btn-xs" id="change-pw-btn" style="font-size:11px">改密</button>
+      <button class="logout-btn" id="logout-btn">退出</button>
     </div>
   </nav>
 
@@ -333,25 +341,25 @@
       <div class="stats-row" id="offers-stats"></div>
       <div class="table-wrap">
         <div class="table-header">
-          <h2>All Offers</h2>
-          <button class="btn-primary" onclick="openOfferModal()">+ New Offer</button>
+          <h2 id="offers-title">全部 Offers</h2>
+          <button class="btn-primary" onclick="openOfferModal()">+ 新建 Offer</button>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
                 <th style="width:200px">Offer</th>
-                <th>Platform</th>
-                <th style="width:90px">Payout</th>
+                <th>平台</th>
+                <th style="width:90px">单价</th>
                 <th>GEOs</th>
-                <th style="width:280px">Icon URL</th>
-                <th style="width:100px">Actions</th>
+                <th style="width:280px">图标 URL</th>
+                <th style="width:100px">操作</th>
               </tr>
             </thead>
             <tbody id="offers-tbody"></tbody>
           </table>
         </div>
-        <div class="empty" id="offers-empty">No offers yet. Create one!</div>
+        <div class="empty" id="offers-empty">${t("noOffers")}</div>
       </div>
     </div>
 
@@ -361,26 +369,26 @@
       <div class="table-wrap">
         <div class="table-header">
           <h2>Applications</h2>
-          <button class="btn-secondary" id="refresh-apps-btn" onclick="loadSubmissions()" title="Refresh">↻ Refresh</button>
+          <button class="btn-secondary" id="refresh-apps-btn" onclick="loadSubmissions()" title="刷新">↻ 刷新</button>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
-                <th>Date</th>
+                <th>日期</th>
                 <th>Offer</th>
                 <th>Publisher</th>
                 <th>PIDs</th>
-                <th>Emails</th>
-                <th>Comment</th>
-                <th>Status</th>
+                <th>邮箱</th>
+                <th>备注</th>
+                <th>状态</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="apps-tbody"></tbody>
           </table>
         </div>
-        <div class="empty" id="apps-empty">No applications yet.</div>
+        <div class="empty" id="apps-empty">暂无申请。</div>
       </div>
     </div>
 
@@ -388,18 +396,18 @@
     <div class="tab-content" id="content-accounts" style="display:none">
       <div class="table-wrap">
         <div class="table-header">
-          <h2>Account Management</h2>
-          <button class="btn-primary" onclick="openAccountModal()">+ Add Account</button>
+          <h2>账号管理</h2>
+          <button class="btn-primary" onclick="openAccountModal()">+ 添加账号</button>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Created</th>
-                <th style="width:200px">Actions</th>
+                <th>用户名</th>
+                <th>角色</th>
+                <th>创建时间</th>
+                <th style="width:200px">操作</th>
               </tr>
             </thead>
             <tbody id="accounts-tbody"></tbody>
@@ -425,11 +433,11 @@
         <input type="hidden" id="of-id" />
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input class="form-input" id="of-name" placeholder="Offer name" />
+            <label class="form-label" id="of-lbl-name">名称</label>
+            <input class="form-input" id="of-name" placeholder="Offer 名称" />
           </div>
           <div class="form-group" style="flex:0.6">
-            <label class="form-label">Platform</label>
+            <label class="form-label" id="of-lbl-platform">平台</label>
             <select class="form-input" id="of-platform">
               <option value="ios">iOS</option>
               <option value="android">Android</option>
@@ -438,11 +446,11 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Payout ($)</label>
+            <label class="form-label" id="of-lbl-payout">单价 ($)</label>
             <input class="form-input" id="of-payout" type="number" step="0.01" min="0" placeholder="0.00" />
           </div>
           <div class="form-group" style="flex:0.6">
-            <label class="form-label">Currency</label>
+            <label class="form-label" id="of-lbl-currency">币种</label>
             <select class="form-input" id="of-currency">
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
@@ -452,64 +460,64 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Icon URL</label>
+          <label class="form-label" id="of-lbl-icon">图标 URL</label>
           <input class="form-input" id="of-icon" placeholder="https://..." />
-          <div class="form-hint">Leave empty to show letter placeholder</div>
+          <div class="form-hint" id="of-icon-hint">留空则显示字母占位</div>
         </div>
         <div class="form-group">
-          <label class="form-label">GEOs</label>
+          <label class="form-label" id="of-lbl-geos">GEOs</label>
           <div class="tag-edit-wrap" id="of-geos-wrap">
-            <input class="tag-edit-input" id="of-geos-input" placeholder="Type a GEO code and press Enter" />
+            <input class="tag-edit-input" id="of-geos-input" placeholder="输入 GEO 代码后按回车" />
           </div>
-          <div class="form-hint">Press Enter or comma to add</div>
+          <div class="form-hint" id="of-geos-hint">按回车或逗号添加</div>
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h4 style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent)">Details</h4>
+        <h4 id="of-detail-head" style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent)">详细信息</h4>
 
         <div class="form-group">
-          <label class="form-label">Detail GEO</label>
-          <input class="form-input" id="of-dgeo" placeholder="e.g. PH, CN, KR" />
+          <label class="form-label" id="of-lbl-dgeo">详细 GEO</label>
+          <input class="form-input" id="of-dgeo" placeholder="例如 PH, CN, KR" />
         </div>
         <div class="form-group">
-          <label class="form-label">Detail Payout Text</label>
-          <input class="form-input" id="of-dpayout" placeholder="e.g. $9.00 CPA" />
+          <label class="form-label" id="of-lbl-dpayout">详细单价文案</label>
+          <input class="form-input" id="of-dpayout" placeholder="例如 $9.00 CPA" />
         </div>
         <div class="form-group">
-          <label class="form-label">Store URL</label>
-          <input class="form-input" id="of-durl" placeholder="App Store / Google Play URL" />
+          <label class="form-label" id="of-lbl-durl">应用商店链接</label>
+          <input class="form-input" id="of-durl" placeholder="App Store / Google Play 链接" />
         </div>
         <div class="form-group">
-          <label class="form-label">Payable Event</label>
-          <input class="form-input" id="of-devent" placeholder="e.g. sign_up" />
+          <label class="form-label" id="of-lbl-devent">结算事件</label>
+          <input class="form-input" id="of-devent" placeholder="例如 sign_up" />
         </div>
         <div class="form-group">
-          <label class="form-label">KPI</label>
-          <textarea class="form-textarea" id="of-dkpi" placeholder="KPI details..."></textarea>
+          <label class="form-label" id="of-lbl-dkpi">KPI</label>
+          <textarea class="form-textarea" id="of-dkpi" placeholder="KPI 详情..."></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">PRT</label>
-            <input class="form-input" id="of-dprt" placeholder="PRT code" />
+            <label class="form-label" id="of-lbl-dprt">PRT</label>
+            <input class="form-input" id="of-dprt" placeholder="PRT 代码" />
           </div>
           <div class="form-group">
-            <label class="form-label">Flow</label>
-            <input class="form-input" id="of-dflow" placeholder="Flow description" />
+            <label class="form-label" id="of-lbl-dflow">流程</label>
+            <input class="form-input" id="of-dflow" placeholder="流程描述" />
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Integrations</label>
+          <label class="form-label" id="of-lbl-int">集成方式</label>
           <div class="tag-edit-wrap" id="of-int-wrap">
-            <input class="tag-edit-input" id="of-int-input" placeholder="Type integration name and press Enter" />
+            <input class="tag-edit-input" id="of-int-input" placeholder="输入集成名称后按回车" />
           </div>
-          <div class="form-hint">e.g. CTV, VTA, Onelink, P360</div>
+          <div class="form-hint" id="of-int-hint">例如 CTV, VTA, Onelink, P360</div>
         </div>
 
         <input type="hidden" id="of-iconLetter" value="N" />
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closeOfferModal()">Cancel</button>
-          <button type="submit" class="btn-save" id="of-save-btn">Save Offer</button>
+          <button type="button" class="btn-cancel" onclick="closeOfferModal()">取消</button>
+          <button type="submit" class="btn-save" id="of-save-btn">保存 Offer</button>
         </div>
       </form>
     </div>
@@ -520,30 +528,30 @@
 <div class="overlay" id="account-overlay">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
-      <h3 id="ac-modal-title">Add Account</h3>
+      <h3 id="ac-modal-title">添加账号</h3>
       <button class="modal-close" onclick="closeAccountModal()">×</button>
     </div>
     <div class="modal-body">
       <form id="account-form">
         <input type="hidden" id="ac-id" />
         <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" id="ac-username" placeholder="Username" autocomplete="off" />
+          <label class="form-label" id="ac-lbl-username">用户名</label>
+          <input class="form-input" id="ac-username" placeholder="用户名" autocomplete="off" />
         </div>
         <div class="form-group">
-          <label class="form-label" id="ac-pw-label">Password</label>
-          <input class="form-input" type="password" id="ac-password" placeholder="Min 6 characters" autocomplete="off" />
+          <label class="form-label" id="ac-lbl-password">密码</label>
+          <input class="form-input" type="password" id="ac-password" placeholder="至少 6 个字符" autocomplete="off" />
         </div>
         <div class="form-group">
-          <label class="form-label">Role</label>
+          <label class="form-label" id="ac-lbl-role">角色</label>
           <select class="form-input" id="ac-role">
-            <option value="admin">Admin</option>
-            <option value="super_admin">Super Admin</option>
+            <option value="admin">管理员</option>
+            <option value="super_admin">超级管理员</option>
           </select>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closeAccountModal()">Cancel</button>
-          <button type="submit" class="btn-save" id="ac-save-btn">Save</button>
+          <button type="button" class="btn-cancel" onclick="closeAccountModal()">取消</button>
+          <button type="submit" class="btn-save" id="ac-save-btn">保存</button>
         </div>
       </form>
     </div>
@@ -554,26 +562,26 @@
 <div class="overlay" id="pw-overlay">
   <div class="modal" style="max-width:400px">
     <div class="modal-header">
-      <h3>Change Password</h3>
+      <h3>修改密码</h3>
       <button class="modal-close" onclick="closePwModal()">×</button>
     </div>
     <div class="modal-body">
       <form id="pw-form">
         <div class="form-group">
-          <label class="form-label">Current Password</label>
-          <input class="form-input" type="password" id="pw-current" placeholder="Current password" />
+          <label class="form-label">当前密码</label>
+          <input class="form-input" type="password" id="pw-current" placeholder="当前密码" />
         </div>
         <div class="form-group">
-          <label class="form-label">New Password</label>
-          <input class="form-input" type="password" id="pw-new" placeholder="Min 6 characters" />
+          <label class="form-label">新密码</label>
+          <input class="form-input" type="password" id="pw-new" placeholder="至少 6 个字符" />
         </div>
         <div class="form-group">
-          <label class="form-label">Confirm New Password</label>
-          <input class="form-input" type="password" id="pw-confirm" placeholder="Repeat new password" />
+          <label class="form-label">确认新密码</label>
+          <input class="form-input" type="password" id="pw-confirm" placeholder="再次输入新密码" />
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closePwModal()">Cancel</button>
-          <button type="submit" class="btn-save">Change</button>
+          <button type="button" class="btn-cancel" onclick="closePwModal()">取消</button>
+          <button type="submit" class="btn-save">修改</button>
         </div>
       </form>
     </div>
@@ -584,19 +592,19 @@
 <div class="overlay" id="reset-pw-overlay">
   <div class="modal" style="max-width:400px">
     <div class="modal-header">
-      <h3>Reset Password</h3>
+      <h3>重置密码</h3>
       <button class="modal-close" onclick="closeResetPwModal()">×</button>
     </div>
     <div class="modal-body">
       <form id="reset-pw-form">
         <input type="hidden" id="rp-id" />
         <div class="form-group">
-          <label class="form-label">New Password for <strong id="rp-username"></strong></label>
-          <input class="form-input" type="password" id="rp-password" placeholder="Min 6 characters" />
+          <label class="form-label">新密码 · <strong id="rp-username"></strong></label>
+          <input class="form-input" type="password" id="rp-password" placeholder="至少 6 个字符" />
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closeResetPwModal()">Cancel</button>
-          <button type="submit" class="btn-save">Reset</button>
+          <button type="button" class="btn-cancel" onclick="closeResetPwModal()">取消</button>
+          <button type="submit" class="btn-save">重置</button>
         </div>
       </form>
     </div>
@@ -618,79 +626,79 @@
 
         <!-- Offer / Publisher info (read-only) -->
         <div class="form-row" style="margin-bottom:12px;padding:10px 14px;background:var(--accent-light);border-radius:8px;font-size:12px">
-          <div><strong>Publisher:</strong> <span id="ord-publisher">—</span></div>
-          <div><strong>Offer:</strong> <span id="ord-offer">—</span></div>
-          <div><strong>Emails:</strong> <span id="ord-emails-display">—</span></div>
+          <div><strong id="ord-publisher-label">Publisher：</strong> <span id="ord-publisher">—</span></div>
+          <div><strong id="ord-offer-label">Offer：</strong> <span id="ord-offer">—</span></div>
+          <div><strong id="ord-emails-label">邮箱：</strong> <span id="ord-emails-display">—</span></div>
         </div>
 
-        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📌 基础信息</h4>
+        <h4 id="ord-section-basic" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📌 基础信息</h4>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Platform</label>
+            <label class="form-label" id="ord-lbl-platform">平台</label>
             <select class="form-input" id="ord-platform">
               <option value="iOS">iOS</option>
               <option value="Android">Android</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">客户编号</label>
-            <input class="form-input" id="ord-customer-id" placeholder="Customer ID" />
+            <label class="form-label" id="ord-lbl-customer">客户编号</label>
+            <input class="form-input" id="ord-customer-id" placeholder="客户编号" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">下单渠道</label>
-            <input class="form-input" id="ord-channel" placeholder="e.g. AppsFlyer" />
+            <label class="form-label" id="ord-lbl-channel">下单渠道</label>
+            <input class="form-input" id="ord-channel" placeholder="例如 AppsFlyer" />
           </div>
           <div class="form-group">
-            <label class="form-label">Campaign Name</label>
-            <input class="form-input" id="ord-campaign" placeholder="Campaign name" />
+            <label class="form-label" id="ord-lbl-campaign">Campaign Name</label>
+            <input class="form-input" id="ord-campaign" placeholder="Campaign 名称" />
           </div>
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📊 AppsFlyer 参数</h4>
+        <h4 id="ord-section-af" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📊 AppsFlyer 参数</h4>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">PRT</label>
-            <input class="form-input" id="ord-prt" placeholder="PRT code" />
+            <label class="form-label" id="ord-lbl-prt">PRT</label>
+            <input class="form-input" id="ord-prt" placeholder="PRT 代码" />
           </div>
           <div class="form-group">
-            <label class="form-label">PID</label>
+            <label class="form-label" id="ord-lbl-pid">PID</label>
             <input class="form-input" id="ord-pid" placeholder="PID" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">外放 PO 价格 ($)</label>
+            <label class="form-label" id="ord-lbl-extprice">外放 PO 价格 ($)</label>
             <input class="form-input" id="ord-ext-price" type="number" step="0.01" min="0" placeholder="0.00" />
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">追踪链接 (Tracking Link)</label>
+          <label class="form-label" id="ord-lbl-tracking">追踪链接</label>
           <input class="form-input" id="ord-tracking-link" placeholder="https://..." />
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📧 邮件文案</h4>
+        <h4 id="ord-section-email" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📧 邮件文案</h4>
         <div class="form-group">
-          <label class="form-label">邮件主题</label>
-          <input class="form-input" id="ord-email-subject" placeholder="Email subject" />
+          <label class="form-label" id="ord-lbl-subject">邮件主题</label>
+          <input class="form-input" id="ord-email-subject" placeholder="邮件主题" />
         </div>
         <div class="form-group">
-          <label class="form-label">邮件正文</label>
-          <textarea class="form-textarea" id="ord-email-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="Email content..."></textarea>
-          <div class="form-hint">邮件正文已根据表单内容自动生成，你可以直接修改</div>
+          <label class="form-label" id="ord-lbl-body">邮件正文</label>
+          <textarea class="form-textarea" id="ord-email-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="邮件内容..."></textarea>
+          <div class="form-hint" id="ord-email-hint">邮件正文已根据表单内容自动生成，你可以直接修改</div>
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
           <input type="checkbox" id="ord-confirm" style="width:16px;height:16px;cursor:pointer" />
-          <label for="ord-confirm" style="font-size:13px;color:var(--text2);cursor:pointer">我确认以上信息无误，同意发送邮件给 Publisher</label>
+          <label for="ord-confirm" id="ord-confirm-label" style="font-size:13px;color:var(--text2);cursor:pointer">我确认以上信息无误，同意发送邮件给 Publisher</label>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
+          <button type="button" class="btn-cancel" onclick="closeOrderModal()">取消</button>
           <button type="submit" class="btn-save" id="ord-submit-btn" disabled>
             📨 提交并打开邮件客户端
           </button>
@@ -713,6 +721,536 @@ let currentTab = "offers";
 let editGeos = [];
 let editIntegrations = [];
 
+// ────────────────────────────────────
+// I18N
+// ────────────────────────────────────
+let currentLang = localStorage.getItem("mobiLang") || "zh";
+
+const L = {
+  zh: {
+    // Login
+    loginTitle: "管理后台",
+    loginSub: "管理 Offers、Applications 与 Accounts",
+    loginError: "用户名或密码错误",
+    loginEmpty: "请输入用户名和密码",
+    loginConnError: "连接错误",
+    loginUserPlaceholder: "用户名",
+    loginPwPlaceholder: "密码",
+    loginBtn: "登录",
+
+    // Nav
+    tabOffers: "Offers",
+    tabApps: "Applications",
+    tabAccounts: "账号管理",
+    changePw: "改密",
+    logout: "退出",
+    superAdmin: "超级管理员",
+    admin: "管理员",
+    you: "你",
+
+    // Offers
+    allOffers: "全部 Offers",
+    newOffer: "+ 新建 Offer",
+    totalOffers: "总计",
+    topPayout: "最高单价",
+    withIcon: "有图标",
+    edit: "编辑",
+    saveOffer: "保存 Offer",
+    noOffers: "暂无 Offer，创建一个吧！",
+    editOfferTitle: "编辑 Offer",
+    newOfferTitle: "新建 Offer",
+
+    // Offer Modal
+    name: "名称",
+    namePlaceholder: "Offer 名称",
+    platform: "平台",
+    platformLabel: "平台",
+    payout: "单价 ($)",
+    payoutLabel: "单价",
+    currency: "币种",
+    iconUrl: "图标 URL",
+    iconUrlPlaceholder: "https://...",
+    iconHint: "留空则显示字母占位",
+    geos: "GEOs",
+    geosPlaceholder: "输入 GEO 代码后按回车",
+    geosHint: "按回车或逗号添加",
+    detailsSection: "详细信息",
+    detailGeo: "详细 GEO",
+    detailGeoPlaceholder: "例如 PH, CN, KR",
+    detailPayout: "详细单价文案",
+    detailPayoutPlaceholder: "例如 $9.00 CPA",
+    storeUrl: "应用商店链接",
+    storeUrlPlaceholder: "App Store / Google Play 链接",
+    payableEvent: "结算事件",
+    payableEventPlaceholder: "例如 sign_up",
+    kpi: "KPI",
+    kpiPlaceholder: "KPI 详情...",
+    prt: "PRT",
+    prtPlaceholder: "PRT 代码",
+    flow: "流程",
+    flowPlaceholder: "流程描述",
+    integrations: "集成方式",
+    integrationsPlaceholder: "输入集成名称后按回车",
+    integrationsHint: "例如 CTV, VTA, Onelink, P360",
+    cancel: "取消",
+    save: "保存",
+    offerCreated: "Offer 已创建！",
+    offerUpdated: "Offer 已更新！",
+    saveFailed: "保存失败",
+    updateFailed: "更新失败",
+    offerDeleted: "Offer 已删除",
+    deleteFailed: "删除失败",
+    deleteConfirm: "确认删除此 Offer？此操作不可撤销。",
+    iconUrlPlaceholderInline: "图标 URL...",
+
+    // Applications
+    applications: "Applications",
+    date: "日期",
+    offer: "Offer",
+    publisher: "Publisher",
+    pids: "PIDs",
+    emails: "邮箱",
+    comment: "备注",
+    status: "状态",
+    totalApps: "总计",
+    refresh: "刷新",
+    noApps: "暂无申请。",
+
+    // Status
+    statusNew: "新消息",
+    statusViewed: "已查看",
+    statusContacted: "已下单",
+
+    // Application actions
+    order: "下单",
+    statusUpdated: "状态已更新",
+    deleteAppConfirm: "确认删除此申请？",
+    deleted: "已删除",
+
+    // Accounts
+    accountMgmt: "账号管理",
+    addAccount: "+ 添加账号",
+    id: "ID",
+    username: "用户名",
+    role: "角色",
+    created: "创建时间",
+    actions: "操作",
+    addAccountTitle: "添加账号",
+    editAccountTitle: "编辑账号",
+    usernamePlaceholder: "用户名",
+    password: "密码",
+    passwordPlaceholder: "至少 6 个字符",
+    adminRole: "管理员",
+    superAdminRole: "超级管理员",
+    updateRole: "更新角色",
+    createAccount: "创建账号",
+    resetPassword: "重置密码",
+    resetBtn: "重置",
+    newPwFor: "新密码 ·",
+    yourAccount: "你的账号",
+    usernamePwRequired: "用户名和密码不能为空",
+    accountCreated: "账号已创建！",
+    roleUpdated: "角色已更新！",
+    passwordReset: "密码已重置！",
+    resetFailed: "重置密码失败",
+    accountDeleted: "账号已删除",
+    deleteAccountConfirm: '确认删除账号 "{}"？此操作不可撤销。',
+    failed: "操作失败",
+
+    // Change Password
+    changePasswordTitle: "修改密码",
+    currentPassword: "当前密码",
+    currentPasswordPlaceholder: "当前密码",
+    newPassword: "新密码",
+    newPasswordPlaceholder: "至少 6 个字符",
+    confirmPassword: "确认新密码",
+    confirmPasswordPlaceholder: "再次输入新密码",
+    changeBtn: "修改",
+    pwMismatch: "两次密码不一致",
+    pwTooShort: "密码至少 6 个字符",
+    passwordChanged: "密码已修改！",
+    pwChangeFailed: "修改失败",
+
+    // Order Modal
+    placeOrder: "下单",
+    publisherLabel: "Publisher",
+    offerLabel: "Offer",
+    emailsLabel: "邮箱",
+    basicInfo: "基础信息",
+    customerId: "客户编号",
+    customerIdPlaceholder: "客户编号",
+    orderChannel: "下单渠道",
+    orderChannelPlaceholder: "例如 AppsFlyer",
+    campaignName: "Campaign Name",
+    campaignNamePlaceholder: "Campaign 名称",
+    appsFlyerParams: "AppsFlyer 参数",
+    pid: "PID",
+    pidPlaceholder: "PID",
+    extPrice: "外放 PO 价格 ($)",
+    extPricePlaceholder: "0.00",
+    trackingLink: "追踪链接",
+    trackingLinkPlaceholder: "https://...",
+    emailSection: "邮件文案",
+    emailSubject: "邮件主题",
+    emailSubjectPlaceholder: "邮件主题",
+    emailBody: "邮件正文",
+    emailBodyPlaceholder: "邮件内容...",
+    emailHint: "邮件正文已根据表单内容自动生成，你可以直接修改",
+    orderConfirm: "我确认以上信息无误，同意发送邮件给 Publisher",
+    submitOrder: "提交并打开邮件客户端",
+    submissionNotFound: "找不到该申请",
+    orderSaved: "订单已保存！",
+    orderFailed: "下单失败",
+    emailTemplateDefault: "(Campaign Name)",
+
+    // Reset Password Modal
+    resetPwTitle: "重置密码",
+  },
+
+  en: {
+    loginTitle: "Admin Panel",
+    loginSub: "Manage offers, applications & accounts",
+    loginError: "Invalid username or password",
+    loginEmpty: "Please enter username and password",
+    loginConnError: "Connection error",
+    loginUserPlaceholder: "Username",
+    loginPwPlaceholder: "Password",
+    loginBtn: "Sign in",
+
+    tabOffers: "Offers",
+    tabApps: "Applications",
+    tabAccounts: "Accounts",
+    changePw: "Change PW",
+    logout: "Logout",
+    superAdmin: "Super Admin",
+    admin: "Admin",
+    you: "you",
+
+    allOffers: "All Offers",
+    newOffer: "+ New Offer",
+    totalOffers: "Total",
+    topPayout: "Top Payout",
+    withIcon: "With Icon",
+    edit: "Edit",
+    saveOffer: "Save Offer",
+    noOffers: "No offers yet. Create one!",
+    editOfferTitle: "Edit Offer",
+    newOfferTitle: "New Offer",
+
+    name: "Name",
+    namePlaceholder: "Offer name",
+    platform: "Platform",
+    platformLabel: "Platform",
+    payout: "Payout ($)",
+    payoutLabel: "Payout",
+    currency: "Currency",
+    iconUrl: "Icon URL",
+    iconUrlPlaceholder: "https://...",
+    iconHint: "Leave empty to show letter placeholder",
+    geos: "GEOs",
+    geosPlaceholder: "Type a GEO code and press Enter",
+    geosHint: "Press Enter or comma to add",
+    detailsSection: "Details",
+    detailGeo: "Detail GEO",
+    detailGeoPlaceholder: "e.g. PH, CN, KR",
+    detailPayout: "Detail Payout Text",
+    detailPayoutPlaceholder: "e.g. $9.00 CPA",
+    storeUrl: "Store URL",
+    storeUrlPlaceholder: "App Store / Google Play URL",
+    payableEvent: "Payable Event",
+    payableEventPlaceholder: "e.g. sign_up",
+    kpi: "KPI",
+    kpiPlaceholder: "KPI details...",
+    prt: "PRT",
+    prtPlaceholder: "PRT code",
+    flow: "Flow",
+    flowPlaceholder: "Flow description",
+    integrations: "Integrations",
+    integrationsPlaceholder: "Type integration name and press Enter",
+    integrationsHint: "e.g. CTV, VTA, Onelink, P360",
+    cancel: "Cancel",
+    save: "Save",
+    offerCreated: "Offer created!",
+    offerUpdated: "Offer updated!",
+    saveFailed: "Save failed",
+    updateFailed: "Update failed",
+    offerDeleted: "Offer deleted",
+    deleteFailed: "Delete failed",
+    deleteConfirm: "Delete this offer? This cannot be undone.",
+    iconUrlPlaceholderInline: "Icon URL...",
+
+    applications: "Applications",
+    date: "Date",
+    offer: "Offer",
+    publisher: "Publisher",
+    pids: "PIDs",
+    emails: "Emails",
+    comment: "Comment",
+    status: "Status",
+    totalApps: "Total",
+    refresh: "Refresh",
+    noApps: "No applications yet.",
+
+    statusNew: "New",
+    statusViewed: "Viewed",
+    statusContacted: "Contacted",
+
+    order: "Order",
+    statusUpdated: "Status updated",
+    deleteAppConfirm: "Delete this application?",
+    deleted: "Deleted",
+
+    accountMgmt: "Account Management",
+    addAccount: "+ Add Account",
+    id: "ID",
+    username: "Username",
+    role: "Role",
+    created: "Created",
+    actions: "Actions",
+    addAccountTitle: "Add Account",
+    editAccountTitle: "Edit Account",
+    usernamePlaceholder: "Username",
+    password: "Password",
+    passwordPlaceholder: "Min 6 characters",
+    adminRole: "Admin",
+    superAdminRole: "Super Admin",
+    updateRole: "Update Role",
+    createAccount: "Create Account",
+    resetPassword: "Reset Password",
+    resetBtn: "Reset",
+    newPwFor: "New Password for",
+    yourAccount: "Your account",
+    usernamePwRequired: "Username and password required",
+    accountCreated: "Account created!",
+    roleUpdated: "Role updated!",
+    passwordReset: "Password reset!",
+    resetFailed: "Failed to reset password",
+    accountDeleted: "Account deleted",
+    deleteAccountConfirm: 'Delete account "{}"? This cannot be undone.',
+    failed: "Failed",
+
+    changePasswordTitle: "Change Password",
+    currentPassword: "Current Password",
+    currentPasswordPlaceholder: "Current password",
+    newPassword: "New Password",
+    newPasswordPlaceholder: "Min 6 characters",
+    confirmPassword: "Confirm New Password",
+    confirmPasswordPlaceholder: "Repeat new password",
+    changeBtn: "Change",
+    pwMismatch: "New passwords do not match",
+    pwTooShort: "Password must be at least 6 characters",
+    passwordChanged: "Password changed!",
+    pwChangeFailed: "Failed",
+
+    placeOrder: "Place Order",
+    publisherLabel: "Publisher",
+    offerLabel: "Offer",
+    emailsLabel: "Emails",
+    basicInfo: "Basic Info",
+    customerId: "Customer ID",
+    customerIdPlaceholder: "Customer ID",
+    orderChannel: "Order Channel",
+    orderChannelPlaceholder: "e.g. AppsFlyer",
+    campaignName: "Campaign Name",
+    campaignNamePlaceholder: "Campaign name",
+    appsFlyerParams: "AppsFlyer Parameters",
+    pid: "PID",
+    pidPlaceholder: "PID",
+    extPrice: "External PO Price ($)",
+    extPricePlaceholder: "0.00",
+    trackingLink: "Tracking Link",
+    trackingLinkPlaceholder: "https://...",
+    emailSection: "Email Content",
+    emailSubject: "Email Subject",
+    emailSubjectPlaceholder: "Email subject",
+    emailBody: "Email Body",
+    emailBodyPlaceholder: "Email content...",
+    emailHint: "Email body auto-generated from form, you can edit directly",
+    orderConfirm: "I confirm the above info is correct and agree to send email to Publisher",
+    submitOrder: "Submit & Open Email Client",
+    submissionNotFound: "Submission not found",
+    orderSaved: "Order saved!",
+    orderFailed: "Order failed",
+    emailTemplateDefault: "(Campaign Name)",
+
+    resetPwTitle: "Reset Password",
+  }
+};
+
+function t(key) {
+  return (L[currentLang] && L[currentLang][key]) || (L.en[key]) || key;
+}
+
+function switchLang() {
+  currentLang = currentLang === "zh" ? "en" : "zh";
+  localStorage.setItem("mobiLang", currentLang);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  // Update lang toggle button
+  document.getElementById("lang-toggle").textContent = currentLang === "zh" ? "EN" : "中";
+
+  // Login
+  document.querySelector(".login-box h1").textContent = t("loginTitle");
+  document.querySelector(".login-box .sub").textContent = t("loginSub");
+  document.getElementById("login-user").placeholder = t("loginUserPlaceholder");
+  document.getElementById("login-pw").placeholder = t("loginPwPlaceholder");
+  document.getElementById("pw-btn").textContent = t("loginBtn");
+
+  // Nav
+  document.getElementById("tab-offers").textContent = t("tabOffers");
+  document.getElementById("tab-apps").textContent = t("tabApps");
+  document.getElementById("tab-accounts").textContent = t("tabAccounts");
+  document.getElementById("change-pw-btn").textContent = t("changePw");
+  document.getElementById("logout-btn").textContent = t("logout");
+  document.getElementById("offers-title").textContent = t("allOffers");
+
+  // Offers table headers
+  const oth = document.querySelectorAll("#content-offers thead th");
+  if (oth.length >= 6) {
+    oth[0].textContent = "Offer";
+    oth[1].textContent = t("platformLabel");
+    oth[2].textContent = t("payoutLabel");
+    oth[3].textContent = "GEOs";
+    oth[4].textContent = t("iconUrl");
+    oth[5].textContent = t("actions");
+  }
+  // Applications table headers
+  const ath = document.querySelectorAll("#content-apps thead th");
+  if (ath.length >= 7) {
+    ath[0].textContent = t("date");
+    ath[1].textContent = t("offer");
+    ath[2].textContent = t("publisher");
+    ath[3].textContent = t("pids");
+    ath[4].textContent = t("emails");
+    ath[5].textContent = t("comment");
+    ath[6].textContent = t("status");
+  }
+  // Accounts table headers
+  const ach = document.querySelectorAll("#content-accounts thead th");
+  if (ach.length >= 5) {
+    ach[0].textContent = t("id");
+    ach[1].textContent = t("username");
+    ach[2].textContent = t("role");
+    ach[3].textContent = t("created");
+    ach[4].textContent = t("actions");
+  }
+
+  // Offer modal static labels
+  setText("of-lbl-name", "name");
+  setText("of-lbl-platform", "platform");
+  setText("of-lbl-payout", "payout");
+  setText("of-lbl-currency", "currency");
+  setText("of-lbl-icon", "iconUrl");
+  setIconHint("of-icon-hint", "iconHint");
+  setText("of-lbl-geos", "geos");
+  setInput("of-geos-input", "geosPlaceholder");
+  setText("of-geos-hint", "geosHint");
+  setText("of-detail-head", "detailsSection");
+  setText("of-lbl-dgeo", "detailGeo");
+  setInput("of-dgeo", "detailGeoPlaceholder");
+  setText("of-lbl-dpayout", "detailPayout");
+  setInput("of-dpayout", "detailPayoutPlaceholder");
+  setText("of-lbl-durl", "storeUrl");
+  setInput("of-durl", "storeUrlPlaceholder");
+  setText("of-lbl-devent", "payableEvent");
+  setInput("of-devent", "payableEventPlaceholder");
+  setText("of-lbl-dkpi", "kpi");
+  setArea("of-dkpi", "kpiPlaceholder");
+  setText("of-lbl-dprt", "prt");
+  setInput("of-dprt", "prtPlaceholder");
+  setText("of-lbl-dflow", "flow");
+  setInput("of-dflow", "flowPlaceholder");
+  setText("of-lbl-int", "integrations");
+  setInput("of-int-input", "integrationsPlaceholder");
+  setText("of-int-hint", "integrationsHint");
+  // Offer modal buttons
+  const ofMdl = document.getElementById("offer-modal-title");
+  if (document.getElementById("of-id").value) ofMdl.textContent = t("editOfferTitle");
+  else ofMdl.textContent = t("newOfferTitle");
+  document.getElementById("of-save-btn").textContent = t("saveOffer");
+  const ofCancel = document.querySelector("#offer-overlay .btn-cancel");
+  if (ofCancel) ofCancel.textContent = t("cancel");
+
+  // Account modal
+  document.getElementById("ac-lbl-username").textContent = t("username");
+  setInput("ac-username", "usernamePlaceholder");
+  document.getElementById("ac-lbl-password").textContent = t("password");
+  setInput("ac-password", "passwordPlaceholder");
+  document.getElementById("ac-lbl-role").textContent = t("role");
+  const acRole = document.getElementById("ac-role");
+  if (acRole) { acRole.options[0].textContent = t("adminRole"); acRole.options[1].textContent = t("superAdminRole"); }
+  const acCancel = document.querySelector("#account-overlay .btn-cancel");
+  if (acCancel) acCancel.textContent = t("cancel");
+
+  // Change Password modal
+  document.querySelector("#pw-overlay .modal-header h3").textContent = t("changePasswordTitle");
+  document.querySelector("#pw-form .form-group:nth-child(1) .form-label").textContent = t("currentPassword");
+  document.getElementById("pw-current").placeholder = t("currentPasswordPlaceholder");
+  document.querySelector("#pw-form .form-group:nth-child(2) .form-label").textContent = t("newPassword");
+  document.getElementById("pw-new").placeholder = t("newPasswordPlaceholder");
+  document.querySelector("#pw-form .form-group:nth-child(3) .form-label").textContent = t("confirmPassword");
+  document.getElementById("pw-confirm").placeholder = t("confirmPasswordPlaceholder");
+  const pwCancel = document.querySelector("#pw-overlay .btn-cancel");
+  if (pwCancel) pwCancel.textContent = t("cancel");
+  const pwSubmit = document.querySelector("#pw-form .btn-save");
+  if (pwSubmit) pwSubmit.textContent = t("changeBtn");
+
+  // Reset Password modal
+  document.querySelector("#reset-pw-overlay .modal-header h3").textContent = t("resetPwTitle");
+  const rpCancel = document.querySelector("#reset-pw-overlay .btn-cancel");
+  if (rpCancel) rpCancel.textContent = t("cancel");
+  const rpSubmit = document.querySelector("#reset-pw-form .btn-save");
+  if (rpSubmit) rpSubmit.textContent = t("resetBtn");
+
+  // Order modal
+  document.querySelector("#order-overlay .modal-header h3").textContent = "📋 " + t("placeOrder");
+  document.getElementById("ord-publisher-label").textContent = t("publisherLabel") + ":";
+  document.getElementById("ord-offer-label").textContent = t("offerLabel") + ":";
+  document.getElementById("ord-emails-label").textContent = t("emailsLabel") + ":";
+  setText("ord-section-basic", "basicInfo");
+  setText("ord-lbl-platform", "platform");
+  setText("ord-lbl-customer", "customerId");
+  setInput("ord-customer-id", "customerIdPlaceholder");
+  setText("ord-lbl-channel", "orderChannel");
+  setInput("ord-channel", "orderChannelPlaceholder");
+  setText("ord-lbl-campaign", "campaignName");
+  setInput("ord-campaign", "campaignNamePlaceholder");
+  setText("ord-section-af", "appsFlyerParams");
+  setText("ord-lbl-prt", "prt");
+  setInput("ord-prt", "prtPlaceholder");
+  setText("ord-lbl-pid", "pid");
+  setInput("ord-pid", "pidPlaceholder");
+  setText("ord-lbl-extprice", "extPrice");
+  setInput("ord-ext-price", "extPricePlaceholder");
+  setText("ord-lbl-tracking", "trackingLink");
+  setInput("ord-tracking-link", "trackingLinkPlaceholder");
+  setText("ord-section-email", "emailSection");
+  setText("ord-lbl-subject", "emailSubject");
+  setInput("ord-email-subject", "emailSubjectPlaceholder");
+  setText("ord-lbl-body", "emailBody");
+  setArea("ord-email-body", "emailBodyPlaceholder");
+  setText("ord-email-hint", "emailHint");
+  document.getElementById("ord-confirm-label").textContent = t("orderConfirm");
+  document.getElementById("ord-submit-btn").textContent = "📨 " + t("submitOrder");
+  const ordCancel = document.querySelector("#order-overlay .btn-cancel");
+  if (ordCancel) ordCancel.textContent = t("cancel");
+
+  // Re-render tables
+  if (currentUser) {
+    updateUserDisplay();
+    if (currentTab === "offers") renderOffers();
+    else if (currentTab === "applications") renderSubmissions();
+    else if (currentTab === "accounts") renderAccounts();
+  }
+}
+
+function setText(id, key) { const el = document.getElementById(id); if (el) el.textContent = t(key); }
+function setInput(id, key) { const el = document.getElementById(id); if (el) el.placeholder = t(key); }
+function setArea(id, key) { const el = document.getElementById(id); if (el) el.placeholder = t(key); }
+function setIconHint(id, key) { const el = document.getElementById(id); if (el) el.textContent = t(key); }
+
 function authHeaders() {
   const h = { "Content-Type": "application/json" };
   if (authToken) h["x-auth-token"] = authToken;
@@ -730,7 +1268,7 @@ async function tryLogin() {
   const password = document.getElementById("login-pw").value;
 
   if (!username || !password) {
-    document.getElementById("login-error").textContent = "Please enter username and password";
+    document.getElementById("login-error").textContent = t("loginEmpty");
     document.getElementById("login-error").style.display = "block";
     return;
   }
@@ -744,7 +1282,7 @@ async function tryLogin() {
     const data = await res.json();
 
     if (!res.ok) {
-      document.getElementById("login-error").textContent = data.error || "Invalid credentials";
+      document.getElementById("login-error").textContent = data.error || t("loginError");
       document.getElementById("login-error").style.display = "block";
       return;
     }
@@ -753,10 +1291,11 @@ async function tryLogin() {
     currentUser = { username: data.username, role: data.role };
     loginWrap.style.display = "none";
     dashboard.style.display = "block";
+    applyLanguage();
     updateUserDisplay();
     loadAll();
   } catch (e) {
-    document.getElementById("login-error").textContent = "Connection error";
+    document.getElementById("login-error").textContent = t("loginConnError");
     document.getElementById("login-error").style.display = "block";
   }
 }
@@ -777,10 +1316,10 @@ document.getElementById("logout-btn").onclick = async () => {
 function updateUserDisplay() {
   const el = document.getElementById("user-info-display");
   if (currentUser.role === "super_admin") {
-    el.innerHTML = `<span class="badge-super">👑 ${currentUser.username}</span> (Super Admin)`;
+    el.innerHTML = `<span class="badge-super">👑 ${currentUser.username}</span> (${t("superAdmin")})`;
     document.getElementById("tab-accounts").style.display = "inline-block";
   } else {
-    el.innerHTML = `<span class="badge-admin">${currentUser.username}</span> (Admin)`;
+    el.innerHTML = `<span class="badge-admin">${currentUser.username}</span> (${t("admin")})`;
     document.getElementById("tab-accounts").style.display = "none";
   }
 }
@@ -850,11 +1389,11 @@ function renderOffers() {
   const topPayout = offers.length ? Math.max(...offers.map(o => o.payout)) : 0;
   const withIcon = offers.filter(o => o.icon).length;
   stats.innerHTML = `
-    <div class="stat-card"><div class="num">${offers.length}</div><div class="lbl">Total Offers</div></div>
+    <div class="stat-card"><div class="num">${offers.length}</div><div class="lbl">${t("totalOffers")}</div></div>
     <div class="stat-card"><div class="num">${iosCount}</div><div class="lbl">iOS</div></div>
     <div class="stat-card"><div class="num">${adrCount}</div><div class="lbl">Android</div></div>
-    <div class="stat-card"><div class="num">${topPayout > 0 ? '$'+topPayout.toFixed(2) : '—'}</div><div class="lbl">Top Payout</div></div>
-    <div class="stat-card"><div class="num">${withIcon}/${offers.length}</div><div class="lbl">With Icon</div></div>
+    <div class="stat-card"><div class="num">${topPayout > 0 ? '$'+topPayout.toFixed(2) : '—'}</div><div class="lbl">${t("topPayout")}</div></div>
+    <div class="stat-card"><div class="num">${withIcon}/${offers.length}</div><div class="lbl">${t("withIcon")}</div></div>
   `;
 
   if (!offers.length) {
@@ -887,11 +1426,11 @@ function renderOffers() {
       <td style="font-size:11px;max-width:160px">${geos.join(", ")}${moreGeo}</td>
       <td>
         <input class="inline-input" type="text" value="${o.icon || ''}"
-               placeholder="Icon URL..."
+               placeholder="${t("iconUrlPlaceholderInline")}"
                onchange="quickUpdate(${o.id}, 'icon', this.value)" />
       </td>
       <td>
-        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="Full Edit">✎ Edit</button>
+        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="${t("edit")}">✎ ${t("edit")}</button>
         <button class="btn-danger btn-sm" onclick="deleteOffer(${o.id})" title="Delete">×</button>
       </td>
     </tr>`;
@@ -905,21 +1444,21 @@ async function quickUpdate(id, field, value) {
     body: JSON.stringify(body)
   });
   if (res.ok) {
-    showToast("Updated!", "success");
+    showToast(t("offerUpdated"), "success");
     loadOffers();
   } else {
-    showToast("Update failed", "error");
+    showToast(t("updateFailed"), "error");
   }
 }
 
 async function deleteOffer(id) {
-  if (!confirm("Delete this offer? This cannot be undone.")) return;
+  if (!confirm(t("deleteConfirm"))) return;
   const res = await fetch(`/api/offers/${id}`, { method: "DELETE", headers: authHeaders() });
   if (res.ok) {
-    showToast("Offer deleted", "success");
+    showToast(t("offerDeleted"), "success");
     loadOffers();
   } else {
-    showToast("Delete failed", "error");
+    showToast(t("deleteFailed"), "error");
   }
 }
 
@@ -975,7 +1514,7 @@ function openOfferModal(id) {
   if (id) {
     const offer = offers.find(o => o.id === id);
     if (!offer) return;
-    document.getElementById("offer-modal-title").textContent = "Edit Offer";
+    document.getElementById("offer-modal-title").textContent = t("editOfferTitle");
     document.getElementById("of-id").value = offer.id;
     document.getElementById("of-name").value = offer.name;
     document.getElementById("of-platform").value = offer.platform;
@@ -994,7 +1533,7 @@ function openOfferModal(id) {
     document.getElementById("of-dflow").value = d.flow || "—";
     editIntegrations.push(...(d.integrations || []));
   } else {
-    document.getElementById("offer-modal-title").textContent = "New Offer";
+    document.getElementById("offer-modal-title").textContent = t("newOfferTitle");
     document.getElementById("of-id").value = "";
     document.getElementById("offer-form").reset();
     document.getElementById("of-platform").value = "ios";
@@ -1045,11 +1584,11 @@ document.getElementById("offer-form").addEventListener("submit", async e => {
 
   const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
   if (res.ok) {
-    showToast(isNew ? "Offer created!" : "Offer updated!", "success");
+    showToast(isNew ? t("offerCreated") : t("offerUpdated"), "success");
     closeOfferModal();
     loadOffers();
   } else {
-    showToast("Save failed", "error");
+    showToast(t("saveFailed"), "error");
   }
 });
 
@@ -1065,10 +1604,10 @@ function renderSubmissions() {
   submissions.forEach(s => counts[s.status] = (counts[s.status] || 0) + 1);
 
   stats.innerHTML = `
-    <div class="stat-card"><div class="num">${submissions.length}</div><div class="lbl">Total</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">New</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--orange)">${counts.viewed}</div><div class="lbl">Viewed</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--green)">${counts.contacted}</div><div class="lbl">Contacted</div></div>
+    <div class="stat-card"><div class="num">${submissions.length}</div><div class="lbl">${t("totalApps")}</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">${t("statusNew")}</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--orange)">${counts.viewed}</div><div class="lbl">${t("statusViewed")}</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--green)">${counts.contacted}</div><div class="lbl">${t("statusContacted")}</div></div>
   `;
 
   if (!submissions.length) {
@@ -1082,8 +1621,9 @@ function renderSubmissions() {
     });
     const pids = (s.pids||[]).map(p => `<span class="tag-chip">${p}</span>`).join("");
     const emails = (s.emails||[]).map(e => `<span class="tag-chip">${e}</span>`).join("");
+    const statusLabels = { new: t("statusNew"), viewed: t("statusViewed"), contacted: t("statusContacted") };
     const statusOpts = ["new","viewed","contacted"]
-      .map(st => `<option value="${st}" ${st===s.status?"selected":""}>${st}</option>`).join("");
+      .map(st => `<option value="${st}" ${st===s.status?"selected":""}>${statusLabels[st]}</option>`).join("");
 
     return `<tr data-id="${s.id}">
       <td class="mono">${date}</td>
@@ -1094,7 +1634,7 @@ function renderSubmissions() {
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment||''}">${s.comment||"—"}</td>
       <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
       <td style="white-space:nowrap">
-        <button class="btn-secondary btn-sm" onclick="openOrderModal('${s.id}')" title="Place Order">📋 Order</button>
+        <button class="btn-secondary btn-sm" onclick="openOrderModal('${s.id}')" title="${t("order")}">📋 ${t("order")}</button>
         <button class="btn-danger btn-sm" onclick="deleteSub('${s.id}')">×</button>
       </td>
     </tr>`;
@@ -1105,14 +1645,14 @@ async function updateStatus(id, status) {
   await fetch(`/api/submissions/${id}/status`, {
     method: "PATCH", headers: authHeaders(), body: JSON.stringify({ status })
   });
-  showToast("Status updated", "success");
+  showToast(t("statusUpdated"), "success");
   loadSubmissions();
 }
 
 async function deleteSub(id) {
-  if (!confirm("Delete this application?")) return;
+  if (!confirm(t("deleteAppConfirm"))) return;
   await fetch(`/api/submissions/${id}`, { method: "DELETE", headers: authHeaders() });
-  showToast("Deleted", "success");
+  showToast(t("deleted"), "success");
   loadSubmissions();
 }
 
@@ -1123,17 +1663,17 @@ function renderAccounts() {
   const tbody = document.getElementById("accounts-tbody");
   tbody.innerHTML = accounts.map(a => {
     const roleBadge = a.role === "super_admin" ? "badge-super" : "badge-admin";
-    const roleLabel = a.role === "super_admin" ? "Super Admin" : "Admin";
+    const roleLabel = a.role === "super_admin" ? t("superAdminRole") : t("adminRole");
     const isSelf = a.username === currentUser.username;
     return `<tr>
       <td>${a.id}</td>
-      <td><strong>${a.username}</strong>${isSelf ? ' <span style="color:var(--accent);font-size:10px">(you)</span>' : ''}</td>
+      <td><strong>${a.username}</strong>${isSelf ? ` <span style="color:var(--accent);font-size:10px">(${t("you")})</span>` : ''}</td>
       <td><span class="badge ${roleBadge}">${roleLabel}</span></td>
       <td class="mono">${new Date(a.createdAt).toLocaleDateString()}</td>
       <td>
-        ${!isSelf ? `<button class="btn-secondary btn-xs" onclick="openAccountModal(${a.id})" title="Edit role">✎</button>
-        <button class="btn-secondary btn-xs" onclick="openResetPwModal(${a.id},'${a.username}')" title="Reset password">🔑</button>
-        <button class="btn-danger btn-xs" onclick="deleteAccount(${a.id},'${a.username}')">×</button>` : `<span style="color:var(--text3);font-size:10px">Your account</span>`}
+        ${!isSelf ? `<button class="btn-secondary btn-xs" onclick="openAccountModal(${a.id})" title="编辑角色">✎</button>
+        <button class="btn-secondary btn-xs" onclick="openResetPwModal(${a.id},'${a.username}')" title="重置密码">🔑</button>
+        <button class="btn-danger btn-xs" onclick="deleteAccount(${a.id},'${a.username}')">×</button>` : `<span style="color:var(--text3);font-size:10px">${t("yourAccount")}</span>`}
       </td>
     </tr>`;
   }).join("");
@@ -1143,16 +1683,16 @@ function openAccountModal(id) {
   if (id) {
     const ac = accounts.find(a => a.id === id);
     if (!ac) return;
-    document.getElementById("ac-modal-title").textContent = "Edit Account";
+    document.getElementById("ac-modal-title").textContent = t("editAccountTitle");
     document.getElementById("ac-id").value = ac.id;
     document.getElementById("ac-username").value = ac.username;
     document.getElementById("ac-username").disabled = true;
     document.getElementById("ac-password").style.display = "none";
     document.getElementById("ac-pw-label").style.display = "none";
     document.getElementById("ac-role").value = ac.role;
-    document.getElementById("ac-save-btn").textContent = "Update Role";
+    document.getElementById("ac-save-btn").textContent = t("updateRole");
   } else {
-    document.getElementById("ac-modal-title").textContent = "Add Account";
+    document.getElementById("ac-modal-title").textContent = t("addAccountTitle");
     document.getElementById("ac-id").value = "";
     document.getElementById("ac-username").value = "";
     document.getElementById("ac-username").disabled = false;
@@ -1160,7 +1700,7 @@ function openAccountModal(id) {
     document.getElementById("ac-pw-label").style.display = "";
     document.getElementById("ac-password").value = "";
     document.getElementById("ac-role").value = "admin";
-    document.getElementById("ac-save-btn").textContent = "Create Account";
+    document.getElementById("ac-save-btn").textContent = t("createAccount");
   }
   document.getElementById("account-overlay").classList.add("open");
 }
@@ -1183,15 +1723,15 @@ document.getElementById("account-form").addEventListener("submit", async e => {
       password: document.getElementById("ac-password").value,
       role: document.getElementById("ac-role").value
     };
-    if (!body.username || !body.password) { showToast("Username and password required", "error"); return; }
+    if (!body.username || !body.password) { showToast(t("usernamePwRequired"), "error"); return; }
     const res = await fetch("/api/accounts", { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
-    if (res.ok) { showToast("Account created!", "success"); closeAccountModal(); loadAccounts(); }
-    else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+    if (res.ok) { showToast(t("accountCreated"), "success"); closeAccountModal(); loadAccounts(); }
+    else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
   } else {
     const body = { role: document.getElementById("ac-role").value };
     const res = await fetch(`/api/accounts/${id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
-    if (res.ok) { showToast("Role updated!", "success"); closeAccountModal(); loadAccounts(); }
-    else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+    if (res.ok) { showToast(t("roleUpdated"), "success"); closeAccountModal(); loadAccounts(); }
+    else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
   }
 });
 
@@ -1213,15 +1753,15 @@ document.getElementById("reset-pw-form").addEventListener("submit", async e => {
   const res = await fetch(`/api/accounts/${id}/reset-password`, {
     method: "POST", headers: authHeaders(), body: JSON.stringify({ newPassword: pw })
   });
-  if (res.ok) { showToast("Password reset!", "success"); closeResetPwModal(); }
-  else { showToast("Failed to reset password", "error"); }
+  if (res.ok) { showToast(t("passwordReset"), "success"); closeResetPwModal(); }
+  else { showToast(t("resetFailed"), "error"); }
 });
 
 async function deleteAccount(id, username) {
-  if (!confirm(`Delete account "${username}"? This cannot be undone.`)) return;
+  if (!confirm(t("deleteAccountConfirm").replace("{}", username))) return;
   const res = await fetch(`/api/accounts/${id}`, { method: "DELETE", headers: authHeaders() });
-  if (res.ok) { showToast("Account deleted", "success"); loadAccounts(); }
-  else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+  if (res.ok) { showToast(t("accountDeleted"), "success"); loadAccounts(); }
+  else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
 }
 
 // ────────────────────────────────────
@@ -1238,14 +1778,14 @@ document.getElementById("pw-form").addEventListener("submit", async e => {
   const current = document.getElementById("pw-current").value;
   const pw = document.getElementById("pw-new").value;
   const confirm = document.getElementById("pw-confirm").value;
-  if (pw !== confirm) { showToast("New passwords do not match", "error"); return; }
-  if (pw.length < 6) { showToast("Password must be at least 6 characters", "error"); return; }
+  if (pw !== confirm) { showToast(t("pwMismatch"), "error"); return; }
+  if (pw.length < 6) { showToast(t("pwTooShort"), "error"); return; }
 
   const res = await fetch("/api/auth/change-password", {
     method: "POST", headers: authHeaders(), body: JSON.stringify({ currentPassword: current, newPassword: pw })
   });
-  if (res.ok) { showToast("Password changed!", "success"); closePwModal(); }
-  else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+  if (res.ok) { showToast(t("passwordChanged"), "success"); closePwModal(); }
+  else { const d = await res.json(); showToast(d.error || t("pwChangeFailed"), "error"); }
 });
 
 // Auto-refresh
@@ -1255,6 +1795,9 @@ setInterval(() => {
     else if (currentTab === "applications") loadSubmissions();
   }
 }, 30000);
+
+// Apply language on initial load
+applyLanguage();
 
 // ────────────────────────────────────
 // ORDER MODAL
@@ -1316,7 +1859,7 @@ Mobireach Team
 
 function openOrderModal(submissionId) {
   const sub = submissions.find(s => s.id === submissionId);
-  if (!sub) { showToast("Submission not found", "error"); return; }
+  if (!sub) { showToast(t("submissionNotFound"), "error"); return; }
 
   // Find the offer for extra details
   const offer = offers.find(o => o.name === sub.offerName);
@@ -1370,7 +1913,7 @@ document.getElementById("order-form").addEventListener("submit", async e => {
 
   const btn = document.getElementById("ord-submit-btn");
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Sending...';
+  btn.innerHTML = '<span class="spinner"></span> 发送中...';
 
   let recipients = [];
   try { recipients = JSON.parse(document.getElementById("ord-recipients").value); } catch(e) {}
@@ -1409,7 +1952,7 @@ document.getElementById("order-form").addEventListener("submit", async e => {
     const data = await res.json();
 
     if (res.ok) {
-      showToast("Order saved ✅ — opening your email client...", "success");
+      showToast(t("orderSaved"), "success");
       closeOrderModal();
 
       // Build mailto link and open default email client
@@ -1421,13 +1964,13 @@ document.getElementById("order-form").addEventListener("submit", async e => {
       // Open in default email client
       setTimeout(() => { window.open(mailtoUrl, "_blank"); }, 300);
     } else {
-      showToast(data.error || "Failed to save order", "error");
+      showToast(data.error || t("orderFailed"), "error");
     }
   } catch (err) {
-    showToast("Network error", "error");
+    showToast(t("loginConnError"), "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = "📨 提交并打开邮件";
+    btn.innerHTML = "📨 " + t("submitOrder");
   }
 });
 
