@@ -53,6 +53,7 @@
     }
     .login-btn:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.4); transform: translateY(-1px); }
     .login-error { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
+    .login-hint { font-size: 11px; color: var(--text3); margin-top: 12px; text-align: center; }
 
     /* ── DASHBOARD ── */
     .dashboard { display: none; }
@@ -75,6 +76,13 @@
     }
     .tab-nav button:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
     .tab-nav button.active { color: #fff; background: rgba(99,102,241,0.3); }
+    .admin-nav-right { display: flex; align-items: center; gap: 12px; }
+    .user-info {
+      font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.08);
+      padding: 4px 12px; border-radius: 6px;
+    }
+    .user-info .badge-super { color: #818cf8; font-weight: 600; }
+    .user-info .badge-admin { color: #34d399; font-weight: 600; }
     .logout-btn {
       padding: 6px 14px; border: 1px solid #334155; border-radius: 8px;
       background: transparent; color: #94a3b8; font-size: 12px;
@@ -125,6 +133,7 @@
     }
     .btn-danger:hover { background: var(--red-light); border-color: var(--red); }
     .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .btn-xs { padding: 3px 8px; font-size: 10px; }
 
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px 16px; text-align: left; font-size: 12px; }
@@ -152,6 +161,8 @@
     }
     .badge-ios { background: #e0e7ff; color: #4338ca; }
     .badge-android { background: #d1fae5; color: #059669; }
+    .badge-super { background: #ede9fe; color: #7c3aed; }
+    .badge-admin { background: #d1fae5; color: #059669; }
     .empty { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 13px; display: none; }
 
     /* ── INLINE EDIT ── */
@@ -271,12 +282,15 @@
     .toast.success { border-left: 3px solid var(--green); }
     .toast.error { border-left: 3px solid var(--red); }
 
-    /* Responsive */
+    /* Change password modal */
+    .pw-row { display: flex; gap: 8px; margin-top: 8px; }
+
     @media (max-width: 768px) {
       .admin-nav { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
       .table-wrap { overflow-x: auto; }
       table { min-width: 900px; }
       .form-row { flex-direction: column; }
+      .admin-nav-left { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -287,10 +301,12 @@
   <div class="login-box">
     <div class="logo-mark">M</div>
     <h1>Admin Panel</h1>
-    <p class="sub">Manage offers & view applications</p>
-    <div class="login-error" id="login-error">Incorrect password</div>
-    <input class="login-input" type="password" id="pw-input" placeholder="Password" autofocus />
+    <p class="sub">Manage offers, applications & accounts</p>
+    <div class="login-error" id="login-error">Invalid username or password</div>
+    <input class="login-input" type="text" id="login-user" placeholder="Username" autofocus />
+    <input class="login-input" type="password" id="login-pw" placeholder="Password" />
     <button class="login-btn" id="pw-btn">Sign in</button>
+    <div class="login-hint">Default: Merlin / Merlin2026!</div>
   </div>
 </div>
 
@@ -302,9 +318,14 @@
       <div class="tab-nav">
         <button class="active" data-tab="offers" id="tab-offers">Offers</button>
         <button data-tab="applications" id="tab-apps">Applications</button>
+        <button data-tab="accounts" id="tab-accounts" style="display:none">Accounts</button>
       </div>
     </div>
-    <button class="logout-btn" id="logout-btn">Logout</button>
+    <div class="admin-nav-right">
+      <span class="user-info" id="user-info-display"></span>
+      <button class="btn-secondary btn-xs" id="change-pw-btn" style="font-size:11px">Change PW</button>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
   </nav>
 
   <div class="content">
@@ -325,7 +346,7 @@
                 <th style="width:90px">Payout</th>
                 <th>GEOs</th>
                 <th style="width:280px">Icon URL</th>
-                <th style="width:80px">Actions</th>
+                <th style="width:100px">Actions</th>
               </tr>
             </thead>
             <tbody id="offers-tbody"></tbody>
@@ -361,6 +382,30 @@
           </table>
         </div>
         <div class="empty" id="apps-empty">No applications yet.</div>
+      </div>
+    </div>
+
+    <!-- ── ACCOUNTS TAB ── -->
+    <div class="tab-content" id="content-accounts" style="display:none">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2>Account Management</h2>
+          <button class="btn-primary" onclick="openAccountModal()">+ Add Account</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th style="width:200px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -472,16 +517,111 @@
   </div>
 </div>
 
+<!-- ── ACCOUNT MODAL ── -->
+<div class="overlay" id="account-overlay">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h3 id="ac-modal-title">Add Account</h3>
+      <button class="modal-close" onclick="closeAccountModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="account-form">
+        <input type="hidden" id="ac-id" />
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" id="ac-username" placeholder="Username" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="ac-pw-label">Password</label>
+          <input class="form-input" type="password" id="ac-password" placeholder="Min 6 characters" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-input" id="ac-role">
+            <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeAccountModal()">Cancel</button>
+          <button type="submit" class="btn-save" id="ac-save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHANGE PASSWORD MODAL ── -->
+<div class="overlay" id="pw-overlay">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>Change Password</h3>
+      <button class="modal-close" onclick="closePwModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="pw-form">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input class="form-input" type="password" id="pw-current" placeholder="Current password" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input class="form-input" type="password" id="pw-new" placeholder="Min 6 characters" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input class="form-input" type="password" id="pw-confirm" placeholder="Repeat new password" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closePwModal()">Cancel</button>
+          <button type="submit" class="btn-save">Change</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESET PASSWORD MODAL ── -->
+<div class="overlay" id="reset-pw-overlay">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>Reset Password</h3>
+      <button class="modal-close" onclick="closeResetPwModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="reset-pw-form">
+        <input type="hidden" id="rp-id" />
+        <div class="form-group">
+          <label class="form-label">New Password for <strong id="rp-username"></strong></label>
+          <input class="form-input" type="password" id="rp-password" placeholder="Min 6 characters" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeResetPwModal()">Cancel</button>
+          <button type="submit" class="btn-save">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 // ────────────────────────────────────
 // STATE
 // ────────────────────────────────────
-let password = "";
+let authToken = "";
+let currentUser = null;
 let offers = [];
 let submissions = [];
+let accounts = [];
 let currentTab = "offers";
 let editGeos = [];
 let editIntegrations = [];
+
+function authHeaders() {
+  const h = { "Content-Type": "application/json" };
+  if (authToken) h["x-auth-token"] = authToken;
+  return h;
+}
 
 // ────────────────────────────────────
 // LOGIN
@@ -489,29 +629,65 @@ let editIntegrations = [];
 const loginWrap = document.getElementById("login-wrap");
 const dashboard = document.getElementById("dashboard");
 
-function tryLogin() {
-  password = document.getElementById("pw-input").value;
-  fetch(`/api/submissions?password=${encodeURIComponent(password)}`)
-    .then(r => {
-      if (!r.ok) throw new Error();
-      loginWrap.style.display = "none";
-      dashboard.style.display = "block";
-      loadAll();
-    })
-    .catch(() => {
-      document.getElementById("login-error").style.display = "block";
-      document.getElementById("pw-input").value = "";
-    });
-}
-document.getElementById("pw-btn").onclick = tryLogin;
-document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+async function tryLogin() {
+  const username = document.getElementById("login-user").value.trim();
+  const password = document.getElementById("login-pw").value;
 
-document.getElementById("logout-btn").onclick = () => {
-  password = "";
+  if (!username || !password) {
+    document.getElementById("login-error").textContent = "Please enter username and password";
+    document.getElementById("login-error").style.display = "block";
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById("login-error").textContent = data.error || "Invalid credentials";
+      document.getElementById("login-error").style.display = "block";
+      return;
+    }
+
+    authToken = data.token;
+    currentUser = { username: data.username, role: data.role };
+    loginWrap.style.display = "none";
+    dashboard.style.display = "block";
+    updateUserDisplay();
+    loadAll();
+  } catch (e) {
+    document.getElementById("login-error").textContent = "Connection error";
+    document.getElementById("login-error").style.display = "block";
+  }
+}
+
+document.getElementById("pw-btn").onclick = tryLogin;
+document.getElementById("login-pw").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+document.getElementById("login-user").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("login-pw").focus(); });
+document.getElementById("logout-btn").onclick = async () => {
+  try { await fetch("/api/auth/logout", { method: "POST", headers: authHeaders() }); } catch(e) {}
+  authToken = "";
+  currentUser = null;
   dashboard.style.display = "none";
   loginWrap.style.display = "flex";
-  document.getElementById("pw-input").value = "";
+  document.getElementById("login-user").value = "";
+  document.getElementById("login-pw").value = "";
 };
+
+function updateUserDisplay() {
+  const el = document.getElementById("user-info-display");
+  if (currentUser.role === "super_admin") {
+    el.innerHTML = `<span class="badge-super">👑 ${currentUser.username}</span> (Super Admin)`;
+    document.getElementById("tab-accounts").style.display = "inline-block";
+  } else {
+    el.innerHTML = `<span class="badge-admin">${currentUser.username}</span> (Admin)`;
+    document.getElementById("tab-accounts").style.display = "none";
+  }
+}
 
 // ────────────────────────────────────
 // TAB SWITCHING
@@ -523,6 +699,8 @@ document.querySelectorAll(".tab-nav button").forEach(btn => {
     btn.classList.add("active");
     document.getElementById("content-offers").style.display = currentTab === "offers" ? "block" : "none";
     document.getElementById("content-apps").style.display = currentTab === "applications" ? "block" : "none";
+    document.getElementById("content-accounts").style.display = currentTab === "accounts" ? "block" : "none";
+    if (currentTab === "accounts") loadAccounts();
   });
 });
 
@@ -540,9 +718,17 @@ async function loadOffers() {
 }
 
 async function loadSubmissions() {
-  const res = await fetch(`/api/submissions?password=${encodeURIComponent(password)}`);
+  const res = await fetch("/api/submissions", { headers: authHeaders() });
+  if (!res.ok) return;
   submissions = await res.json();
   renderSubmissions();
+}
+
+async function loadAccounts() {
+  const res = await fetch("/api/accounts", { headers: authHeaders() });
+  if (!res.ok) return;
+  accounts = await res.json();
+  renderAccounts();
 }
 
 // ────────────────────────────────────
@@ -565,7 +751,7 @@ function renderOffers() {
 
   const iosCount = offers.filter(o => o.platform === "ios").length;
   const adrCount = offers.filter(o => o.platform === "android").length;
-  const topPayout = Math.max(...offers.map(o => o.payout));
+  const topPayout = offers.length ? Math.max(...offers.map(o => o.payout)) : 0;
   const withIcon = offers.filter(o => o.icon).length;
   stats.innerHTML = `
     <div class="stat-card"><div class="num">${offers.length}</div><div class="lbl">Total Offers</div></div>
@@ -609,7 +795,7 @@ function renderOffers() {
                onchange="quickUpdate(${o.id}, 'icon', this.value)" />
       </td>
       <td>
-        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="Edit">Edit</button>
+        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="Full Edit">✎ Edit</button>
         <button class="btn-danger btn-sm" onclick="deleteOffer(${o.id})" title="Delete">×</button>
       </td>
     </tr>`;
@@ -618,8 +804,8 @@ function renderOffers() {
 
 async function quickUpdate(id, field, value) {
   const body = { [field]: value };
-  const res = await fetch(`/api/offers/${id}?password=${encodeURIComponent(password)}`, {
-    method: "PUT", headers: { "Content-Type": "application/json" },
+  const res = await fetch(`/api/offers/${id}`, {
+    method: "PUT", headers: authHeaders(),
     body: JSON.stringify(body)
   });
   if (res.ok) {
@@ -632,7 +818,7 @@ async function quickUpdate(id, field, value) {
 
 async function deleteOffer(id) {
   if (!confirm("Delete this offer? This cannot be undone.")) return;
-  const res = await fetch(`/api/offers/${id}?password=${encodeURIComponent(password)}`, { method: "DELETE" });
+  const res = await fetch(`/api/offers/${id}`, { method: "DELETE", headers: authHeaders() });
   if (res.ok) {
     showToast("Offer deleted", "success");
     loadOffers();
@@ -702,7 +888,6 @@ function openOfferModal(id) {
     document.getElementById("of-icon").value = offer.icon || "";
     document.getElementById("of-iconLetter").value = offer.iconLetter || "N";
     editGeos.push(...(offer.geos || []));
-    // details
     const d = offer.details || {};
     document.getElementById("of-dgeo").value = d.geo || "";
     document.getElementById("of-dpayout").value = d.payout || "";
@@ -759,12 +944,10 @@ document.getElementById("offer-form").addEventListener("submit", async e => {
     }
   };
 
-  const url = isNew
-    ? `/api/offers?password=${encodeURIComponent(password)}`
-    : `/api/offers/${id}?password=${encodeURIComponent(password)}`;
+  const url = isNew ? "/api/offers" : `/api/offers/${id}`;
   const method = isNew ? "POST" : "PUT";
 
-  const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
   if (res.ok) {
     showToast(isNew ? "Offer created!" : "Offer updated!", "success");
     closeOfferModal();
@@ -820,8 +1003,8 @@ function renderSubmissions() {
 }
 
 async function updateStatus(id, status) {
-  await fetch(`/api/submissions/${id}/status?password=${encodeURIComponent(password)}`, {
-    method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status })
+  await fetch(`/api/submissions/${id}/status`, {
+    method: "PATCH", headers: authHeaders(), body: JSON.stringify({ status })
   });
   showToast("Status updated", "success");
   loadSubmissions();
@@ -829,18 +1012,153 @@ async function updateStatus(id, status) {
 
 async function deleteSub(id) {
   if (!confirm("Delete this application?")) return;
-  await fetch(`/api/submissions/${id}?password=${encodeURIComponent(password)}`, { method: "DELETE" });
+  await fetch(`/api/submissions/${id}`, { method: "DELETE", headers: authHeaders() });
   showToast("Deleted", "success");
   loadSubmissions();
 }
 
+// ────────────────────────────────────
+// ACCOUNT MANAGEMENT
+// ────────────────────────────────────
+function renderAccounts() {
+  const tbody = document.getElementById("accounts-tbody");
+  tbody.innerHTML = accounts.map(a => {
+    const roleBadge = a.role === "super_admin" ? "badge-super" : "badge-admin";
+    const roleLabel = a.role === "super_admin" ? "Super Admin" : "Admin";
+    const isSelf = a.username === currentUser.username;
+    return `<tr>
+      <td>${a.id}</td>
+      <td><strong>${a.username}</strong>${isSelf ? ' <span style="color:var(--accent);font-size:10px">(you)</span>' : ''}</td>
+      <td><span class="badge ${roleBadge}">${roleLabel}</span></td>
+      <td class="mono">${new Date(a.createdAt).toLocaleDateString()}</td>
+      <td>
+        ${!isSelf ? `<button class="btn-secondary btn-xs" onclick="openAccountModal(${a.id})" title="Edit role">✎</button>
+        <button class="btn-secondary btn-xs" onclick="openResetPwModal(${a.id},'${a.username}')" title="Reset password">🔑</button>
+        <button class="btn-danger btn-xs" onclick="deleteAccount(${a.id},'${a.username}')">×</button>` : `<span style="color:var(--text3);font-size:10px">Your account</span>`}
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function openAccountModal(id) {
+  if (id) {
+    const ac = accounts.find(a => a.id === id);
+    if (!ac) return;
+    document.getElementById("ac-modal-title").textContent = "Edit Account";
+    document.getElementById("ac-id").value = ac.id;
+    document.getElementById("ac-username").value = ac.username;
+    document.getElementById("ac-username").disabled = true;
+    document.getElementById("ac-password").style.display = "none";
+    document.getElementById("ac-pw-label").style.display = "none";
+    document.getElementById("ac-role").value = ac.role;
+    document.getElementById("ac-save-btn").textContent = "Update Role";
+  } else {
+    document.getElementById("ac-modal-title").textContent = "Add Account";
+    document.getElementById("ac-id").value = "";
+    document.getElementById("ac-username").value = "";
+    document.getElementById("ac-username").disabled = false;
+    document.getElementById("ac-password").style.display = "";
+    document.getElementById("ac-pw-label").style.display = "";
+    document.getElementById("ac-password").value = "";
+    document.getElementById("ac-role").value = "admin";
+    document.getElementById("ac-save-btn").textContent = "Create Account";
+  }
+  document.getElementById("account-overlay").classList.add("open");
+}
+
+function closeAccountModal() {
+  document.getElementById("account-overlay").classList.remove("open");
+}
+document.getElementById("account-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeAccountModal();
+});
+
+document.getElementById("account-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("ac-id").value;
+  const isNew = !id;
+
+  if (isNew) {
+    const body = {
+      username: document.getElementById("ac-username").value.trim(),
+      password: document.getElementById("ac-password").value,
+      role: document.getElementById("ac-role").value
+    };
+    if (!body.username || !body.password) { showToast("Username and password required", "error"); return; }
+    const res = await fetch("/api/accounts", { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
+    if (res.ok) { showToast("Account created!", "success"); closeAccountModal(); loadAccounts(); }
+    else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+  } else {
+    const body = { role: document.getElementById("ac-role").value };
+    const res = await fetch(`/api/accounts/${id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
+    if (res.ok) { showToast("Role updated!", "success"); closeAccountModal(); loadAccounts(); }
+    else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+  }
+});
+
+function openResetPwModal(id, username) {
+  document.getElementById("rp-id").value = id;
+  document.getElementById("rp-username").textContent = username;
+  document.getElementById("rp-password").value = "";
+  document.getElementById("reset-pw-overlay").classList.add("open");
+}
+function closeResetPwModal() { document.getElementById("reset-pw-overlay").classList.remove("open"); }
+document.getElementById("reset-pw-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeResetPwModal();
+});
+
+document.getElementById("reset-pw-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const id = document.getElementById("rp-id").value;
+  const pw = document.getElementById("rp-password").value;
+  const res = await fetch(`/api/accounts/${id}/reset-password`, {
+    method: "POST", headers: authHeaders(), body: JSON.stringify({ newPassword: pw })
+  });
+  if (res.ok) { showToast("Password reset!", "success"); closeResetPwModal(); }
+  else { showToast("Failed to reset password", "error"); }
+});
+
+async function deleteAccount(id, username) {
+  if (!confirm(`Delete account "${username}"? This cannot be undone.`)) return;
+  const res = await fetch(`/api/accounts/${id}`, { method: "DELETE", headers: authHeaders() });
+  if (res.ok) { showToast("Account deleted", "success"); loadAccounts(); }
+  else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+}
+
+// ────────────────────────────────────
+// CHANGE PASSWORD
+// ────────────────────────────────────
+document.getElementById("change-pw-btn").onclick = () => document.getElementById("pw-overlay").classList.add("open");
+function closePwModal() { document.getElementById("pw-overlay").classList.remove("open"); }
+document.getElementById("pw-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closePwModal();
+});
+
+document.getElementById("pw-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const current = document.getElementById("pw-current").value;
+  const pw = document.getElementById("pw-new").value;
+  const confirm = document.getElementById("pw-confirm").value;
+  if (pw !== confirm) { showToast("New passwords do not match", "error"); return; }
+  if (pw.length < 6) { showToast("Password must be at least 6 characters", "error"); return; }
+
+  const res = await fetch("/api/auth/change-password", {
+    method: "POST", headers: authHeaders(), body: JSON.stringify({ currentPassword: current, newPassword: pw })
+  });
+  if (res.ok) { showToast("Password changed!", "success"); closePwModal(); }
+  else { const d = await res.json(); showToast(d.error || "Failed", "error"); }
+});
+
 // Auto-refresh
 setInterval(() => {
-  if (password && dashboard.style.display === "block") {
+  if (currentUser && dashboard.style.display === "block") {
     if (currentTab === "offers") loadOffers();
-    else loadSubmissions();
+    else if (currentTab === "applications") loadSubmissions();
   }
 }, 30000);
+
+// Enter key for login
+document.getElementById("login-pw").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 </script>
 </body>
 </html>

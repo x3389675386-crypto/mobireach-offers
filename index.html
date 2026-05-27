@@ -54,22 +54,35 @@
     nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--nav-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: none;
       padding: 0 24px;
       height: 56px;
       display: flex; align-items: center; justify-content: space-between;
+      border-bottom: none;
     }
-    .nav-logo {
+    .nav-left { display: flex; align-items: center; gap: 24px; }
+    .nav-brand {
       font-size: 17px; font-weight: 700;
       color: #ffffff; text-decoration: none;
       letter-spacing: -0.3px;
+      cursor: pointer;
     }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-links a {
+      color: #94a3b8; text-decoration: none;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+    .nav-links a.active { color: #fff; background: rgba(99,102,241,0.3); }
     .nav-tag {
       font-size: 12px; color: #94a3b8;
       letter-spacing: 0.2px;
     }
+
+    /* ── PAGE CONTAINERS ── */
+    .page { display: none; }
+    .page.active { display: block; }
 
     /* ── HERO ── */
     .hero {
@@ -100,8 +113,6 @@
 
     /* ── STATS ── */
     .stats-bar {
-      border-top: none;
-      border-bottom: none;
       background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
       padding: 20px 24px;
     }
@@ -276,6 +287,97 @@
     }
     .empty-state.visible { display: block; }
     .empty-state p { margin-top: 8px; font-size: 13px; }
+
+    /* ── ABOUT PAGE ── */
+    .about-page {
+      max-width: 780px; margin: 0 auto; padding: 60px 24px 80px;
+    }
+    .about-page h1 {
+      font-size: 36px; font-weight: 700; letter-spacing: -0.8px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-page .intro {
+      font-size: 16px; color: var(--text-secondary); line-height: 1.8;
+      margin-bottom: 40px;
+    }
+    .about-section { margin-bottom: 36px; }
+    .about-section h2 {
+      font-size: 20px; font-weight: 700; margin-bottom: 14px;
+      color: var(--text-primary);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .about-section h2::before {
+      content: '';
+      width: 4px; height: 24px; border-radius: 2px;
+      background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    }
+    .about-section ul {
+      list-style: none; padding: 0;
+    }
+    .about-section li {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.8;
+      padding: 4px 0; padding-left: 20px; position: relative;
+    }
+    .about-section li::before {
+      content: '•';
+      position: absolute; left: 6px; color: var(--accent);
+      font-weight: 700;
+    }
+    .about-section p {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.8;
+    }
+    .what-we-deliver { margin-bottom: 36px; }
+    .what-we-deliver h2 {
+      font-size: 20px; font-weight: 700; margin-bottom: 14px;
+      color: var(--text-primary);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .what-we-deliver h2::before {
+      content: '';
+      width: 4px; height: 24px; border-radius: 2px;
+      background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    }
+    .deliver-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .deliver-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+    .deliver-card h3 {
+      font-size: 14px; font-weight: 600; color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .deliver-card p {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+    }
+    .about-contact {
+      background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 32px; margin-top: 48px;
+    }
+    .about-contact h2 {
+      font-size: 20px; font-weight: 700; margin-bottom: 16px;
+    }
+    .contact-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .contact-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius-btn); text-decoration: none;
+      font-size: 14px; font-weight: 500; color: var(--text-primary);
+      transition: all 0.2s;
+      font-family: var(--font);
+    }
+    .contact-link:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(99,102,241,0.15); }
+    .contact-link svg { width: 18px; height: 18px; flex-shrink: 0; }
 
     /* ── MODAL OVERLAY ── */
     .overlay {
@@ -554,6 +656,7 @@
       .stat-value { font-size: 18px; }
       .footer-inner { flex-direction: column; align-items: flex-start; }
       .modal { max-width: 100%; }
+      .nav-left { gap: 12px; }
     }
   </style>
 </head>
@@ -561,78 +664,149 @@
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="/" class="nav-logo">Mobireach</a>
+  <div class="nav-left">
+    <a class="nav-brand" onclick="showPage('about')">Mobireach</a>
+    <div class="nav-links">
+      <a href="#" class="active" data-page="offers" onclick="showPage('offers');return false;">Offers</a>
+      <a href="#" data-page="about" onclick="showPage('about');return false;">About</a>
+    </div>
+  </div>
   <span class="nav-tag">Direct Offers · Mobile Advertising</span>
 </nav>
 
-<!-- ── HERO ── -->
-<section class="hero">
-  <h1>Direct mobile offers<br>ready to scale.</h1>
-  <p>
-    Browse the offers below. Click <strong>Details</strong> on any card for full event, flow
-    and integration info — or <strong>Apply</strong> to submit a request.
-  </p>
-</section>
+<!-- ── OFFERS PAGE ── -->
+<div class="page active" id="page-offers">
+  <section class="hero">
+    <h1>Direct mobile offers<br>ready to scale.</h1>
+    <p>
+      Browse the offers below. Click <strong>Details</strong> on any card for full event, flow
+      and integration info — or <strong>Apply</strong> to submit a request.
+    </p>
+  </section>
 
-<!-- ── STATS ── -->
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat-item">
-      <span class="stat-value" id="stat-live">—</span>
-      <span class="stat-label">Live Offers</span>
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-live">—</span>
+        <span class="stat-label">Live Offers</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">iOS &amp; Android</span>
+        <span class="stat-label">Platforms</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-geos">—</span>
+        <span class="stat-label">GEOs Covered</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-top">—</span>
+        <span class="stat-label">Top Payout</span>
+      </div>
     </div>
-    <div class="stat-item">
-      <span class="stat-value">iOS &amp; Android</span>
-      <span class="stat-label">Platforms</span>
+  </div>
+
+  <main class="main">
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="ios">iOS</button>
+        <button class="tab-btn" data-filter="android">Android</button>
+      </div>
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="search-input" type="search" id="search-input"
+               placeholder="Search offers, apps, GEOs…" />
+      </div>
     </div>
-    <div class="stat-item">
-      <span class="stat-value" id="stat-geos">—</span>
-      <span class="stat-label">GEOs Covered</span>
+
+    <div class="offers-grid" id="offers-grid"></div>
+
+    <div class="empty-state" id="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="1.5" style="color:#ccc">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <p>No offers match your search.<br>Try a different keyword or platform filter.</p>
     </div>
-    <div class="stat-item">
-      <span class="stat-value" id="stat-top">—</span>
-      <span class="stat-label">Top Payout</span>
+  </main>
+</div>
+
+<!-- ── ABOUT PAGE ── -->
+<div class="page" id="page-about">
+  <div class="about-page">
+    <h1>About Mobireach</h1>
+    <p class="intro">
+      At Mobireach, we specialize in mobile advertising solutions designed to drive growth and performance for our partners through cost-per-install (CPI) and cost-per-action (CPA) models.
+    </p>
+
+    <div class="about-section">
+      <h2>Global Reach with Top GEOs</h2>
+      <p>Our traffic spans worldwide, with a strong focus on top-performing regions, including:</p>
+      <ul style="margin-top:8px">
+        <li>United States (US)</li>
+        <li>Brazil (BR)</li>
+        <li>Mexico (MX)</li>
+        <li>India (IN)</li>
+        <li>Indonesia (ID)</li>
+        <li>Russia (RU)</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>Diverse Traffic Types</h2>
+      <p>We leverage two primary sources of traffic to deliver high-quality results:</p>
+      <ul style="margin-top:8px">
+        <li><strong>Demand-Side Platform (DSP):</strong> Access to premium programmatic inventory ensuring scale, precision targeting, and measurable ROI.</li>
+        <li><strong>Developer Traffic:</strong> Direct partnerships with app developers, providing authentic and engaged audiences.</li>
+      </ul>
+    </div>
+
+    <div class="what-we-deliver">
+      <h2>What We Deliver</h2>
+      <div class="deliver-grid">
+        <div class="deliver-card">
+          <h3>Scalable Solutions</h3>
+          <p>Tailored to meet performance goals across verticals and markets.</p>
+        </div>
+        <div class="deliver-card">
+          <h3>Campaign Expertise</h3>
+          <p>Deep optimization experience for diverse verticals and global markets.</p>
+        </div>
+        <div class="deliver-card">
+          <h3>Dedicated Team</h3>
+          <p>Focused on maximizing ROI and fostering long-term partnerships.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="color:var(--text-secondary);font-size:15px;line-height:1.8">
+      Mobireach is committed to delivering innovation, transparency, and excellence in mobile advertising.
+    </p>
+
+    <div class="about-contact">
+      <h2>Contact Us</h2>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:merlin@mobirich.online" class="contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+          merlin@mobirich.online
+        </a>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- ── MAIN ── -->
-<main class="main">
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="filter-tabs">
-      <button class="tab-btn active" data-filter="all">All</button>
-      <button class="tab-btn" data-filter="ios">iOS</button>
-      <button class="tab-btn" data-filter="android">Android</button>
-    </div>
-    <div class="search-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input class="search-input" type="search" id="search-input"
-             placeholder="Search offers, apps, GEOs…" />
-    </div>
-  </div>
-
-  <!-- Grid -->
-  <div class="offers-grid" id="offers-grid"></div>
-
-  <!-- Empty state -->
-  <div class="empty-state" id="empty-state">
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="1.5" style="color:#ccc">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <p>No offers match your search.<br>Try a different keyword or platform filter.</p>
-  </div>
-</main>
 
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <a href="/" class="footer-logo">Mobireach</a>
+      <a class="footer-logo" onclick="showPage('about');return false;" href="#" style="cursor:pointer">Mobireach</a>
       <div class="footer-tagline">Mobile advertising</div>
     </div>
     <div class="footer-contact">
@@ -647,7 +821,7 @@
   </div>
   <div class="footer-inner">
     <div class="footer-copy">
-      <span>© 2026 <a href="https://www.linkedin.com/company/mobireach/posts/?feedView=all" target="_blank" rel="noopener" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Mobireach</a> · Mobile advertising</span>
+      <span>© 2026 <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Mobireach</a> · Mobile advertising</span>
     </div>
   </div>
 </footer>
@@ -724,13 +898,11 @@
       </button>
     </div>
     <div class="modal-body">
-      <!-- Success -->
       <div class="success-box" id="am-success">
         <div class="success-icon">✓</div>
         <h3>Request registered!</h3>
         <p>A confirmation email was sent to your mailbox.<br>Links will be processed within the next 3 business days.</p>
       </div>
-      <!-- Form -->
       <form id="apply-form" novalidate>
         <div class="form-group">
           <label class="form-label" for="f-publisher">Publisher <span>*</span></label>
@@ -784,6 +956,27 @@
 </div>
 
 <script>
+// ─────────────────────────────────────────────
+//  PAGE SWITCHING
+// ─────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + name).classList.add("active");
+  document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
+  const link = document.querySelector(`.nav-links a[data-page="${name}"]`);
+  if (link) link.classList.add("active");
+}
+
+// Logo and footer logo also go to About
+document.querySelector(".nav-brand").addEventListener("click", e => {
+  e.preventDefault();
+  showPage("about");
+});
+document.querySelector(".footer-logo").addEventListener("click", e => {
+  e.preventDefault();
+  showPage("about");
+});
+
 // ─────────────────────────────────────────────
 //  OFFER DATA  — loaded from API
 // ─────────────────────────────────────────────
@@ -957,11 +1150,8 @@ function makeTagInput(wrapId, inputId, tagsArray) {
     const pills = tagsArray.map(v =>
       `<span class="tag-pill">${v}<span class="tag-remove" data-v="${v}">×</span></span>`
     ).join("");
-    // Remove old pills
     wrap.querySelectorAll(".tag-pill").forEach(el => el.remove());
-    // Insert before input
     input.insertAdjacentHTML("beforebegin", pills);
-    // Attach remove listeners
     wrap.querySelectorAll(".tag-remove").forEach(el => {
       el.onclick = () => removeTag(el.dataset.v);
     });
@@ -990,7 +1180,6 @@ function openApply(id) {
   if (!currentOffer) return;
   document.getElementById("am-subtitle").textContent =
     currentOffer.name + " · " + (currentOffer.platform === "ios" ? "iOS" : "Android");
-  // Reset form
   document.getElementById("apply-form").style.display = "block";
   document.getElementById("am-success").style.display = "none";
   document.getElementById("apply-form").reset();
@@ -1022,7 +1211,6 @@ function isValidEmail(e) {
 
 document.getElementById("apply-form").addEventListener("submit", async e => {
   e.preventDefault();
-  // Force-add anything still typed in tag inputs
   const pidInput = document.getElementById("pid-input");
   if (pidInput.value.trim()) { pidTags.push(pidInput.value.trim()); pidInput.value = ""; }
   const emailInput = document.getElementById("email-input");
@@ -1045,7 +1233,6 @@ document.getElementById("apply-form").addEventListener("submit", async e => {
   btn.disabled = true;
   label.innerHTML = '<div class="spinner"></div> Sending…';
 
-  // Submit to backend
   try {
     const res = await fetch("/api/apply", {
       method: "POST",
