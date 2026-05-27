@@ -749,6 +749,22 @@
   </div>
 </div>
 
+<!-- ── MAILTO CONFIRM MODAL ── -->
+<div class="overlay" id="mailto-overlay">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div class="modal-header">
+      <h3 id="mailto-title">订单已保存</h3>
+      <button class="modal-close" onclick="closeMailtoModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p id="mailto-body" style="margin-bottom:20px;color:var(--text-secondary)">点击下方按钮打开邮件客户端发送下单邮件</p>
+      <a id="mailto-link" href="#" target="_blank" class="btn-save" style="display:inline-block;text-decoration:none;padding:12px 32px;margin-bottom:12px;font-size:15px;width:auto">📧 打开邮件客户端</a>
+      <br/>
+      <button class="btn-cancel" onclick="closeMailtoModal()" id="mailto-close-btn" style="margin-top:4px">稍后手动发送</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ────────────────────────────────────
 // STATE
@@ -961,6 +977,12 @@ const L = {
     orderFailed: "下单失败",
     emailTemplateDefault: "(Campaign Name)",
 
+    // Mailto Modal
+    mailtoTitle: "订单已保存",
+    mailtoBody: "点击下方按钮打开邮件客户端发送下单邮件",
+    mailtoBtn: "📧 打开邮件客户端",
+    mailtoClose: "稍后手动发送",
+
     // Reset Password Modal
     resetPwTitle: "重置密码",
   },
@@ -1148,6 +1170,12 @@ const L = {
     orderFailed: "Order failed",
     emailTemplateDefault: "(Campaign Name)",
 
+    // Mailto Modal
+    mailtoTitle: "Order Saved",
+    mailtoBody: "Click the button below to open your email client",
+    mailtoBtn: "📧 Open Email Client",
+    mailtoClose: "Send Later",
+
     resetPwTitle: "Reset Password",
   }
 };
@@ -1320,6 +1348,12 @@ function applyLanguage() {
   document.getElementById("ord-submit-btn").textContent = "📨 " + t("submitOrder");
   const ordCancel = document.querySelector("#order-overlay .btn-cancel");
   if (ordCancel) ordCancel.textContent = t("cancel");
+
+  // Mailto modal
+  document.getElementById("mailto-title").textContent = t("mailtoTitle");
+  document.getElementById("mailto-body").textContent = t("mailtoBody");
+  document.getElementById("mailto-link").textContent = t("mailtoBtn");
+  document.getElementById("mailto-close-btn").textContent = t("mailtoClose");
 
   // Update tracker dropdown options and section header
   try { switchTrackerType(); } catch (e) { console.error("switchTrackerType error:", e); }
@@ -2012,6 +2046,26 @@ document.getElementById("order-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeOrderModal();
 });
 
+// ── MAILTO CONFIRM MODAL ──
+function openMailtoModal(mailtoUrl) {
+  document.getElementById("mailto-link").href = mailtoUrl;
+  document.getElementById("mailto-title").textContent = t("mailtoTitle");
+  document.getElementById("mailto-body").textContent = t("mailtoBody");
+  document.getElementById("mailto-link").textContent = t("mailtoBtn");
+  document.getElementById("mailto-close-btn").textContent = t("mailtoClose");
+  document.getElementById("mailto-overlay").classList.add("open");
+}
+function closeMailtoModal() {
+  document.getElementById("mailto-overlay").classList.remove("open");
+}
+document.getElementById("mailto-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeMailtoModal();
+});
+document.getElementById("mailto-link").addEventListener("click", () => {
+  // Close modal after a brief delay so mailto: protocol has time to fire
+  setTimeout(closeMailtoModal, 500);
+});
+
 // Auto-generate email when fields change
 ["ord-campaign","ord-platform","ord-prt","ord-pid","ord-short-link","ord-group-name","ord-info1","ord-info2","ord-ext-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
   document.getElementById(id).addEventListener("input", generateEmailTemplate);
@@ -2074,22 +2128,15 @@ document.getElementById("order-form").addEventListener("submit", async e => {
 
     if (res.ok) {
       showToast(t("orderSaved"), "success");
+      closeOrderModal();
 
-      // Build mailto link
+      // Build mailto link and show clickable link modal
+      // This is the ONLY reliable way: user clicks a real <a> tag
       const to = recipients.join(",");
       const subject = encodeURIComponent(body.emailSubject);
       const bodyText = encodeURIComponent(body.emailBody);
       const mailtoUrl = `mailto:${to}?subject=${subject}&body=${bodyText}`;
-
-      // Open mail client FIRST (before closing modal):
-      // Try window.open (works in user-gesture context), fallback to location.href
-      const w = window.open(mailtoUrl, "_blank");
-      if (!w) {
-        window.location.href = mailtoUrl;
-      }
-
-      // Close modal after mailto triggers
-      closeOrderModal();
+      openMailtoModal(mailtoUrl);
     } else {
       showToast(data.error || t("orderFailed"), "error");
     }
