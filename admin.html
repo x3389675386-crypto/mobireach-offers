@@ -2074,22 +2074,22 @@ document.getElementById("order-form").addEventListener("submit", async e => {
 
     if (res.ok) {
       showToast(t("orderSaved"), "success");
-      closeOrderModal();
 
-      // Build mailto link and open default email client
+      // Build mailto link
       const to = recipients.join(",");
       const subject = encodeURIComponent(body.emailSubject);
       const bodyText = encodeURIComponent(body.emailBody);
       const mailtoUrl = `mailto:${to}?subject=${subject}&body=${bodyText}`;
 
-      // Use <a> + click — most reliable way to trigger mailto: protocol
-      const a = document.createElement("a");
-      a.href = mailtoUrl;
-      a.target = "_blank";
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      // Open mail client FIRST (before closing modal):
+      // Try window.open (works in user-gesture context), fallback to location.href
+      const w = window.open(mailtoUrl, "_blank");
+      if (!w) {
+        window.location.href = mailtoUrl;
+      }
+
+      // Close modal after mailto triggers
+      closeOrderModal();
     } else {
       showToast(data.error || t("orderFailed"), "error");
     }
