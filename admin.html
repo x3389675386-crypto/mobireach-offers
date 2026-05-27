@@ -1961,8 +1961,9 @@ document.getElementById("order-form").addEventListener("submit", async e => {
       const bodyText = encodeURIComponent(body.emailBody);
       const mailtoUrl = `mailto:${to}?subject=${subject}&body=${bodyText}`;
 
-      // Open in default email client
-      setTimeout(() => { window.open(mailtoUrl, "_blank"); }, 300);
+      // Use location.href instead of window.open — more reliable for mailto:
+      // window.open + setTimeout gets blocked by popup blockers
+      window.location.href = mailtoUrl;
     } else {
       showToast(data.error || t("orderFailed"), "error");
     }
