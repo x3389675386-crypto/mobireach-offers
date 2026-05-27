@@ -2,62 +2,155 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { Octokit } = require("@octokit/rest");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "mobireach2026";
 
-// ── Persistent data directory ──
-// On Render: set DATA_DIR=/var/data and mount a persistent disk there.
-// Locally defaults to ./data/ (gitignored).
+// ── GitHub data storage ──
+const GH_TOKEN = process.env.GH_TOKEN;
+const GH_OWNER = process.env.GH_OWNER || "x3389675386-crypto";
+const GH_REPO = process.env.GH_REPO || "mobireach-data";
+
+// Local fallback
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
-const SUBMISSIONS_FILE = path.join(DATA_DIR, "submissions.json");
-const OFFERS_FILE = path.join(DATA_DIR, "offers.json");
+const LOCAL_OFFERS = path.join(DATA_DIR, "offers.json");
+const LOCAL_SUBMISSIONS = path.join(DATA_DIR, "submissions.json");
 const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
 
-// Initialize data directory on first run
-function initData() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(OFFERS_FILE) && fs.existsSync(OFFERS_SEED)) {
-    fs.copyFileSync(OFFERS_SEED, OFFERS_FILE);
-    console.log("📋 Offers initialized from seed");
-  }
-  if (!fs.existsSync(SUBMISSIONS_FILE)) {
-    fs.writeFileSync(SUBMISSIONS_FILE, "[]", "utf-8");
-    console.log("📋 Submissions initialized (empty)");
+let octokit = null;
+let useGitHub = false;
+
+async function ensureDataRepo() {
+  if (!useGitHub) return;
+  try {
+    await octokit.repos.get({ owner: GH_OWNER, repo: GH_REPO });
+  } catch (e) {
+    if (e.status === 404) {
+      await octokit.repos.createForAuthenticatedUser({
+        name: GH_REPO,
+        private: true,
+        description: "Mobireach persistent data storage",
+        auto_init: true,
+      });
+      console.log(`📦 Created data repo: ${GH_OWNER}/${GH_REPO}`);
+    } else {
+      console.warn(`⚠️  Cannot access data repo: ${e.message}`);
+    }
   }
 }
-initData();
 
-// ── Middleware ──
-app.use(express.json());
+let repoReady;
 
-// ── Helpers: Submissions ──
-function readSubmissions() {
+if (GH_TOKEN && GH_OWNER) {
+  octokit = new Octokit({ auth: GH_TOKEN });
+  useGitHub = true;
+  console.log(`🔗 GitHub storage: ${GH_OWNER}/${GH_REPO}`);
+  repoReady = ensureDataRepo();
+} else {
+  console.log("💾 Local storage (no GH_TOKEN set)");
+  // Init local data dir
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs.existsSync(LOCAL_OFFERS) && fs.existsSync(OFFERS_SEED)) {
+    fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
+  }
+  if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
+    fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
+  }
+}
+
+// ── In-memory cache ──
+let offersCache = null;
+let submissionsCache = null;
+
+// ── GitHub API helpers ──
+async function ghRead(filename) {
   try {
-    return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, "utf-8"));
-  } catch {
+    const { data } = await octokit.repos.getContent({
+      owner: GH_OWNER, repo: GH_REPO, path: filename,
+    });
+    return JSON.parse(Buffer.from(data.content, "base64").toString("utf-8"));
+  } catch (e) {
+    if (e.status === 404) return null;
+    throw e;
+  }
+}
+
+async function ghWrite(filename, jsonData) {
+  let sha;
+  try {
+    const { data } = await octokit.repos.getContent({
+      owner: GH_OWNER, repo: GH_REPO, path: filename,
+    });
+    sha = data.sha;
+  } catch (e) {
+    // file doesn't exist yet — first write
+  }
+
+  await octokit.repos.createOrUpdateFileContents({
+    owner: GH_OWNER,
+    repo: GH_REPO,
+    path: filename,
+    message: `Update ${filename}`,
+    content: Buffer.from(JSON.stringify(jsonData, null, 2)).toString("base64"),
+    sha,
+  });
+}
+
+// ── Data access (GitHub first, local fallback) ──
+async function readOffers() {
+  if (offersCache) return offersCache;
+
+  if (useGitHub) {
+    const data = await ghRead("offers.json");
+    if (data) { offersCache = data; return data; }
+    // GitHub empty: seed from local file
+    if (fs.existsSync(OFFERS_SEED)) {
+      const seed = JSON.parse(fs.readFileSync(OFFERS_SEED, "utf-8"));
+      await ghWrite("offers.json", seed);
+      offersCache = seed;
+      return seed;
+    }
     return [];
   }
+
+  // Local fallback
+  try { return JSON.parse(fs.readFileSync(LOCAL_OFFERS, "utf-8")); }
+  catch { return []; }
 }
 
-function writeSubmissions(data) {
-  fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
-// ── Helpers: Offers ──
-function readOffers() {
-  try {
-    return JSON.parse(fs.readFileSync(OFFERS_FILE, "utf-8"));
-  } catch {
-    return [];
+async function writeOffers(data) {
+  offersCache = data;
+  if (useGitHub) {
+    await ghWrite("offers.json", data);
+  } else {
+    fs.writeFileSync(LOCAL_OFFERS, JSON.stringify(data, null, 2), "utf-8");
   }
 }
 
-function writeOffers(data) {
-  fs.writeFileSync(OFFERS_FILE, JSON.stringify(data, null, 2), "utf-8");
+async function readSubmissions() {
+  if (submissionsCache) return submissionsCache;
+
+  if (useGitHub) {
+    const data = await ghRead("submissions.json");
+    if (data) { submissionsCache = data; return data; }
+    await ghWrite("submissions.json", []);
+    submissionsCache = [];
+    return [];
+  }
+
+  try { return JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8")); }
+  catch { return []; }
+}
+
+async function writeSubmissions(data) {
+  submissionsCache = data;
+  if (useGitHub) {
+    await ghWrite("submissions.json", data);
+  } else {
+    fs.writeFileSync(LOCAL_SUBMISSIONS, JSON.stringify(data, null, 2), "utf-8");
+  }
 }
 
 function checkAdmin(req, res) {
@@ -69,11 +162,13 @@ function checkAdmin(req, res) {
   return true;
 }
 
+// ── Middleware ──
+app.use(express.json());
+
 // ── API: Submit Application ──
-app.post("/api/apply", (req, res) => {
+app.post("/api/apply", async (req, res) => {
   const { publisher, pids, emails, handshake, comment, offerName, offerPlatform } = req.body;
 
-  // Validate
   if (!publisher || !pids || !pids.length || !emails || !emails.length || !handshake) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -88,83 +183,82 @@ app.post("/api/apply", (req, res) => {
     emails,
     handshake: true,
     comment: comment || "",
-    status: "new" // new | viewed | contacted
+    status: "new"
   };
 
-  const submissions = readSubmissions();
-  submissions.unshift(submission); // newest first
-  writeSubmissions(submissions);
+  const submissions = await readSubmissions();
+  submissions.unshift(submission);
+  await writeSubmissions(submissions);
 
   console.log(`✅ New application: ${publisher} → ${offerName} (${offerPlatform})`);
   res.json({ success: true, id: submission.id });
 });
 
 // ── API: List Submissions (admin) ──
-app.get("/api/submissions", (req, res) => {
+app.get("/api/submissions", async (req, res) => {
   if (!checkAdmin(req, res)) return;
-  res.json(readSubmissions());
+  res.json(await readSubmissions());
 });
 
 // ── API: Update Status (admin) ──
-app.patch("/api/submissions/:id/status", (req, res) => {
+app.patch("/api/submissions/:id/status", async (req, res) => {
   if (!checkAdmin(req, res)) return;
   const { status } = req.body;
   if (!["new", "viewed", "contacted"].includes(status)) {
     return res.status(400).json({ error: "Invalid status" });
   }
-  const submissions = readSubmissions();
+  const submissions = await readSubmissions();
   const idx = submissions.findIndex(s => s.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   submissions[idx].status = status;
-  writeSubmissions(submissions);
+  await writeSubmissions(submissions);
   res.json({ success: true });
 });
 
 // ── API: Delete Submission (admin) ──
-app.delete("/api/submissions/:id", (req, res) => {
+app.delete("/api/submissions/:id", async (req, res) => {
   if (!checkAdmin(req, res)) return;
-  let submissions = readSubmissions();
+  let submissions = await readSubmissions();
   submissions = submissions.filter(s => s.id !== req.params.id);
-  writeSubmissions(submissions);
+  await writeSubmissions(submissions);
   res.json({ success: true });
 });
 
 // ── API: Get All Offers (public) ──
-app.get("/api/offers", (req, res) => {
-  res.json(readOffers());
+app.get("/api/offers", async (req, res) => {
+  res.json(await readOffers());
 });
 
 // ── API: Get Single Offer (public) ──
-app.get("/api/offers/:id", (req, res) => {
-  const offers = readOffers();
+app.get("/api/offers/:id", async (req, res) => {
+  const offers = await readOffers();
   const offer = offers.find(o => o.id === parseInt(req.params.id));
   if (!offer) return res.status(404).json({ error: "Not found" });
   res.json(offer);
 });
 
 // ── API: Update Offer (admin) ──
-app.put("/api/offers/:id", (req, res) => {
+app.put("/api/offers/:id", async (req, res) => {
   if (!checkAdmin(req, res)) return;
-  const offers = readOffers();
+  const offers = await readOffers();
   const idx = offers.findIndex(o => o.id === parseInt(req.params.id));
   if (idx === -1) return res.status(404).json({ error: "Not found" });
 
   const allowedFields = ["name", "platform", "payout", "currency", "geos", "icon", "iconLetter", "details"];
-  const updates = req.body;
   allowedFields.forEach(field => {
-    if (updates[field] !== undefined) {
-      offers[idx][field] = updates[field];
+    if (req.body[field] !== undefined) {
+      offers[idx][field] = req.body[field];
     }
   });
 
-  writeOffers(offers);
+  await writeOffers(offers);
   res.json({ success: true, offer: offers[idx] });
 });
 
 // ── API: Create Offer (admin) ──
-app.post("/api/offers", (req, res) => {
+app.post("/api/offers", async (req, res) => {
   if (!checkAdmin(req, res)) return;
-  const offers = readOffers();
+  const offers = await readOffers();
   const maxId = offers.reduce((max, o) => Math.max(max, o.id), 0);
   const newOffer = {
     id: maxId + 1,
@@ -181,18 +275,18 @@ app.post("/api/offers", (req, res) => {
     }
   };
   offers.push(newOffer);
-  writeOffers(offers);
+  await writeOffers(offers);
   res.status(201).json({ success: true, offer: newOffer });
 });
 
 // ── API: Delete Offer (admin) ──
-app.delete("/api/offers/:id", (req, res) => {
+app.delete("/api/offers/:id", async (req, res) => {
   if (!checkAdmin(req, res)) return;
-  let offers = readOffers();
+  let offers = await readOffers();
   const before = offers.length;
   offers = offers.filter(o => o.id !== parseInt(req.params.id));
   if (offers.length === before) return res.status(404).json({ error: "Not found" });
-  writeOffers(offers);
+  await writeOffers(offers);
   res.json({ success: true });
 });
 
