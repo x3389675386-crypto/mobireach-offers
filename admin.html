@@ -1978,9 +1978,14 @@ document.getElementById("order-form").addEventListener("submit", async e => {
       const bodyText = encodeURIComponent(body.emailBody);
       const mailtoUrl = `mailto:${to}?subject=${subject}&body=${bodyText}`;
 
-      // Use location.href instead of window.open — more reliable for mailto:
-      // window.open + setTimeout gets blocked by popup blockers
-      window.location.href = mailtoUrl;
+      // Use <a> + click — most reliable way to trigger mailto: protocol
+      const a = document.createElement("a");
+      a.href = mailtoUrl;
+      a.target = "_blank";
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } else {
       showToast(data.error || t("orderFailed"), "error");
     }

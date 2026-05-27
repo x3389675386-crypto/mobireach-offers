@@ -122,7 +122,6 @@ if (GH_TOKEN && GH_OWNER) {
 // ── In-memory caches ──
 let offersCache = null;
 let submissionsCache = null;
-let accountsCache = null;
 
 // ── Token store (in-memory) ──
 const tokens = new Map(); // token → { username, role, expiresAt }
@@ -218,23 +217,21 @@ async function writeSubmissions(data) {
 
 // ── Accounts ──
 async function readAccounts() {
-  if (accountsCache) return accountsCache;
+  // Always read fresh — never cache, to avoid stale data after writes
   if (useGitHub) {
     const data = await ghRead("accounts.json");
-    if (data) { accountsCache = data; return data; }
+    if (data) return data;
     // First run: create default super admin
     const hash = crypto.createHash("sha256").update("Merlin2026!").digest("hex");
     const def = [{ id: 1, username: "Merlin", password: hash, role: "super_admin", createdAt: new Date().toISOString() }];
     await ghWrite("accounts.json", def);
-    accountsCache = def;
     return def;
   }
-  try { const data = JSON.parse(fs.readFileSync(LOCAL_ACCOUNTS, "utf-8")); accountsCache = data; return data; }
+  try { return JSON.parse(fs.readFileSync(LOCAL_ACCOUNTS, "utf-8")); }
   catch { return []; }
 }
 
 async function writeAccounts(data) {
-  accountsCache = data;
   if (useGitHub) {
     await ghWrite("accounts.json", data);
   } else {
@@ -847,8 +844,8 @@ app.listen(PORT, async () => {
   }
 
   try {
-    await readAccounts();
-    console.log(`👤 Accounts initialized (${(accountsCache || []).length} users)`);
+    const accts = await readAccounts();
+    console.log(`👤 Accounts initialized (${accts.length} users)`);
   } catch (e) {
     console.warn("Failed to load accounts:", e.message);
   }
