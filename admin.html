@@ -604,7 +604,105 @@
   </div>
 </div>
 
-<script>
+<!-- ── ORDER MODAL ── -->
+<div class="overlay" id="order-overlay">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3>📋 Place Order</h3>
+      <button class="modal-close" onclick="closeOrderModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="order-form">
+        <input type="hidden" id="ord-submission-id" />
+        <input type="hidden" id="ord-recipients" />
+
+        <!-- Offer / Publisher info (read-only) -->
+        <div class="form-row" style="margin-bottom:12px;padding:10px 14px;background:var(--accent-light);border-radius:8px;font-size:12px">
+          <div><strong>Publisher:</strong> <span id="ord-publisher">—</span></div>
+          <div><strong>Offer:</strong> <span id="ord-offer">—</span></div>
+          <div><strong>Emails:</strong> <span id="ord-emails-display">—</span></div>
+        </div>
+
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📌 基础信息</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Platform</label>
+            <select class="form-input" id="ord-platform">
+              <option value="iOS">iOS</option>
+              <option value="Android">Android</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">客户编号</label>
+            <input class="form-input" id="ord-customer-id" placeholder="Customer ID" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">下单渠道</label>
+            <input class="form-input" id="ord-channel" placeholder="e.g. AppsFlyer" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Campaign Name</label>
+            <input class="form-input" id="ord-campaign" placeholder="Campaign name" />
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📊 AppsFlyer 参数</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">PRT</label>
+            <input class="form-input" id="ord-prt" placeholder="PRT code" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">PID</label>
+            <input class="form-input" id="ord-pid" placeholder="PID" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">外放 PO 价格 ($)</label>
+            <input class="form-input" id="ord-ext-price" type="number" step="0.01" min="0" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">真实 PO 价格 ($)</label>
+            <input class="form-input" id="ord-real-price" type="number" step="0.01" min="0" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">追踪链接 (Tracking Link)</label>
+          <input class="form-input" id="ord-tracking-link" placeholder="https://..." />
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📧 邮件文案</h4>
+        <div class="form-group">
+          <label class="form-label">邮件主题</label>
+          <input class="form-input" id="ord-email-subject" placeholder="Email subject" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">邮件正文</label>
+          <textarea class="form-textarea" id="ord-email-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="Email content..."></textarea>
+          <div class="form-hint">邮件正文已根据表单内容自动生成，你可以直接修改</div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <input type="checkbox" id="ord-confirm" style="width:16px;height:16px;cursor:pointer" />
+          <label for="ord-confirm" style="font-size:13px;color:var(--text2);cursor:pointer">我确认以上信息无误，同意发送邮件给 Publisher</label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
+          <button type="submit" class="btn-save" id="ord-submit-btn" disabled>
+            📨 提交并发送邮件
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 // ────────────────────────────────────
 // STATE
 // ────────────────────────────────────
@@ -997,7 +1095,10 @@ function renderSubmissions() {
       <td><div class="tag-list">${emails}</div></td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment||''}">${s.comment||"—"}</td>
       <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
-      <td><button class="btn-danger btn-sm" onclick="deleteSub('${s.id}')">×</button></td>
+      <td style="white-space:nowrap">
+        <button class="btn-secondary btn-sm" onclick="openOrderModal('${s.id}')" title="Place Order">📋 Order</button>
+        <button class="btn-danger btn-sm" onclick="deleteSub('${s.id}')">×</button>
+      </td>
     </tr>`;
   }).join("");
 }
@@ -1157,7 +1258,176 @@ setInterval(() => {
   }
 }, 30000);
 
-// Enter key for login
+// ────────────────────────────────────
+// ORDER MODAL
+// ────────────────────────────────────
+
+function generateEmailTemplate() {
+  const publisher = document.getElementById("ord-publisher").textContent;
+  const campaign = document.getElementById("ord-campaign").value || "(Campaign Name)";
+  const platform = document.getElementById("ord-platform").value;
+  const prt = document.getElementById("ord-prt").value || "—";
+  const pid = document.getElementById("ord-pid").value || "—";
+  const extPrice = document.getElementById("ord-ext-price").value || "0";
+  const realPrice = document.getElementById("ord-real-price").value || "0";
+  const trackingLink = document.getElementById("ord-tracking-link").value || "(to be provided)";
+  const customerId = document.getElementById("ord-customer-id").value || "—";
+  const channel = document.getElementById("ord-channel").value || "—";
+
+  const subject = `Campaign Order Confirmation - ${campaign} (${platform})`;
+
+  const body = `Dear ${publisher},
+
+Thank you for your application! We are pleased to confirm your campaign order with the following details:
+
+━━━━━━━━━━━━━━━━━━━
+  CAMPAIGN ORDER
+━━━━━━━━━━━━━━━━━━━
+
+Campaign Name:  ${campaign}
+Platform:       ${platform}
+Customer ID:    ${customerId}
+Order Channel:  ${channel}
+
+━━ AppsFlyer Parameters ━━
+PRT:             ${prt}
+PID:             ${pid}
+External PO:     $${extPrice}
+Real PO:         $${realPrice}
+
+━━ Tracking ━━
+${trackingLink}
+
+━━━━━━━━━━━━━━━━━━━
+
+Please confirm receipt of this order. If any details are incorrect or if you have questions, please reply to this email directly.
+
+We look forward to working with you!
+
+Best regards,
+Mobireach Team
+`;
+
+  document.getElementById("ord-email-subject").value = subject;
+  document.getElementById("ord-email-body").value = body;
+}
+
+function openOrderModal(submissionId) {
+  const sub = submissions.find(s => s.id === submissionId);
+  if (!sub) { showToast("Submission not found", "error"); return; }
+
+  // Find the offer for extra details
+  const offer = offers.find(o => o.name === sub.offerName);
+  const details = offer ? (offer.details || {}) : {};
+
+  // Pre-fill
+  document.getElementById("ord-submission-id").value = submissionId;
+  document.getElementById("ord-publisher").textContent = sub.publisher || "—";
+  document.getElementById("ord-offer").textContent = (sub.offerName || "—") + " (" + (sub.offerPlatform || "—") + ")";
+  document.getElementById("ord-emails-display").textContent = (sub.emails || []).join(", ");
+  document.getElementById("ord-recipients").value = JSON.stringify(sub.emails || []);
+
+  document.getElementById("ord-platform").value = sub.offerPlatform === "android" ? "Android" : "iOS";
+  document.getElementById("ord-customer-id").value = "";
+  document.getElementById("ord-channel").value = "AppsFlyer";
+  document.getElementById("ord-campaign").value = (sub.offerName || "") + " - " + (sub.publisher || "");
+  document.getElementById("ord-prt").value = details.prt || "";
+  document.getElementById("ord-pid").value = (sub.pids && sub.pids.length) ? sub.pids[0] : "";
+  document.getElementById("ord-ext-price").value = offer ? offer.payout : 0;
+  document.getElementById("ord-real-price").value = "";
+  document.getElementById("ord-tracking-link").value = "";
+  document.getElementById("ord-confirm").checked = false;
+  document.getElementById("ord-submit-btn").disabled = true;
+
+  generateEmailTemplate();
+  document.getElementById("order-overlay").classList.add("open");
+}
+
+function closeOrderModal() {
+  document.getElementById("order-overlay").classList.remove("open");
+}
+
+document.getElementById("order-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeOrderModal();
+});
+
+// Auto-generate email when fields change
+["ord-campaign","ord-platform","ord-prt","ord-pid","ord-ext-price","ord-real-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
+  document.getElementById(id).addEventListener("input", generateEmailTemplate);
+  document.getElementById(id).addEventListener("change", generateEmailTemplate);
+});
+
+// Enable submit only when confirmed
+document.getElementById("ord-confirm").addEventListener("change", function() {
+  document.getElementById("ord-submit-btn").disabled = !this.checked;
+});
+
+// Submit order
+document.getElementById("order-form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const btn = document.getElementById("ord-submit-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Sending...';
+
+  let recipients = [];
+  try { recipients = JSON.parse(document.getElementById("ord-recipients").value); } catch(e) {}
+
+  const publisher = document.getElementById("ord-publisher").textContent;
+  const offerText = document.getElementById("ord-offer").textContent;
+  const [offerName, offerPlatform] = offerText.includes("(")
+    ? [offerText.split(" (")[0], offerText.split("(")[1].replace(")","").trim()]
+    : [offerText, ""];
+
+  const body = {
+    submissionId: document.getElementById("ord-submission-id").value,
+    publisher,
+    offerName,
+    offerPlatform,
+    platform: document.getElementById("ord-platform").value,
+    customerId: document.getElementById("ord-customer-id").value.trim(),
+    channel: document.getElementById("ord-channel").value.trim(),
+    campaignName: document.getElementById("ord-campaign").value.trim(),
+    prt: document.getElementById("ord-prt").value.trim(),
+    pid: document.getElementById("ord-pid").value.trim(),
+    externalPrice: parseFloat(document.getElementById("ord-ext-price").value) || 0,
+    realPrice: parseFloat(document.getElementById("ord-real-price").value) || 0,
+    trackingLink: document.getElementById("ord-tracking-link").value.trim(),
+    emailSubject: document.getElementById("ord-email-subject").value.trim(),
+    emailBody: document.getElementById("ord-email-body").value,
+    recipients
+  };
+
+  try {
+    const res = await fetch("/api/orders/send", {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      if (data.warning) {
+        showToast("Order saved, but " + data.warning, "error");
+      } else if (data.order.status === "sent") {
+        showToast("Order sent! Email delivered to " + recipients.length + " recipient(s) ✅", "success");
+      } else if (data.order.status === "partial") {
+        showToast("Partial delivery: " + data.order.sentCount + "/" + recipients.length + " emails sent ⚠️", "error");
+      } else {
+        showToast("Order saved! Email sending failed — check SMTP config ❌", "error");
+      }
+      closeOrderModal();
+    } else {
+      showToast(data.error || "Failed to send order", "error");
+    }
+  } catch (err) {
+    showToast("Network error", "error");
+  } finally {
+    btn.innerHTML = "📨 提交并发送邮件";
+  }
+});
+
+// Enter key for login (moved to end)
 document.getElementById("login-pw").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 </script>
 </body>

@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { Octokit } = require("@octokit/rest");
+const nodemailer = require("nodemailer");
 
 // ── Prevent unhandled rejections from crashing the process ──
 process.on("unhandledRejection", (reason) => {
@@ -13,6 +14,27 @@ process.on("unhandledRejection", (reason) => {
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "mobireach2026";
+
+// ── Email (SMTP) ──
+const SMTP_HOST = process.env.SMTP_HOST || "";
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || "587");
+const SMTP_USER = process.env.SMTP_USER || "";
+const SMTP_PASS = process.env.SMTP_PASS || "";
+const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || "noreply@mobirich.online";
+
+let transporter = null;
+if (SMTP_HOST && SMTP_USER) {
+  transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    tls: { rejectUnauthorized: false }
+  });
+  console.log(`📧 Email ready: ${SMTP_FROM}`);
+} else {
+  console.log("⚠️  Email not configured — set SMTP_HOST + SMTP_USER in env");
+}
 
 // ── GitHub data storage ──
 const GH_TOKEN = process.env.GH_TOKEN;
@@ -217,6 +239,27 @@ async function writeAccounts(data) {
     await ghWrite("accounts.json", data);
   } else {
     fs.writeFileSync(LOCAL_ACCOUNTS, JSON.stringify(data, null, 2), "utf-8");
+  }
+}
+
+// ── Orders ──
+const LOCAL_ORDERS = path.join(DATA_DIR, "orders.json");
+
+async function readOrders() {
+  if (useGitHub) {
+    const data = await ghRead("orders.json");
+    return data || [];
+  }
+  try { return JSON.parse(fs.readFileSync(LOCAL_ORDERS, "utf-8")); }
+  catch { return []; }
+}
+
+async function writeOrders(data) {
+  if (useGitHub) {
+    await ghWrite("orders.json", data);
+  } else {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(LOCAL_ORDERS, JSON.stringify(data, null, 2), "utf-8");
   }
 }
 
@@ -598,6 +641,122 @@ app.delete("/api/offers/:id", async (req, res) => {
   if (offers.length === before) return res.status(404).json({ error: "Not found" });
   await writeOffers(offers);
   res.json({ success: true });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  ORDER EMAIL API
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Get all orders
+app.get("/api/orders", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  res.json(await readOrders());
+});
+
+// Send order email
+app.post("/api/orders/send", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  const {
+    submissionId, publisher, offerName, offerPlatform,
+    platform, customerId, channel, campaignName,
+    prt, pid, externalPrice, realPrice,
+    trackingLink, emailSubject, emailBody, recipients
+  } = req.body;
+
+  if (!recipients || !recipients.length) {
+    return res.status(400).json({ error: "At least one recipient required" });
+  }
+
+  const order = {
+    id: crypto.randomUUID(),
+    submissionId: submissionId || "",
+    publisher: publisher || "",
+    offerName: offerName || "",
+    offerPlatform: offerPlatform || "",
+    platform: platform || "",
+    customerId: customerId || "",
+    channel: channel || "",
+    campaignName: campaignName || "",
+    prt: prt || "",
+    pid: pid || "",
+    externalPrice: externalPrice || 0,
+    realPrice: realPrice || 0,
+    trackingLink: trackingLink || "",
+    emailSubject: emailSubject || `Campaign Order: ${campaignName || "New Order"}`,
+    emailBody: emailBody || "",
+    recipients,
+    createdAt: new Date().toISOString(),
+    sentBy: session.username,
+    status: "sending"
+  };
+
+  // Persist order
+  const orders = await readOrders();
+  orders.unshift(order);
+  await writeOrders(orders);
+
+  if (!transporter) {
+    order.status = "saved_no_email";
+    orders[0].status = order.status;
+    await writeOrders(orders);
+    return res.json({
+      success: true,
+      order,
+      warning: "Email not sent: SMTP not configured. Set SMTP_HOST and SMTP_USER in Render env vars."
+    });
+  }
+
+  // Send emails to each recipient
+  let sentCount = 0;
+  let errors = [];
+  for (const recipient of recipients) {
+    try {
+      await transporter.sendMail({
+        from: `"Mobireach" <${SMTP_FROM}>`,
+        to: recipient,
+        subject: emailSubject || `Campaign Order: ${campaignName || "New Order"}`,
+        text: emailBody,
+      });
+      sentCount++;
+    } catch (e) {
+      errors.push(`${recipient}: ${e.message}`);
+      console.warn(`⚠️  Email to ${recipient} failed: ${e.message}`);
+    }
+  }
+
+  if (sentCount === recipients.length) {
+    order.status = "sent";
+    console.log(`✅ Order email sent to all ${sentCount} recipients`);
+  } else if (sentCount > 0) {
+    order.status = "partial";
+    order.emailErrors = errors;
+    console.log(`⚠️  Sent ${sentCount}/${recipients.length} emails`);
+  } else {
+    order.status = "email_failed";
+    order.emailErrors = errors;
+    console.log(`❌ All emails failed`);
+  }
+
+  orders[0].status = order.status;
+  orders[0].sentCount = sentCount;
+  if (errors.length) orders[0].emailErrors = errors;
+  await writeOrders(orders);
+
+  // Auto-update submission status to "contacted"
+  if (order.submissionId) {
+    try {
+      const subs = await readSubmissions();
+      const sub = subs.find(s => s.id === order.submissionId);
+      if (sub && sub.status !== "contacted") {
+        sub.status = "contacted";
+        await writeSubmissions(subs);
+      }
+    } catch (e) { /* non-critical */ }
+  }
+
+  res.json({ success: true, order });
 });
 
 // ── Admin Page ──
