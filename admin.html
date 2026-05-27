@@ -306,7 +306,6 @@
     <input class="login-input" type="text" id="login-user" placeholder="Username" autofocus />
     <input class="login-input" type="password" id="login-pw" placeholder="Password" />
     <button class="login-btn" id="pw-btn">Sign in</button>
-    <div class="login-hint">Default: Merlin / Merlin2026!</div>
   </div>
 </div>
 
@@ -615,6 +614,7 @@
       <form id="order-form">
         <input type="hidden" id="ord-submission-id" />
         <input type="hidden" id="ord-recipients" />
+        <input type="hidden" id="ord-kpi" />
 
         <!-- Offer / Publisher info (read-only) -->
         <div class="form-row" style="margin-bottom:12px;padding:10px 14px;background:var(--accent-light);border-radius:8px;font-size:12px">
@@ -664,10 +664,6 @@
           <div class="form-group">
             <label class="form-label">外放 PO 价格 ($)</label>
             <input class="form-input" id="ord-ext-price" type="number" step="0.01" min="0" placeholder="0.00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">真实 PO 价格 ($)</label>
-            <input class="form-input" id="ord-real-price" type="number" step="0.01" min="0" placeholder="0.00" />
           </div>
         </div>
         <div class="form-group">
@@ -1271,12 +1267,14 @@ function generateEmailTemplate() {
   const prt = document.getElementById("ord-prt").value || "—";
   const pid = document.getElementById("ord-pid").value || "—";
   const extPrice = document.getElementById("ord-ext-price").value || "0";
-  const realPrice = document.getElementById("ord-real-price").value || "0";
   const trackingLink = document.getElementById("ord-tracking-link").value || "(to be provided)";
   const customerId = document.getElementById("ord-customer-id").value || "—";
   const channel = document.getElementById("ord-channel").value || "—";
+  const kpi = document.getElementById("ord-kpi").value || "—";
 
-  const subject = `Campaign Order Confirmation - ${campaign} (${platform})`;
+  // Email subject format: [Offer-MobiReach]客户编号_Campaign Name_日期
+  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const subject = `[Offer-MobiReach]${customerId}_${campaign}_${dateStr}`;
 
   const body = `Dear ${publisher},
 
@@ -1295,7 +1293,9 @@ Order Channel:  ${channel}
 PRT:             ${prt}
 PID:             ${pid}
 External PO:     $${extPrice}
-Real PO:         $${realPrice}
+
+━━ KPI ━━
+${kpi}
 
 ━━ Tracking ━━
 ${trackingLink}
@@ -1336,8 +1336,8 @@ function openOrderModal(submissionId) {
   document.getElementById("ord-prt").value = details.prt || "";
   document.getElementById("ord-pid").value = (sub.pids && sub.pids.length) ? sub.pids[0] : "";
   document.getElementById("ord-ext-price").value = offer ? offer.payout : 0;
-  document.getElementById("ord-real-price").value = "";
   document.getElementById("ord-tracking-link").value = "";
+  document.getElementById("ord-kpi").value = details.kpi || "";
   document.getElementById("ord-confirm").checked = false;
   document.getElementById("ord-submit-btn").disabled = true;
 
@@ -1354,7 +1354,7 @@ document.getElementById("order-overlay").addEventListener("click", e => {
 });
 
 // Auto-generate email when fields change
-["ord-campaign","ord-platform","ord-prt","ord-pid","ord-ext-price","ord-real-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
+["ord-campaign","ord-platform","ord-prt","ord-pid","ord-ext-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
   document.getElementById(id).addEventListener("input", generateEmailTemplate);
   document.getElementById(id).addEventListener("change", generateEmailTemplate);
 });
@@ -1393,7 +1393,6 @@ document.getElementById("order-form").addEventListener("submit", async e => {
     prt: document.getElementById("ord-prt").value.trim(),
     pid: document.getElementById("ord-pid").value.trim(),
     externalPrice: parseFloat(document.getElementById("ord-ext-price").value) || 0,
-    realPrice: parseFloat(document.getElementById("ord-real-price").value) || 0,
     trackingLink: document.getElementById("ord-tracking-link").value.trim(),
     emailSubject: document.getElementById("ord-email-subject").value.trim(),
     emailBody: document.getElementById("ord-email-body").value,
