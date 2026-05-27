@@ -657,15 +657,56 @@
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h4 id="ord-section-af" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📊 AppsFlyer 参数</h4>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" id="ord-lbl-prt">PRT</label>
-            <input class="form-input" id="ord-prt" placeholder="PRT 代码" />
+            <label class="form-label" id="ord-lbl-tracker-type">追踪平台</label>
+            <select class="form-input" id="ord-tracker-type" onchange="switchTrackerType()">
+              <option value="appsFlyer">AppsFlyer</option>
+              <option value="adjust">Adjust</option>
+              <option value="other">Other</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label class="form-label" id="ord-lbl-pid">PID</label>
-            <input class="form-input" id="ord-pid" placeholder="PID" />
+        </div>
+        <h4 id="ord-section-af" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📊 AppsFlyer 参数</h4>
+        <div id="ord-tracker-fields">
+          <!-- AppsFlyer fields -->
+          <div id="ord-af-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-prt">PRT</label>
+                <input class="form-input" id="ord-prt" placeholder="PRT 代码" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-pid">PID</label>
+                <input class="form-input" id="ord-pid" placeholder="PID" />
+              </div>
+            </div>
+          </div>
+          <!-- Adjust fields -->
+          <div id="ord-adjust-fields" style="display:none">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-short-link">短链</label>
+                <input class="form-input" id="ord-short-link" placeholder="Adjust 短链" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-group-name">Group Name</label>
+                <input class="form-input" id="ord-group-name" placeholder="Group Name" />
+              </div>
+            </div>
+          </div>
+          <!-- Other fields -->
+          <div id="ord-other-fields" style="display:none">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-info1">信息1</label>
+                <input class="form-input" id="ord-info1" placeholder="信息1" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" id="ord-lbl-info2">信息2</label>
+                <input class="form-input" id="ord-info2" placeholder="信息2" />
+              </div>
+            </div>
           </div>
         </div>
         <div class="form-row">
@@ -887,8 +928,22 @@ const L = {
     campaignName: "Campaign Name",
     campaignNamePlaceholder: "Campaign 名称",
     appsFlyerParams: "AppsFlyer 参数",
+    trackerParamsAdjust: "Adjust 参数",
+    trackerParamsOther: "其他参数",
+    trackerType: "追踪平台",
+    trackerAF: "AppsFlyer",
+    trackerAdjust: "Adjust",
+    trackerOther: "Other",
     pid: "PID",
     pidPlaceholder: "PID",
+    shortLink: "短链",
+    shortLinkPlaceholder: "Adjust 短链",
+    groupName: "Group Name",
+    groupNamePlaceholder: "Group Name",
+    info1: "信息1",
+    info1Placeholder: "信息1",
+    info2: "信息2",
+    info2Placeholder: "信息2",
     extPrice: "外放 PO 价格 ($)",
     extPricePlaceholder: "0.00",
     trackingLink: "追踪链接",
@@ -1060,8 +1115,22 @@ const L = {
     campaignName: "Campaign Name",
     campaignNamePlaceholder: "Campaign name",
     appsFlyerParams: "AppsFlyer Parameters",
+    trackerParamsAdjust: "Adjust Parameters",
+    trackerParamsOther: "Other Parameters",
+    trackerType: "Tracking Platform",
+    trackerAF: "AppsFlyer",
+    trackerAdjust: "Adjust",
+    trackerOther: "Other",
     pid: "PID",
     pidPlaceholder: "PID",
+    shortLink: "Short Link",
+    shortLinkPlaceholder: "Adjust short link",
+    groupName: "Group Name",
+    groupNamePlaceholder: "Group Name",
+    info1: "Info 1",
+    info1Placeholder: "Info 1",
+    info2: "Info 2",
+    info2Placeholder: "Info 2",
     extPrice: "External PO Price ($)",
     extPricePlaceholder: "0.00",
     trackingLink: "Tracking Link",
@@ -1224,10 +1293,19 @@ function applyLanguage() {
   setText("ord-lbl-campaign", "campaignName");
   setInput("ord-campaign", "campaignNamePlaceholder");
   setText("ord-section-af", "appsFlyerParams");
+  setText("ord-lbl-tracker-type", "trackerType");
   setText("ord-lbl-prt", "prt");
   setInput("ord-prt", "prtPlaceholder");
   setText("ord-lbl-pid", "pid");
   setInput("ord-pid", "pidPlaceholder");
+  setText("ord-lbl-short-link", "shortLink");
+  setInput("ord-short-link", "shortLinkPlaceholder");
+  setText("ord-lbl-group-name", "groupName");
+  setInput("ord-group-name", "groupNamePlaceholder");
+  setText("ord-lbl-info1", "info1");
+  setInput("ord-info1", "info1Placeholder");
+  setText("ord-lbl-info2", "info2");
+  setInput("ord-info2", "info2Placeholder");
   setText("ord-lbl-extprice", "extPrice");
   setInput("ord-ext-price", "extPricePlaceholder");
   setText("ord-lbl-tracking", "trackingLink");
@@ -1242,6 +1320,9 @@ function applyLanguage() {
   document.getElementById("ord-submit-btn").textContent = "📨 " + t("submitOrder");
   const ordCancel = document.querySelector("#order-overlay .btn-cancel");
   if (ordCancel) ordCancel.textContent = t("cancel");
+
+  // Update tracker dropdown options and section header
+  switchTrackerType();
 
   // Re-render tables
   if (currentUser) {
@@ -1820,12 +1901,38 @@ applyLanguage();
 // ORDER MODAL
 // ────────────────────────────────────
 
+function switchTrackerType() {
+  const type = document.getElementById("ord-tracker-type").value;
+  const afEl = document.getElementById("ord-af-fields");
+  const adjEl = document.getElementById("ord-adjust-fields");
+  const otherEl = document.getElementById("ord-other-fields");
+
+  afEl.style.display = type === "appsFlyer" ? "" : "none";
+  adjEl.style.display = type === "adjust" ? "" : "none";
+  otherEl.style.display = type === "other" ? "" : "none";
+
+  // Update section header
+  const headerMap = {
+    appsFlyer: t("appsFlyerParams"),
+    adjust: t("trackerParamsAdjust"),
+    other: t("trackerParamsOther")
+  };
+  document.getElementById("ord-section-af").textContent = "\u{1F4CA} " + (headerMap[type] || "");
+
+  generateEmailTemplate();
+}
+
 function generateEmailTemplate() {
   const publisher = document.getElementById("ord-publisher").textContent;
   const campaign = document.getElementById("ord-campaign").value || "(Campaign Name)";
   const platform = document.getElementById("ord-platform").value;
+  const trackerType = document.getElementById("ord-tracker-type").value;
   const prt = document.getElementById("ord-prt").value || "—";
   const pid = document.getElementById("ord-pid").value || "—";
+  const shortLink = document.getElementById("ord-short-link").value || "—";
+  const groupName = document.getElementById("ord-group-name").value || "—";
+  const info1 = document.getElementById("ord-info1").value || "—";
+  const info2 = document.getElementById("ord-info2").value || "—";
   const extPrice = document.getElementById("ord-ext-price").value || "0";
   const trackingLink = document.getElementById("ord-tracking-link").value || "(to be provided)";
   const customerId = document.getElementById("ord-customer-id").value || "—";
@@ -1836,39 +1943,20 @@ function generateEmailTemplate() {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const subject = `[Offer-MobiReach]${customerId}_${campaign}_${dateStr}`;
 
-  const body = `Dear ${publisher},
+  // Tracker-specific params
+  let trackerLabel, trackerParams;
+  if (trackerType === "appsFlyer") {
+    trackerLabel = "AppsFlyer Parameters";
+    trackerParams = `PRT:             ${prt}\nPID:             ${pid}`;
+  } else if (trackerType === "adjust") {
+    trackerLabel = "Adjust Parameters";
+    trackerParams = `Short Link:      ${shortLink}\nGroup Name:      ${groupName}`;
+  } else {
+    trackerLabel = "Other Parameters";
+    trackerParams = `Info 1:          ${info1}\nInfo 2:          ${info2}`;
+  }
 
-Thank you for your application! We are pleased to confirm your campaign order with the following details:
-
-━━━━━━━━━━━━━━━━━━━
-  CAMPAIGN ORDER
-━━━━━━━━━━━━━━━━━━━
-
-Campaign Name:  ${campaign}
-Platform:       ${platform}
-Customer ID:    ${customerId}
-Order Channel:  ${channel}
-
-━━ AppsFlyer Parameters ━━
-PRT:             ${prt}
-PID:             ${pid}
-External PO:     $${extPrice}
-
-━━ KPI ━━
-${kpi}
-
-━━ Tracking ━━
-${trackingLink}
-
-━━━━━━━━━━━━━━━━━━━
-
-Please confirm receipt of this order. If any details are incorrect or if you have questions, please reply to this email directly.
-
-We look forward to working with you!
-
-Best regards,
-Mobireach Team
-`;
+  const body = `Dear ${publisher},\n\nThank you for your application! We are pleased to confirm your campaign order with the following details:\n\n━━━━━━━━━━━━━━━━━━━\n  CAMPAIGN ORDER\n━━━━━━━━━━━━━━━━━━━\n\nCampaign Name:  ${campaign}\nPlatform:       ${platform}\nCustomer ID:    ${customerId}\nOrder Channel:  ${channel}\n\n━━ ${trackerLabel} ━━\n${trackerParams}\nExternal PO:     $${extPrice}\n\n━━ KPI ━━\n${kpi}\n\n━━ Tracking ━━\n${trackingLink}\n\n━━━━━━━━━━━━━━━━━━━\n\nPlease confirm receipt of this order. If any details are incorrect or if you have questions, please reply to this email directly.\n\nWe look forward to working with you!\n\nBest regards,\nMobireach Team\n`;
 
   document.getElementById("ord-email-subject").value = subject;
   document.getElementById("ord-email-body").value = body;
@@ -1890,17 +1978,23 @@ function openOrderModal(submissionId) {
   document.getElementById("ord-recipients").value = JSON.stringify(sub.emails || []);
 
   document.getElementById("ord-platform").value = sub.offerPlatform === "android" ? "Android" : "iOS";
+  document.getElementById("ord-campaign").value = (sub.offerName || "") + " - " + (sub.publisher || "");
   document.getElementById("ord-customer-id").value = "";
   document.getElementById("ord-channel").value = "AppsFlyer";
-  document.getElementById("ord-campaign").value = (sub.offerName || "") + " - " + (sub.publisher || "");
+  document.getElementById("ord-tracker-type").value = "appsFlyer";
   document.getElementById("ord-prt").value = details.prt || "";
   document.getElementById("ord-pid").value = (sub.pids && sub.pids.length) ? sub.pids[0] : "";
+  document.getElementById("ord-short-link").value = "";
+  document.getElementById("ord-group-name").value = "";
+  document.getElementById("ord-info1").value = "";
+  document.getElementById("ord-info2").value = "";
   document.getElementById("ord-ext-price").value = offer ? offer.payout : 0;
   document.getElementById("ord-tracking-link").value = "";
   document.getElementById("ord-kpi").value = details.kpi || "";
   document.getElementById("ord-confirm").checked = false;
   document.getElementById("ord-submit-btn").disabled = true;
 
+  switchTrackerType();
   generateEmailTemplate();
   document.getElementById("order-overlay").classList.add("open");
 }
@@ -1914,7 +2008,7 @@ document.getElementById("order-overlay").addEventListener("click", e => {
 });
 
 // Auto-generate email when fields change
-["ord-campaign","ord-platform","ord-prt","ord-pid","ord-ext-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
+["ord-campaign","ord-platform","ord-prt","ord-pid","ord-short-link","ord-group-name","ord-info1","ord-info2","ord-ext-price","ord-tracking-link","ord-customer-id","ord-channel"].forEach(id => {
   document.getElementById(id).addEventListener("input", generateEmailTemplate);
   document.getElementById(id).addEventListener("change", generateEmailTemplate);
 });
@@ -1950,8 +2044,13 @@ document.getElementById("order-form").addEventListener("submit", async e => {
     customerId: document.getElementById("ord-customer-id").value.trim(),
     channel: document.getElementById("ord-channel").value.trim(),
     campaignName: document.getElementById("ord-campaign").value.trim(),
+    trackerType: document.getElementById("ord-tracker-type").value,
     prt: document.getElementById("ord-prt").value.trim(),
     pid: document.getElementById("ord-pid").value.trim(),
+    shortLink: document.getElementById("ord-short-link").value.trim(),
+    groupName: document.getElementById("ord-group-name").value.trim(),
+    info1: document.getElementById("ord-info1").value.trim(),
+    info2: document.getElementById("ord-info2").value.trim(),
     externalPrice: parseFloat(document.getElementById("ord-ext-price").value) || 0,
     trackingLink: document.getElementById("ord-tracking-link").value.trim(),
     emailSubject: document.getElementById("ord-email-subject").value.trim(),
