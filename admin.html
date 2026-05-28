@@ -729,7 +729,10 @@
         <div class="form-group">
           <label class="form-label" id="ord-lbl-body">邮件正文</label>
           <textarea class="form-textarea" id="ord-email-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="邮件内容..."></textarea>
-          <div class="form-hint" id="ord-email-hint">邮件正文已根据表单内容自动生成，你可以直接修改</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+            <div class="form-hint" id="ord-email-hint" style="margin:0">邮件正文已根据表单内容自动生成，你可以直接修改</div>
+            <button type="button" id="copy-email-body-btn" onclick="copyEmailBody()" style="flex-shrink:0;margin-left:10px;padding:5px 14px;font-size:12px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all .15s">📋 复制正文</button>
+          </div>
         </div>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
@@ -969,6 +972,8 @@ const L = {
     emailSubjectPlaceholder: "邮件主题",
     emailBody: "邮件正文",
     emailBodyPlaceholder: "邮件内容...",
+    copyEmailBody: "📋 复制正文",
+    copyEmailBodyDone: "✅ 已复制",
     emailHint: "邮件正文已根据表单内容自动生成，你可以直接修改",
     orderConfirm: "我确认以上信息无误，同意发送邮件给 Publisher",
     submitOrder: "提交并打开邮件客户端",
@@ -1162,6 +1167,8 @@ const L = {
     emailSubjectPlaceholder: "Email subject",
     emailBody: "Email Body",
     emailBodyPlaceholder: "Email content...",
+    copyEmailBody: "📋 Copy Body",
+    copyEmailBodyDone: "✅ Copied",
     emailHint: "Email body auto-generated from form, you can edit directly",
     orderConfirm: "I confirm the above info is correct and agree to send email to Publisher",
     submitOrder: "Submit & Open Email Client",
@@ -1344,6 +1351,8 @@ function applyLanguage() {
   setText("ord-lbl-body", "emailBody");
   setArea("ord-email-body", "emailBodyPlaceholder");
   setText("ord-email-hint", "emailHint");
+  const copyBtn = document.getElementById("copy-email-body-btn");
+  if (copyBtn && !copyBtn._copied) copyBtn.textContent = t("copyEmailBody");
   document.getElementById("ord-confirm-label").textContent = t("orderConfirm");
   document.getElementById("ord-submit-btn").textContent = "📨 " + t("submitOrder");
   const ordCancel = document.querySelector("#order-overlay .btn-cancel");
@@ -2091,6 +2100,32 @@ function openOrderModal(submissionId) {
 
 function closeOrderModal() {
   document.getElementById("order-overlay").classList.remove("open");
+}
+
+// Copy email body (subject + body) to clipboard
+function copyEmailBody() {
+  const subject = document.getElementById("ord-email-subject").value.trim();
+  const body = document.getElementById("ord-email-body").value;
+  const text = subject ? `主题：${subject}\n\n${body}` : body;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copy-email-body-btn");
+    btn._copied = true;
+    btn.textContent = t("copyEmailBodyDone");
+    btn.style.background = "var(--accent)";
+    btn.style.color = "#fff";
+    setTimeout(() => {
+      btn._copied = false;
+      btn.textContent = t("copyEmailBody");
+      btn.style.background = "transparent";
+      btn.style.color = "var(--accent)";
+    }, 2000);
+  }).catch(() => {
+    // Fallback: select textarea and execCommand
+    const ta = document.getElementById("ord-email-body");
+    ta.select();
+    document.execCommand("copy");
+    showToast("已复制", "success");
+  });
 }
 
 document.getElementById("order-overlay").addEventListener("click", e => {
