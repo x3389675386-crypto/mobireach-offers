@@ -729,9 +729,13 @@
         <div class="form-group">
           <label class="form-label" id="ord-lbl-body">邮件正文</label>
           <textarea class="form-textarea" id="ord-email-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="邮件内容..."></textarea>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-            <div class="form-hint" id="ord-email-hint" style="margin:0">邮件正文已根据表单内容自动生成，你可以直接修改</div>
-            <button type="button" id="copy-email-body-btn" onclick="copyEmailBody()" style="flex-shrink:0;margin-left:10px;padding:5px 14px;font-size:12px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all .15s">📋 复制正文</button>
+          <div class="form-hint" id="ord-email-hint" style="margin-top:4px;margin-bottom:8px">邮件正文已根据表单内容自动生成，你可以直接修改</div>
+          <!-- Email action toolbar -->
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;background:var(--bg2,#f8f9fa);border:1px solid var(--border);border-radius:8px">
+            <button type="button" id="copy-subject-btn" onclick="copyEmailSubject()" style="padding:6px 14px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;transition:all .15s">📋 复制主题</button>
+            <button type="button" id="copy-email-body-btn" onclick="copyEmailBody()" style="padding:6px 14px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;transition:all .15s">📋 复制正文</button>
+            <button type="button" id="copy-all-btn" onclick="copyEmailAll()" style="padding:6px 14px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;transition:all .15s">📋 复制全部（主题+正文）</button>
+            <a id="mailto-direct-link" href="#" target="_blank" onclick="updateMailtoLink()" style="display:inline-flex;align-items:center;padding:6px 14px;font-size:12px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;text-decoration:none;cursor:pointer;transition:all .15s">📨 直接发邮件</a>
           </div>
         </div>
 
@@ -2059,6 +2063,8 @@ function generateEmailTemplate() {
 
   document.getElementById("ord-email-subject").value = subject;
   document.getElementById("ord-email-body").value = body;
+  // Keep mailto direct link up to date
+  try { updateMailtoLink(); } catch(e) {}
 }
 
 function openOrderModal(submissionId) {
@@ -2102,30 +2108,72 @@ function closeOrderModal() {
   document.getElementById("order-overlay").classList.remove("open");
 }
 
-// Copy email body (subject + body) to clipboard
+// ── EMAIL COPY HELPERS ──
+function _flashBtn(btn, doneText, restoreText) {
+  const origBg = btn.style.background;
+  const origColor = btn.style.color;
+  const origBorder = btn.style.borderColor;
+  btn.textContent = doneText;
+  btn.style.background = "#16a34a";
+  btn.style.color = "#fff";
+  btn.style.borderColor = "#16a34a";
+  setTimeout(() => {
+    btn.textContent = restoreText;
+    btn.style.background = origBg;
+    btn.style.color = origColor;
+    btn.style.borderColor = origBorder;
+  }, 2000);
+}
+function _copyText(text, btn, doneText, restoreText) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      _flashBtn(btn, doneText, restoreText);
+    }).catch(() => {
+      document.execCommand && (document.execCommand("copy") || true);
+      _flashBtn(btn, doneText, restoreText);
+    });
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(ta);
+    _flashBtn(btn, doneText, restoreText);
+  }
+}
+function copyEmailSubject() {
+  const text = document.getElementById("ord-email-subject").value.trim();
+  if (!text) { showToast("主题为空", "error"); return; }
+  _copyText(text, document.getElementById("copy-subject-btn"), "✅ 已复制", "📋 复制主题");
+}
 function copyEmailBody() {
+  const text = document.getElementById("ord-email-body").value;
+  if (!text) { showToast("正文为空", "error"); return; }
+  _copyText(text, document.getElementById("copy-email-body-btn"), "✅ 已复制", "📋 复制正文");
+}
+function copyEmailAll() {
   const subject = document.getElementById("ord-email-subject").value.trim();
   const body = document.getElementById("ord-email-body").value;
-  const text = subject ? `主题：${subject}\n\n${body}` : body;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById("copy-email-body-btn");
-    btn._copied = true;
-    btn.textContent = t("copyEmailBodyDone");
-    btn.style.background = "var(--accent)";
-    btn.style.color = "#fff";
-    setTimeout(() => {
-      btn._copied = false;
-      btn.textContent = t("copyEmailBody");
-      btn.style.background = "transparent";
-      btn.style.color = "var(--accent)";
-    }, 2000);
-  }).catch(() => {
-    // Fallback: select textarea and execCommand
-    const ta = document.getElementById("ord-email-body");
-    ta.select();
-    document.execCommand("copy");
-    showToast("已复制", "success");
-  });
+  const text = subject ? `${subject}\n\n${body}` : body;
+  if (!text.trim()) { showToast("内容为空", "error"); return; }
+  _copyText(text, document.getElementById("copy-all-btn"), "✅ 已复制", "📋 复制全部（主题+正文）");
+}
+function updateMailtoLink() {
+  const recipients = _getRecipients();
+  const subject = encodeURIComponent(document.getElementById("ord-email-subject").value.trim());
+  const body = encodeURIComponent(document.getElementById("ord-email-body").value);
+  const to = recipients.join(",");
+  document.getElementById("mailto-direct-link").href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+function _getRecipients() {
+  try {
+    const offerId = document.getElementById("ord-offer-id") && document.getElementById("ord-offer-id").value;
+    if (offerId) {
+      const offer = offers.find(o => String(o.id) === String(offerId));
+      if (offer && offer.publisherEmail) return [offer.publisherEmail];
+    }
+  } catch(e) {}
+  return [];
 }
 
 document.getElementById("order-overlay").addEventListener("click", e => {
