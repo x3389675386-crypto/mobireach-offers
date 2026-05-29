@@ -2486,30 +2486,15 @@ function openNotesEditor(el, id) {
 
   // Tag chips
   const selectedTags = existing ? existing.split(",").map(t => t.trim()).filter(Boolean) : [];
-  MO_NOTE_TAGS.forEach(tag => {
-    const chip = document.createElement("span");
-    chip.textContent = tag;
-    const active = selectedTags.includes(tag);
-    chip.style.cssText = `display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid ${active ? "var(--accent)" : "var(--border)"};background:${active ? "var(--accent-light)" : "#fff"};color:${active ? "var(--accent)" : "var(--text2)"}`;
-    chip.onclick = () => {
-      if (selectedTags.includes(tag)) {
-        selectedTags.splice(selectedTags.indexOf(tag), 1);
-      } else {
-        selectedTags.push(tag);
-      }
-      el.innerHTML = renderNotesTags(selectedTags.join(", "));
-      saveMoNotes(id, selectedTags.join(", "));
-      openNotesEditor(el, id); // re-render
-    };
-    wrapper.appendChild(chip);
-  });
+  const chips = {}; // track chip elements for inline styling update
 
-  // Free text input
+  // Free text input - define first so chip onclick can reference it
   const input = document.createElement("input");
   input.type = "text";
   input.value = selectedTags.filter(t => !MO_NOTE_TAGS.includes(t)).join(", ");
   input.placeholder = "+ 自定义备注";
   input.style.cssText = "border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;width:120px;outline:none;font-family:var(--font)";
+
   input.onblur = () => {
     const custom = input.value.split(",").map(t => t.trim()).filter(Boolean);
     const all = [...selectedTags, ...custom];
@@ -2520,6 +2505,34 @@ function openNotesEditor(el, id) {
     if (e.key === "Enter") { e.preventDefault(); input.blur(); }
     if (e.key === "Escape") { e.preventDefault(); input.blur(); }
   };
+
+  MO_NOTE_TAGS.forEach(tag => {
+    const chip = document.createElement("span");
+    chip.textContent = tag;
+    chips[tag] = chip;
+    const active = selectedTags.includes(tag);
+    chip.style.cssText = `display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid ${active ? "var(--accent)" : "var(--border)"};background:${active ? "var(--accent-light)" : "#fff"};color:${active ? "var(--accent)" : "var(--text2)"}`;
+    chip.onclick = null; // clear any stale handler
+    chip.addEventListener("click", function() {
+      const idx = selectedTags.indexOf(tag);
+      if (idx !== -1) {
+        selectedTags.splice(idx, 1);
+        this.style.borderColor = "var(--border)";
+        this.style.background = "#fff";
+        this.style.color = "var(--text2)";
+      } else {
+        selectedTags.push(tag);
+        this.style.borderColor = "var(--accent)";
+        this.style.background = "var(--accent-light)";
+        this.style.color = "var(--accent)";
+      }
+      // Save immediately, but do NOT destroy/recreate the editor DOM
+      const customText = input.value.split(",").map(t => t.trim()).filter(Boolean);
+      saveMoNotes(id, [...selectedTags, ...customText].join(", "));
+    });
+    wrapper.appendChild(chip);
+  });
+
   wrapper.appendChild(input);
 
   el.innerHTML = "";
