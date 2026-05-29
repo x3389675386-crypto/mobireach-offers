@@ -311,6 +311,25 @@
       .stats-row .stat-card { min-width: 0; }
       .tab-nav { overflow-x: auto; }
     }
+
+    /* ── CUSTOM CONFIRM DIALOG ── */
+    .confirm-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .confirm-overlay.open { opacity: 1; pointer-events: auto; }
+    .confirm-box {
+      background: #fff; border-radius: 12px; padding: 28px 24px 20px;
+      max-width: 380px; width: 90%; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    }
+    .confirm-box p { margin: 0 0 20px; font-size: 15px; color: #1a1a2e; line-height: 1.5; }
+    .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+    .confirm-actions button { padding: 8px 24px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; }
+    .confirm-cancel { background: #f0f0f5; color: #555; }
+    .confirm-cancel:hover { background: #e4e4ea; }
+    .confirm-danger { background: #ef4444; color: #fff; }
+    .confirm-danger:hover { background: #dc2626; }
   </style>
 </head>
 <body>
@@ -1741,7 +1760,7 @@ async function quickUpdate(id, field, value) {
 }
 
 async function deleteOffer(id) {
-  if (!confirm(t("deleteConfirm"))) return;
+  if (!await customConfirm(t("deleteConfirm"))) return;
   const res = await fetch(`/api/offers/${id}`, { method: "DELETE", headers: authHeaders() });
   if (res.ok) {
     showToast(t("offerDeleted"), "success");
@@ -1833,9 +1852,25 @@ function openOfferModal(id) {
   renderGeos();
   renderInts();
   document.getElementById("offer-overlay").classList.add("open");
+  // Save snapshot for dirty-check
+  setTimeout(() => { offerFormSnapshot = serializeForm("offer-form"); }, 0);
 }
 
-function closeOfferModal() {
+let offerFormSnapshot = "";
+function serializeForm(formId) {
+  const form = document.getElementById(formId);
+  return JSON.stringify(Array.from(new FormData(form)).filter(([k]) => k !== "of-id"));
+}
+function isOfferFormDirty() {
+  return offerFormSnapshot && serializeForm("offer-form") !== offerFormSnapshot;
+}
+
+async function closeOfferModal() {
+  if (isOfferFormDirty()) {
+    const ok = await customConfirm(t("unsavedChanges") || "You have unsaved changes. Discard?", t("discard") || "Discard");
+    if (!ok) return;
+  }
+  offerFormSnapshot = "";
   document.getElementById("offer-overlay").classList.remove("open");
 }
 
@@ -1874,6 +1909,7 @@ document.getElementById("offer-form").addEventListener("submit", async e => {
   const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
   if (res.ok) {
     showToast(isNew ? t("offerCreated") : t("offerUpdated"), "success");
+    offerFormSnapshot = ""; // clear before close to skip dirty check
     closeOfferModal();
     loadOffers();
   } else {
@@ -1939,7 +1975,7 @@ async function updateStatus(id, status) {
 }
 
 async function deleteSub(id) {
-  if (!confirm(t("deleteAppConfirm"))) return;
+  if (!await customConfirm(t("deleteAppConfirm"))) return;
   await fetch(`/api/submissions/${id}`, { method: "DELETE", headers: authHeaders() });
   showToast(t("deleted"), "success");
   loadSubmissions();
@@ -2060,7 +2096,7 @@ document.getElementById("reset-pw-form").addEventListener("submit", async e => {
 });
 
 async function deleteAccount(id, username) {
-  if (!confirm(t("deleteAccountConfirm").replace("{}", username))) return;
+  if (!await customConfirm(t("deleteAccountConfirm").replace("{}", username))) return;
   const res = await fetch(`/api/accounts/${id}`, { method: "DELETE", headers: authHeaders() });
   if (res.ok) { showToast(t("accountDeleted"), "success"); loadAccounts(); }
   else { const d = await res.json(); showToast(d.error || t("failed"), "error"); }
@@ -2255,9 +2291,21 @@ function openOrderModal(submissionId) {
   switchTrackerType();
   generateEmailTemplate();
   document.getElementById("order-overlay").classList.add("open");
+  // Save snapshot for dirty-check
+  setTimeout(() => { orderFormSnapshot = serializeForm("order-form"); }, 0);
 }
 
-function closeOrderModal() {
+let orderFormSnapshot = "";
+function isOrderFormDirty() {
+  return orderFormSnapshot && serializeForm("order-form") !== orderFormSnapshot;
+}
+
+async function closeOrderModal() {
+  if (isOrderFormDirty()) {
+    const ok = await customConfirm(t("unsavedChanges") || "You have unsaved changes. Discard?", t("discard") || "Discard");
+    if (!ok) return;
+  }
+  orderFormSnapshot = "";
   document.getElementById("order-overlay").classList.remove("open");
 }
 
@@ -2415,6 +2463,7 @@ document.getElementById("order-form").addEventListener("submit", async e => {
 
     if (res.ok) {
       showToast(t("orderSaved"), "success");
+      orderFormSnapshot = ""; // clear before close to skip dirty check
       closeOrderModal();
 
       // Build mailto link and show clickable link modal
@@ -2767,7 +2816,7 @@ async function updateMoStatus(sel) {
 }
 
 async function deleteManagedOrder(id) {
-  if (!confirm("确定删除这条订单吗？")) return;
+  if (!await customConfirm("确定删除这条订单吗？")) return;
   try {
     const res = await fetch(`/api/managed-orders/${id}`, {
       method: "DELETE",
@@ -2929,5 +2978,55 @@ function resetPubUpload() {
 }
 
 </script>
+
+<!-- ── CUSTOM CONFIRM DIALOG ── -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <p id="confirm-message">Are you sure?</p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" id="confirm-cancel-btn">Cancel</button>
+      <button class="confirm-danger" id="confirm-ok-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Promise-based confirm dialog ──
+function customConfirm(message, okText) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById("confirm-overlay");
+    const msgEl = document.getElementById("confirm-message");
+    const okBtn = document.getElementById("confirm-ok-btn");
+    const cancelBtn = document.getElementById("confirm-cancel-btn");
+    msgEl.textContent = message;
+    okBtn.textContent = okText || "Delete";
+
+    function cleanup(result) {
+      overlay.classList.remove("open");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      resolve(result);
+    }
+    function onOk() { cleanup(true); }
+    function onCancel() { cleanup(false); }
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    overlay.addEventListener("click", function handler(e) {
+      if (e.target === overlay) { cleanup(false); overlay.removeEventListener("click", handler); }
+    });
+    overlay.classList.add("open");
+  });
+}
+
+// ── beforeunload: warn if any modal form is dirty ──
+window.addEventListener("beforeunload", e => {
+  if (isOfferFormDirty() || isOrderFormDirty()) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
+</script>
+
 </body>
 </html>

@@ -725,9 +725,14 @@ app.post("/api/apply", async (req, res) => {
   res.json({ success: true, id: submission.id });
 });
 
-// Get All Offers (public)
+// Get All Offers (public, with pagination)
 app.get("/api/offers", async (req, res) => {
-  res.json(await readOffers());
+  const all = await readOffers();
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 200));
+  if (!req.query.page && !req.query.limit) return res.json(all); // backward compat
+  const start = (page - 1) * limit;
+  res.json({ data: all.slice(start, start + limit), total: all.length, page, limit });
 });
 
 // Get Single Offer (public)
@@ -742,10 +747,15 @@ app.get("/api/offers/:id", async (req, res) => {
 //  ADMIN API (require auth)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// List Submissions
+// List Submissions (with pagination)
 app.get("/api/submissions", async (req, res) => {
   if (!(await checkAuth(req, res))) return;
-  res.json(await readSubmissions());
+  const all = await readSubmissions();
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 100));
+  if (!req.query.page && !req.query.limit) return res.json(all); // backward compat
+  const start = (page - 1) * limit;
+  res.json({ data: all.slice(start, start + limit), total: all.length, page, limit });
 });
 
 // Update Submission Status
@@ -829,10 +839,15 @@ app.delete("/api/offers/:id", async (req, res) => {
 //  ORDER EMAIL API
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// Get all orders
+// Get all orders (with pagination)
 app.get("/api/orders", async (req, res) => {
   if (!(await checkAuth(req, res))) return;
-  res.json(await readOrders());
+  const all = await readOrders();
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 100));
+  if (!req.query.page && !req.query.limit) return res.json(all); // backward compat
+  const start = (page - 1) * limit;
+  res.json({ data: all.slice(start, start + limit), total: all.length, page, limit });
 });
 
 // Save order (no email — mailto handled by frontend)
