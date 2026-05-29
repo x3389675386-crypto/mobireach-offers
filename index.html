@@ -4,7 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mobireach · Direct Offers</title>
+  <!-- #18: SVG inline favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%236366f1'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white' font-family='sans-serif'>M</text></svg>" />
+  <!-- #23: OG tags -->
+  <meta property="og:title" content="Mobireach · Direct Offers" />
+  <meta property="og:description" content="Direct mobile offers ready to scale." />
+  <meta property="og:type" content="website" />
+  <!-- #19: Google Fonts with preconnect and fallback CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.loli.net" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -657,6 +666,10 @@
       .footer-inner { flex-direction: column; align-items: flex-start; }
       .modal { max-width: 100%; }
       .nav-left { gap: 12px; }
+      /* #26: stats-bar vertical on small screens */
+      .stats-inner { flex-direction: column; gap: 4px; }
+      .stat-item + .stat-item::before { display: none; }
+      .stat-item { padding: 6px 18px; }
     }
   </style>
 </head>
@@ -815,7 +828,7 @@
       <a href="mailto:admin@mobirich.online">admin@mobirich.online</a>
     </div>
     <div class="footer-links">
-      <a href="#">Privacy Policy</a>
+      <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request">Privacy Policy</a>
       <a href="#" id="cookie-settings-link">Cookie Settings</a>
     </div>
   </div>
@@ -948,7 +961,7 @@
           <span id="submit-label">Submit application</span>
         </button>
         <div class="form-footer">
-          Protected by reCAPTCHA — <a href="#">Privacy Policy</a> &amp; <a href="#">Terms of Service</a> apply.
+          By submitting, you agree to our <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request">Privacy Policy</a> &amp; <a href="mailto:admin@mobirich.online?subject=Terms of Service Request">Terms of Service</a>.
         </div>
       </form>
     </div>
@@ -956,6 +969,11 @@
 </div>
 
 <script>
+// ─────────────────────────────────────────────
+//  HTML ESCAPE UTILITY (#5: XSS prevention)
+// ─────────────────────────────────────────────
+function escHtml(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
 // ─────────────────────────────────────────────
 //  PAGE SWITCHING
 // ─────────────────────────────────────────────
@@ -1028,12 +1046,12 @@ function renderCard(offer) {
   const MAX_GEOS = 4;
   const displayGeos = offer.geos.slice(0, MAX_GEOS);
   const moreCount = offer.geos.length - MAX_GEOS;
-  const geoHtml = displayGeos.map(g => `<span class="geo-tag">${g}</span>`).join("") +
+  const geoHtml = displayGeos.map(g => `<span class="geo-tag">${escHtml(g)}</span>`).join("") +
     (moreCount > 0 ? `<span class="geo-more">+${moreCount} more</span>` : "");
 
   const iconHtml = offer.icon
-    ? `<img src="${offer.icon}" alt="${offer.name}" loading="lazy" />`
-    : offer.iconLetter || offer.name[0].toUpperCase();
+    ? `<img src="${escHtml(offer.icon)}" alt="${escHtml(offer.name)}" loading="lazy" />`
+    : offer.iconLetter || escHtml(offer.name)[0].toUpperCase();
 
   const platformIcon = offer.platform === "ios" ? iosIcon : androidIcon;
   const platformLabel = offer.platform === "ios" ? "iOS" : "Android";
@@ -1043,7 +1061,7 @@ function renderCard(offer) {
       <div class="card-top">
         <div class="app-icon">${iconHtml}</div>
         <div class="app-meta">
-          <div class="app-name">${offer.name}</div>
+          <div class="app-name">${escHtml(offer.name)}</div>
           <div class="platform-badge">${platformIcon} ${platformLabel}</div>
         </div>
       </div>
@@ -1098,13 +1116,13 @@ function openDetails(id) {
   const rows = [
     ["GEO", d.geo],
     ["Payout", d.payout],
-    ["Store URL", d.storeUrl ? `<a href="${d.storeUrl}" target="_blank" rel="noopener" style="color:inherit">${d.storeUrl}</a>` : "—"],
+    ["Store URL", d.storeUrl ? `<a href="${escHtml(d.storeUrl)}" target="_blank" rel="noopener" style="color:inherit">${escHtml(d.storeUrl)}</a>` : "—"],
     ["Payable Event", d.payableEvent || "—"],
     ["Flow", d.flow || "—"],
     ["KPI", d.kpi || "—"],
     ["PRT", d.prt || "—"],
     ["Integrations", d.integrations && d.integrations.length
-      ? `<div class="detail-tags">${d.integrations.map(i => `<span class="integration-pill">${i}</span>`).join("")}</div>`
+      ? `<div class="detail-tags">${d.integrations.map(i => `<span class="integration-pill">${escHtml(i)}</span>`).join("")}</div>`
       : "—"]
   ];
 
@@ -1271,32 +1289,59 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
-document.getElementById("search-input").addEventListener("input", e => {
+document.getElementById("search-input").addEventListener("input", debounce(e => {
   searchQuery = e.target.value;
   renderGrid();
-});
+}, 300));
+
+// #15: Debounce utility
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
 // ─────────────────────────────────────────────
-//  COOKIE BANNER
+//  COOKIE BANNER (#20: proper localStorage persistence)
 // ─────────────────────────────────────────────
 const banner = document.getElementById("cookie-banner");
-if (localStorage.getItem("mr-cookie-consent")) {
-  banner.style.display = "none";
+// Restore saved preferences
+const savedConsent = localStorage.getItem("mr-cookie-consent");
+if (savedConsent) {
+  try {
+    const prefs = JSON.parse(savedConsent);
+    if (prefs.analytics) document.getElementById("toggle-analytics").classList.replace("off", "on");
+    if (prefs.marketing) document.getElementById("toggle-marketing").classList.replace("off", "on");
+    banner.style.display = "none";
+  } catch (e) {
+    // Old format, just hide banner
+    banner.style.display = "none";
+  }
 }
+
 function closeBanner() {
   banner.style.opacity = "0";
   banner.style.transform = "translateX(-50%) translateY(20px)";
   banner.style.transition = "opacity 0.3s, transform 0.3s";
   setTimeout(() => { banner.style.display = "none"; }, 300);
-  localStorage.setItem("mr-cookie-consent", "1");
 }
+
+function saveCookiePrefs(analytics, marketing) {
+  localStorage.setItem("mr-cookie-consent", JSON.stringify({ analytics, marketing, ts: Date.now() }));
+}
+
 document.getElementById("cookie-accept").onclick = () => {
   document.getElementById("toggle-analytics").classList.replace("off", "on");
   document.getElementById("toggle-marketing").classList.replace("off", "on");
+  saveCookiePrefs(true, true);
   closeBanner();
 };
-document.getElementById("cookie-reject").onclick = closeBanner;
-document.getElementById("cookie-save").onclick = closeBanner;
+document.getElementById("cookie-reject").onclick = () => {
+  saveCookiePrefs(false, false);
+  closeBanner();
+};
+document.getElementById("cookie-save").onclick = () => {
+  const analytics = document.getElementById("toggle-analytics").classList.contains("on");
+  const marketing = document.getElementById("toggle-marketing").classList.contains("on");
+  saveCookiePrefs(analytics, marketing);
+  closeBanner();
+};
 
 [document.getElementById("toggle-analytics"), document.getElementById("toggle-marketing")].forEach(t => {
   t.addEventListener("click", () => {

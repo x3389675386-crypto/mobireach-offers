@@ -2,10 +2,17 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 const { Octokit } = require("@octokit/rest");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
-const upload = multer({ dest: path.join(__dirname, "data", "uploads") });
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const compression = require("compression");
+const upload = multer({
+  dest: path.join(__dirname, "data", "uploads"),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit (#9)
+});
 const XLSX = require("xlsx");
 
 // ── Prevent unhandled rejections from crashing the process ──
@@ -49,6 +56,7 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
 const LOCAL_OFFERS = path.join(DATA_DIR, "offers.json");
 const LOCAL_SUBMISSIONS = path.join(DATA_DIR, "submissions.json");
 const LOCAL_ACCOUNTS = path.join(DATA_DIR, "accounts.json");
+const LOCAL_TOKENS = path.join(DATA_DIR, "tokens.json"); // #2 Token persistence
 const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
 
 let octokit = null;
@@ -113,21 +121,63 @@ if (GH_TOKEN && GH_OWNER) {
     fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
   }
   if (!fs.existsSync(LOCAL_ACCOUNTS)) {
-    // Create default super admin
-    const hash = crypto.createHash("sha256").update("Merlin2026!").digest("hex");
-    fs.writeFileSync(LOCAL_ACCOUNTS, JSON.stringify([{
-      id: 1, username: "Merlin", password: hash, role: "super_admin",
-      createdAt: new Date().toISOString()
-    }], null, 2), "utf-8");
+    // Create default super admin with bcrypt hash (#1)
+    (async () => {
+      const hash = await bcrypt.hash("Merlin2026!", 10);
+      fs.writeFileSync(LOCAL_ACCOUNTS, JSON.stringify([{
+        id: 1, username: "Merlin", password: hash, role: "super_admin",
+        createdAt: new Date().toISOString()
+      }], null, 2), "utf-8");
+    })();
   }
 }
 
 // ── In-memory caches ──
 let offersCache = null;
+let offersCacheTime = 0; // #10 offersCache TTL timestamp
 let submissionsCache = null;
 
-// ── Token store (in-memory) ──
+// ── Token store (in-memory + file persistence) (#2) ──
 const tokens = new Map(); // token → { username, role, expiresAt }
+
+// Load tokens from file on startup (only in local mode)
+if (!useGitHub && fs.existsSync(LOCAL_TOKENS)) {
+  try {
+    const savedTokens = JSON.parse(fs.readFileSync(LOCAL_TOKENS, "utf-8"));
+    if (Array.isArray(savedTokens)) {
+      for (const [t, session] of savedTokens) {
+        // Skip expired tokens
+        if (session.expiresAt && Date.now() < session.expiresAt) {
+          tokens.set(t, session);
+        }
+      }
+    }
+    console.log(`🔑 Restored ${tokens.size} active tokens from file`);
+  } catch (e) {
+    console.warn("⚠️  Failed to load tokens from file:", e.message);
+  }
+}
+
+/** Persist tokens to file (only in local mode) */
+function persistTokens() {
+  if (useGitHub) return;
+  try {
+    const entries = Array.from(tokens.entries());
+    fs.writeFileSync(LOCAL_TOKENS, JSON.stringify(entries, null, 2), "utf-8");
+  } catch (e) {
+    console.error("❌ Failed to persist tokens:", e.message);
+  }
+}
+
+// ── Concurrent write lock (#7) ──
+const writeLocks = {};
+async function withWriteLock(key, fn) {
+  while (writeLocks[key]) await writeLocks[key];
+  let resolve;
+  writeLocks[key] = new Promise(r => resolve = r);
+  try { return await fn(); }
+  finally { delete writeLocks[key]; resolve(); }
+}
 
 // ── GitHub API helpers ──
 async function ghRead(filename) {
@@ -170,29 +220,46 @@ async function ghWrite(filename, jsonData) {
 
 // ── Offers ──
 async function readOffers() {
-  if (offersCache) return offersCache;
+  // #10: Check cache TTL (5 minutes)
+  if (offersCache && offersCacheTime && (Date.now() - offersCacheTime < 5 * 60 * 1000)) {
+    return offersCache;
+  }
+  // Cache expired or not set — clear and re-read
+  offersCache = null;
   if (useGitHub) {
     const data = await ghRead("offers.json");
-    if (data) { offersCache = data; return data; }
+    if (data) { offersCache = data; offersCacheTime = Date.now(); return data; }
     if (fs.existsSync(OFFERS_SEED)) {
       const seed = JSON.parse(fs.readFileSync(OFFERS_SEED, "utf-8"));
       await ghWrite("offers.json", seed);
       offersCache = seed;
+      offersCacheTime = Date.now();
       return seed;
     }
     return [];
   }
-  try { const data = JSON.parse(fs.readFileSync(LOCAL_OFFERS, "utf-8")); offersCache = data; return data; }
-  catch { return []; }
+  try {
+    const data = JSON.parse(fs.readFileSync(LOCAL_OFFERS, "utf-8"));
+    offersCache = data;
+    offersCacheTime = Date.now();
+    return data;
+  } catch (e) {
+    console.error("❌ readOffers failed:", e.message); // #11
+    return [];
+  }
 }
 
 async function writeOffers(data) {
   offersCache = data;
-  if (useGitHub) {
-    await ghWrite("offers.json", data);
-  } else {
-    fs.writeFileSync(LOCAL_OFFERS, JSON.stringify(data, null, 2), "utf-8");
-  }
+  offersCacheTime = Date.now(); // #10: update cache timestamp
+  submissionsCache = null; // #10: invalidate submissionsCache for consistency
+  await withWriteLock("offers", async () => { // #7: write lock
+    if (useGitHub) {
+      await ghWrite("offers.json", data);
+    } else {
+      fs.writeFileSync(LOCAL_OFFERS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
 }
 
 // ── Submissions ──
@@ -205,17 +272,25 @@ async function readSubmissions() {
     submissionsCache = [];
     return [];
   }
-  try { const data = JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8")); submissionsCache = data; return data; }
-  catch { return []; }
+  try {
+    const data = JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8"));
+    submissionsCache = data;
+    return data;
+  } catch (e) {
+    console.error("❌ readSubmissions failed:", e.message); // #11
+    return [];
+  }
 }
 
 async function writeSubmissions(data) {
   submissionsCache = data;
-  if (useGitHub) {
-    await ghWrite("submissions.json", data);
-  } else {
-    fs.writeFileSync(LOCAL_SUBMISSIONS, JSON.stringify(data, null, 2), "utf-8");
-  }
+  await withWriteLock("submissions", async () => { // #7
+    if (useGitHub) {
+      await ghWrite("submissions.json", data);
+    } else {
+      fs.writeFileSync(LOCAL_SUBMISSIONS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
 }
 
 // ── Accounts ──
@@ -224,22 +299,27 @@ async function readAccounts() {
   if (useGitHub) {
     const data = await ghRead("accounts.json");
     if (data) return data;
-    // First run: create default super admin
-    const hash = crypto.createHash("sha256").update("Merlin2026!").digest("hex");
+    // First run: create default super admin with bcrypt (#1)
+    const hash = await bcrypt.hash("Merlin2026!", 10);
     const def = [{ id: 1, username: "Merlin", password: hash, role: "super_admin", createdAt: new Date().toISOString() }];
     await ghWrite("accounts.json", def);
     return def;
   }
   try { return JSON.parse(fs.readFileSync(LOCAL_ACCOUNTS, "utf-8")); }
-  catch { return []; }
+  catch (e) {
+    console.error("❌ readAccounts failed:", e.message); // #11
+    return [];
+  }
 }
 
 async function writeAccounts(data) {
-  if (useGitHub) {
-    await ghWrite("accounts.json", data);
-  } else {
-    fs.writeFileSync(LOCAL_ACCOUNTS, JSON.stringify(data, null, 2), "utf-8");
-  }
+  await withWriteLock("accounts", async () => { // #7
+    if (useGitHub) {
+      await ghWrite("accounts.json", data);
+    } else {
+      fs.writeFileSync(LOCAL_ACCOUNTS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
 }
 
 // ── Orders ──
@@ -251,16 +331,21 @@ async function readOrders() {
     return data || [];
   }
   try { return JSON.parse(fs.readFileSync(LOCAL_ORDERS, "utf-8")); }
-  catch { return []; }
+  catch (e) {
+    console.error("❌ readOrders failed:", e.message); // #11
+    return [];
+  }
 }
 
 async function writeOrders(data) {
-  if (useGitHub) {
-    await ghWrite("orders.json", data);
-  } else {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(LOCAL_ORDERS, JSON.stringify(data, null, 2), "utf-8");
-  }
+  await withWriteLock("orders", async () => { // #7
+    if (useGitHub) {
+      await ghWrite("orders.json", data);
+    } else {
+      if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(LOCAL_ORDERS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
 }
 
 // ── Managed Orders ──
@@ -272,38 +357,85 @@ async function readManagedOrders() {
     return data || [];
   }
   try { return JSON.parse(fs.readFileSync(LOCAL_MANAGED_ORDERS, "utf-8")); }
-  catch { return []; }
+  catch (e) {
+    console.error("❌ readManagedOrders failed:", e.message); // #11
+    return [];
+  }
 }
 
 async function writeManagedOrders(data) {
-  if (useGitHub) {
-    await ghWrite("managed_orders.json", data);
-  } else {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(LOCAL_MANAGED_ORDERS, JSON.stringify(data, null, 2), "utf-8");
-  }
+  await withWriteLock("managed_orders", async () => { // #7
+    if (useGitHub) {
+      await ghWrite("managed_orders.json", data);
+    } else {
+      if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(LOCAL_MANAGED_ORDERS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
 }
-function hashPassword(pw) {
-  return crypto.createHash("sha256").update(pw).digest("hex");
+
+// ── Password hashing with bcryptjs (#1) ──
+const BCRYPT_ROUNDS = 10;
+
+/** Hash a password with bcrypt. Used for new passwords. */
+async function hashPassword(pw) {
+  return bcrypt.hash(pw, BCRYPT_ROUNDS);
+}
+
+/**
+ * Verify a password against an account's stored hash.
+ * Supports both bcrypt hashes and legacy SHA-256 hashes (for migration).
+ * If a legacy hash matches, it auto-migrates to bcrypt.
+ * Returns { valid: boolean, migrated: boolean }
+ */
+async function verifyPassword(plainPw, storedHash, account, allAccounts) {
+  // Check if this is a bcrypt hash (starts with $2a$, $2b$, or $2y$)
+  if (storedHash.startsWith("$2a$") || storedHash.startsWith("$2b$") || storedHash.startsWith("$2y$")) {
+    const valid = await bcrypt.compare(plainPw, storedHash);
+    return { valid, migrated: false };
+  }
+
+  // Legacy SHA-256 migration path
+  // Old SHA-256 hashes are 64-char hex strings
+  if (storedHash.length === 64 && /^[a-f0-9]+$/.test(storedHash)) {
+    const sha256Hash = crypto.createHash("sha256").update(plainPw).digest("hex");
+    if (sha256Hash === storedHash) {
+      // Auto-migrate: re-hash with bcrypt
+      if (account && allAccounts) {
+        try {
+          account.password = await bcrypt.hash(plainPw, BCRYPT_ROUNDS);
+          await writeAccounts(allAccounts);
+          console.log(`🔄 Auto-migrated password for user: ${account.username}`);
+        } catch (e) {
+          console.error(`❌ Failed to migrate password for ${account.username}:`, e.message);
+        }
+      }
+      return { valid: true, migrated: true };
+    }
+  }
+
+  return { valid: false, migrated: false };
 }
 
 function generateToken() {
   return crypto.randomBytes(32).toString("hex");
 }
 
-// Check auth: token-based first, then legacy password
+// Check auth: token-based only (#3: removed legacy password auth)
 async function checkAuth(req, res, requireSuper) {
-  // 1. Token auth
-  const token = req.headers["x-auth-token"] || req.query.token || "";
+  // Token auth (header only — removed query string to avoid token leaking into logs/history)
+  const token = req.headers["x-auth-token"] || "";
   if (token && tokens.has(token)) {
     const session = tokens.get(token);
     if (Date.now() > session.expiresAt) {
       tokens.delete(token);
+      persistTokens(); // #2: sync token deletion
       res.status(401).json({ error: "Token expired" });
       return null;
     }
     // Refresh expiry
     session.expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+    persistTokens(); // #2: sync token refresh
     if (requireSuper && session.role !== "super_admin") {
       res.status(403).json({ error: "Super admin required" });
       return null;
@@ -311,25 +443,41 @@ async function checkAuth(req, res, requireSuper) {
     return session;
   }
 
-  // 2. Legacy password auth
-  const pw = req.query.password || req.headers["x-admin-password"] || "";
-  if (pw === ADMIN_PASSWORD) {
-    return { username: "admin", role: "legacy" };
-  }
-
   res.status(401).json({ error: "Unauthorized" });
   return null;
 }
 
 // ── Middleware ──
-app.use(express.json());
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts/styles for SPA
+  crossOriginEmbedderPolicy: false, // Allow external images (app icons)
+}));
+app.use(compression());
+app.use(express.json({ limit: "1mb" }));
+
+// Login rate limiter: max 5 attempts per minute per IP
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { error: "Too many login attempts. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// #9: File size limit error handling
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({ error: "文件大小超过10MB限制" });
+  }
+  next(err);
+});
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  AUTH ROUTES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 // Login
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", loginLimiter, async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password required" });
@@ -341,8 +489,9 @@ app.post("/api/auth/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const hash = hashPassword(password);
-  if (hash !== account.password) {
+  // #1: Use bcrypt verify with auto-migration
+  const { valid } = await verifyPassword(password, account.password, account, accounts);
+  if (!valid) {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
@@ -352,6 +501,7 @@ app.post("/api/auth/login", async (req, res) => {
     role: account.role,
     expiresAt: Date.now() + 24 * 60 * 60 * 1000
   });
+  persistTokens(); // #2: persist new token
 
   res.json({
     success: true,
@@ -372,6 +522,7 @@ app.get("/api/auth/me", async (req, res) => {
 app.post("/api/auth/logout", (req, res) => {
   const token = req.headers["x-auth-token"] || "";
   tokens.delete(token);
+  persistTokens(); // #2: sync token deletion
   res.json({ success: true });
 });
 
@@ -392,12 +543,14 @@ app.post("/api/auth/change-password", async (req, res) => {
   const account = accounts.find(a => a.username === session.username);
   if (!account) return res.status(404).json({ error: "Account not found" });
 
-  const currentHash = hashPassword(currentPassword);
-  if (currentHash !== account.password) {
+  // #1: Use bcrypt verify for current password
+  const { valid } = await verifyPassword(currentPassword, account.password, account, accounts);
+  if (!valid) {
     return res.status(401).json({ error: "Current password is incorrect" });
   }
 
-  account.password = hashPassword(newPassword);
+  // #1: Hash new password with bcrypt
+  account.password = await hashPassword(newPassword);
   await writeAccounts(accounts);
   res.json({ success: true });
 });
@@ -444,10 +597,11 @@ app.post("/api/accounts", async (req, res) => {
   }
 
   const maxId = accounts.reduce((max, a) => Math.max(max, a.id), 0);
+  // #1: Use bcrypt hash for new account
   const newAccount = {
     id: maxId + 1,
     username,
-    password: hashPassword(password),
+    password: await hashPassword(password),
     role,
     createdAt: new Date().toISOString()
   };
@@ -498,7 +652,8 @@ app.post("/api/accounts/:id/reset-password", async (req, res) => {
   const account = accounts.find(a => a.id === parseInt(req.params.id));
   if (!account) return res.status(404).json({ error: "Account not found" });
 
-  account.password = hashPassword(newPassword);
+  // #1: Use bcrypt hash for reset password
+  account.password = await hashPassword(newPassword);
   await writeAccounts(accounts);
   res.json({ success: true });
 });
@@ -720,7 +875,9 @@ app.post("/api/orders", async (req, res) => {
         sub.status = "contacted";
         await writeSubmissions(subs);
       }
-    } catch (e) { /* non-critical */ }
+    } catch (e) {
+      console.error("❌ Auto-update submission status failed:", e.message); // #11
+    }
   }
 
   res.json({ success: true, order });
@@ -826,7 +983,9 @@ app.post("/api/orders/send", async (req, res) => {
         sub.status = "contacted";
         await writeSubmissions(subs);
       }
-    } catch (e) { /* non-critical */ }
+    } catch (e) {
+      console.error("❌ Auto-update submission status failed:", e.message); // #11
+    }
   }
 
   res.json({ success: true, order });
@@ -992,7 +1151,7 @@ app.delete("/api/managed-orders/:id", async (req, res) => {
   res.json({ success: true });
 });
 
-// Export managed orders to Excel
+// Export managed orders to Excel (#24: auto column width)
 app.get("/api/managed-orders/export", async (req, res) => {
   const session = await checkAuth(req, res);
   if (!session) return;
@@ -1016,12 +1175,22 @@ app.get("/api/managed-orders/export", async (req, res) => {
   }
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // #24: Auto-fit column widths
+  const colWidths = headers.map((h, i) => {
+    let max = h.length;
+    rows.forEach(r => { if (r[i] && String(r[i]).length > max) max = String(r[i]).length; });
+    return { wch: Math.min(max + 2, 40) };
+  });
+  ws['!cols'] = colWidths;
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "订单管理");
   const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 
+  const filename = `orders_${new Date().toISOString().slice(0,10)}.xlsx`;
   res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-  res.setHeader("Content-Disposition", `attachment; filename="orders_${new Date().toISOString().slice(0,10)}.xlsx"`);
+  res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`); // Chinese filename
   res.send(buf);
 });
 
@@ -1032,8 +1201,27 @@ app.get("/api/managed-orders/export", async (req, res) => {
 // In-memory store for split results (keyed by session token hash)
 const pubSplitCache = new Map();
 
-// Split PUB bill Excel by customer ID
-app.post("/api/pub-bills/split", upload.single("file"), (req, res) => {
+// #8: Periodic cache cleanup (every 10 min, expire after 30 min)
+function cleanPubSplitCache() {
+  const now = Date.now();
+  const MAX_AGE = 30 * 60 * 1000; // 30 minutes
+  let cleaned = 0;
+  for (const [key, val] of pubSplitCache) {
+    if (now - val.createdAt > MAX_AGE) {
+      try { if (val.path) fs.unlinkSync(val.path); } catch (_) {}
+      pubSplitCache.delete(key);
+      cleaned++;
+    }
+  }
+  if (cleaned > 0) console.log(`🧹 Cleaned ${cleaned} expired PUB split cache entries`);
+}
+setInterval(cleanPubSplitCache, 10 * 60 * 1000);
+
+// #4: PUB账单 split API now requires auth
+app.post("/api/pub-bills/split", upload.single("file"), async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
   let wb, sheets;
@@ -1043,7 +1231,7 @@ app.post("/api/pub-bills/split", upload.single("file"), (req, res) => {
     if (!sheets.length) throw new Error("Empty workbook");
   } catch (e) {
     try { fs.unlinkSync(req.file.path); } catch (_) {}
-    return res.status(400).json({ error: "无法解析 Excel 文件: " + e.message });
+    return res.status(400).json({ error: "无法解析 Excel 文件: " + e.message }); // #11: Chinese error
   }
 
   // Identify the "客户编号" column and collect all rows
@@ -1149,19 +1337,23 @@ app.post("/api/pub-bills/split", upload.single("file"), (req, res) => {
   });
 });
 
-// Download split result
-app.get("/api/pub-bills/download/:id", (req, res) => {
+// #4: PUB账单 download API now requires auth
+app.get("/api/pub-bills/download/:id", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
   const info = pubSplitCache.get(req.params.id);
-  if (!info) return res.status(404).json({ error: "结果已过期，请重新上传" });
+  if (!info) return res.status(404).json({ error: "结果已过期，请重新上传" }); // #11: Chinese error
 
   try {
     const buf = fs.readFileSync(info.path);
     const filename = `PUB_${info.customers}customers_${new Date().toISOString().slice(0,10)}.xlsx`;
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`); // Chinese filename
     res.send(buf);
   } catch (e) {
-    res.status(500).json({ error: "文件读取失败" });
+    console.error("❌ PUB bill download failed:", e.message); // #11
+    res.status(500).json({ error: "文件读取失败" }); // #11: Chinese error
   } finally {
     try { fs.unlinkSync(info.path); } catch (_) {}
     pubSplitCache.delete(req.params.id);
@@ -1175,6 +1367,19 @@ app.get("/admin", (req, res) => {
 
 // ── Static files (after API routes) ──
 app.use(express.static(__dirname));
+
+// ── Global error handler (must be last middleware) ──
+app.use((err, req, res, next) => {
+  // Multer file-size errors already handled above, but catch anything else
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({ error: "Request body too large" });
+  }
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({ error: "文件大小超过10MB限制" });
+  }
+  console.error("🔥 Unhandled error:", err.stack || err);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 // ── Start ──
 app.listen(PORT, async () => {

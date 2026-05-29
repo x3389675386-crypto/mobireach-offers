@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mobireach · Admin Panel</title>
+  <!-- #18: SVG inline favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%236366f1'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white' font-family='sans-serif'>M</text></svg>" />
+  <!-- #19: Google Fonts with preconnect and fallback CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.loli.net" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -298,6 +304,12 @@
       table { min-width: 900px; }
       .form-row { flex-direction: column; }
       .admin-nav-left { flex-wrap: wrap; }
+      /* #26: Order search bar wraps on small screens */
+      .table-header > div { flex-wrap: wrap; }
+      /* #26: Stats bar stacks vertically on small screens */
+      .stats-row { flex-direction: column; gap: 8px; }
+      .stats-row .stat-card { min-width: 0; }
+      .tab-nav { overflow-x: auto; }
     }
   </style>
 </head>
@@ -427,6 +439,13 @@
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <input type="text" class="form-input" id="mo-cust-search" placeholder="客户编号..." style="width:120px;font-size:12px;padding:6px 10px" />
             <input type="text" class="form-input" id="mo-chan-search" placeholder="下单渠道..." style="width:140px;font-size:12px;padding:6px 10px" />
+            <select id="mo-status-filter" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:var(--font);background:#fff;cursor:pointer;color:var(--text2)">
+              <option value="">全部状态</option>
+              <option value="运行中">运行中</option>
+              <option value="暂停中">暂停中</option>
+              <option value="已完成">已完成</option>
+              <option value="已取消">已取消</option>
+            </select>
             <input type="text" class="form-input" id="mo-search" placeholder="其他关键词..." style="width:130px;font-size:12px;padding:6px 10px" />
             <label class="btn-secondary btn-sm" id="mo-import-label" style="cursor:pointer;display:flex;align-items:center;gap:4px">
               📥 导入Excel
@@ -439,20 +458,26 @@
           <table id="mo-table">
             <thead>
               <tr>
-                <th style="width:70px">客户编号</th>
-                <th style="width:130px">下单渠道</th>
-                <th style="width:105px">状态</th>
+                <th style="width:70px;cursor:pointer" onclick="sortMoTable('customer_id')">客户编号 <span id="mo-sort-customer_id"></span></th>
+                <th style="width:130px;cursor:pointer" onclick="sortMoTable('channel')">下单渠道 <span id="mo-sort-channel"></span></th>
+                <th style="width:105px;cursor:pointer" onclick="sortMoTable('status')">状态 <span id="mo-sort-status"></span></th>
                 <th style="width:200px">备注 / 注意事项</th>
-                <th style="width:60px">平台</th>
-                <th style="width:120px">Campaign</th>
-                <th style="width:110px">PRT</th>
-                <th style="width:110px">PID</th>
-                <th style="width:65px">Payout</th>
+                <th style="width:60px;cursor:pointer" onclick="sortMoTable('platform')">平台 <span id="mo-sort-platform"></span></th>
+                <th style="width:120px;cursor:pointer" onclick="sortMoTable('campaign_name')">Campaign <span id="mo-sort-campaign_name"></span></th>
+                <th style="width:110px;cursor:pointer" onclick="sortMoTable('prt')">PRT <span id="mo-sort-prt"></span></th>
+                <th style="width:110px;cursor:pointer" onclick="sortMoTable('pid')">PID <span id="mo-sort-pid"></span></th>
+                <th style="width:65px;cursor:pointer" onclick="sortMoTable('payout')">Payout <span id="mo-sort-payout"></span></th>
                 <th style="width:55px">操作</th>
               </tr>
             </thead>
             <tbody id="mo-tbody"></tbody>
           </table>
+          <!-- #14: Pagination controls -->
+          <div id="mo-pagination" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--text2)">
+            <button class="btn-secondary btn-xs" id="mo-prev-btn" onclick="moPrevPage()">上一页</button>
+            <span id="mo-page-info">1 / 1</span>
+            <button class="btn-secondary btn-xs" id="mo-next-btn" onclick="moNextPage()">下一页</button>
+          </div>
         </div>
         <div class="empty" id="mo-empty">暂无订单。请导入 Excel 文件开始管理。</div>
       </div>
@@ -467,7 +492,7 @@
         </div>
 
         <!-- Upload Area -->
-        <div style="padding:20px;text-align:center;border:2px dashed var(--border);border-radius:8px;margin:12px 0;background:#fafbfc" id="pub-upload-area">
+        <div style="padding:20px;text-align:center;border:2px dashed var(--border);border-radius:8px;margin:12px 0;background:#fafbfc;transition:border-color 0.2s,background 0.2s" id="pub-upload-area">
           <div style="font-size:40px;margin-bottom:8px">📁</div>
           <p style="color:var(--text2);margin:0 0 8px 0">拖拽或点击上传 PUB 账单 Excel 文件</p>
           <p style="color:var(--text3);font-size:11px;margin:0 0 12px 0">支持多 Sheet，自动识别客户编号列，按客户拆分</p>
@@ -871,6 +896,18 @@ let accounts = [];
 let currentTab = "offers";
 let editGeos = [];
 let editIntegrations = [];
+
+// #14: Pagination state for managed orders
+let moAllOrders = []; // full dataset from API
+let moCurrentPage = 1;
+const moPageSize = 50;
+
+// #25: Sort state for managed orders
+let moSortField = "";
+let moSortDir = "asc"; // "asc" or "desc"
+
+// #15: Debounce utility
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
 // ────────────────────────────────────
 // I18N
@@ -1655,8 +1692,8 @@ function renderOffers() {
 
   tbody.innerHTML = offers.map(o => {
     const iconHtml = o.icon
-      ? `<div class="icon-preview"><img src="${o.icon}" alt="" /></div>`
-      : `<div class="icon-preview"><span>${o.iconLetter || o.name[0]}</span></div>`;
+      ? `<div class="icon-preview"><img src="${esc(o.icon)}" alt="" /></div>`
+      : `<div class="icon-preview"><span>${esc(o.iconLetter || o.name[0])}</span></div>`;
     const badgeClass = o.platform === "ios" ? "badge-ios" : "badge-android";
     const platformLabel = o.platform === "ios" ? "iOS" : "Android";
     const geos = (o.geos || []).slice(0, 6);
@@ -1666,7 +1703,7 @@ function renderOffers() {
       <td>
         <div class="offer-name-cell">
           ${iconHtml}
-          <strong>${o.name}</strong>
+          <strong>${esc(o.name)}</strong>
         </div>
       </td>
       <td><span class="badge ${badgeClass}">${platformLabel}</span></td>
@@ -1675,9 +1712,9 @@ function renderOffers() {
                value="${o.payout}" style="width:80px;text-align:right"
                onchange="quickUpdate(${o.id}, 'payout', parseFloat(this.value)||0)" />
       </td>
-      <td style="font-size:11px;max-width:160px">${geos.join(", ")}${moreGeo}</td>
+      <td style="font-size:11px;max-width:160px">${geos.map(g => esc(g)).join(", ")}${moreGeo}</td>
       <td>
-        <input class="inline-input" type="text" value="${o.icon || ''}"
+        <input class="inline-input" type="text" value="${esc(o.icon || '')}"
                placeholder="${t("iconUrlPlaceholderInline")}"
                onchange="quickUpdate(${o.id}, 'icon', this.value)" />
       </td>
@@ -2061,6 +2098,26 @@ setInterval(() => {
   }
 }, 30000);
 
+// #16: Periodic token validity check (every 5 minutes)
+setInterval(async () => {
+  if (!authToken || dashboard.style.display === "none") return;
+  try {
+    const res = await fetch("/api/auth/me", { headers: authHeaders() });
+    if (!res.ok) {
+      // Token expired/invalid — force logout
+      authToken = "";
+      currentUser = null;
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+      dashboard.style.display = "none";
+      loginWrap.style.display = "flex";
+    }
+  } catch (e) {
+    // Network error — don't force logout, just log
+    console.warn("Token check failed:", e.message);
+  }
+}, 5 * 60 * 1000);
+
 // Apply language on initial load
 applyLanguage();
 
@@ -2391,6 +2448,7 @@ async function loadManagedOrders() {
   const custQ = document.getElementById("mo-cust-search").value.trim();
   const chanQ = document.getElementById("mo-chan-search").value.trim();
   const genQ = document.getElementById("mo-search").value.trim();
+  const statusFilter = document.getElementById("mo-status-filter").value; // #21
 
   const params = new URLSearchParams();
   if (custQ) params.set("customer_id", custQ);
@@ -2409,7 +2467,16 @@ async function loadManagedOrders() {
     return;
   }
 
-  // Stats
+  // #21: Frontend status filter
+  if (statusFilter) {
+    orders = orders.filter(o => o.status === statusFilter);
+  }
+
+  // Store full dataset for pagination
+  moAllOrders = orders;
+  moCurrentPage = 1; // reset page on reload
+
+  // Stats (based on full dataset before pagination)
   const stats = document.getElementById("mo-stats");
   const running = orders.filter(o => o.status === "运行中").length;
   const paused = orders.filter(o => o.status === "暂停中").length;
@@ -2423,16 +2490,58 @@ async function loadManagedOrders() {
     <div class="stat-card" style="border-left:3px solid var(--red)"><div class="num" style="color:var(--red)">${cancelled}</div><div class="lbl">已取消</div></div>
   `;
 
-  tbody.innerHTML = "";
   if (!orders.length) {
+    tbody.innerHTML = "";
     empty.style.display = "block";
     document.getElementById("mo-table").style.display = "none";
+    document.getElementById("mo-pagination").style.display = "none";
     return;
   }
   empty.style.display = "none";
   document.getElementById("mo-table").style.display = "";
+  document.getElementById("mo-pagination").style.display = "flex";
 
-  for (const o of orders) {
+  renderMoPage(); // #14: render with pagination
+
+  // Update export href
+  document.getElementById("mo-export-btn").onclick = () => {
+    window.open("/api/managed-orders/export?token=" + encodeURIComponent(authToken), "_blank");
+  };
+}
+
+// #14: Render current page of managed orders
+function renderMoPage() {
+  const tbody = document.getElementById("mo-tbody");
+  const orders = moAllOrders;
+
+  // #25: Apply sort
+  let sorted = [...orders];
+  if (moSortField) {
+    sorted.sort((a, b) => {
+      let va = a[moSortField] || "";
+      let vb = b[moSortField] || "";
+      // Try numeric sort for customer_id, payout
+      if (["customer_id", "payout"].includes(moSortField)) {
+        va = parseFloat(va) || 0;
+        vb = parseFloat(vb) || 0;
+      } else {
+        va = String(va).toLowerCase();
+        vb = String(vb).toLowerCase();
+      }
+      if (va < vb) return moSortDir === "asc" ? -1 : 1;
+      if (va > vb) return moSortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(sorted.length / moPageSize));
+  if (moCurrentPage > totalPages) moCurrentPage = totalPages;
+  const start = (moCurrentPage - 1) * moPageSize;
+  const pageOrders = sorted.slice(start, start + moPageSize);
+
+  tbody.innerHTML = "";
+  for (const o of pageOrders) {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
@@ -2458,10 +2567,34 @@ async function loadManagedOrders() {
     tbody.appendChild(tr);
   }
 
-  // Update export href
-  document.getElementById("mo-export-btn").onclick = () => {
-    window.open("/api/managed-orders/export?token=" + encodeURIComponent(authToken), "_blank");
-  };
+  // #14: Update pagination info
+  document.getElementById("mo-page-info").textContent = `${moCurrentPage} / ${totalPages}`;
+  document.getElementById("mo-prev-btn").disabled = moCurrentPage <= 1;
+  document.getElementById("mo-next-btn").disabled = moCurrentPage >= totalPages;
+}
+
+// #14: Pagination navigation
+function moPrevPage() {
+  if (moCurrentPage > 1) { moCurrentPage--; renderMoPage(); }
+}
+function moNextPage() {
+  const totalPages = Math.max(1, Math.ceil(moAllOrders.length / moPageSize));
+  if (moCurrentPage < totalPages) { moCurrentPage++; renderMoPage(); }
+}
+
+// #25: Sort managed orders table
+function sortMoTable(field) {
+  if (moSortField === field) {
+    moSortDir = moSortDir === "asc" ? "desc" : "asc";
+  } else {
+    moSortField = field;
+    moSortDir = "asc";
+  }
+  // Update sort indicators
+  document.querySelectorAll("[id^='mo-sort-']").forEach(el => el.textContent = "");
+  const indicator = document.getElementById("mo-sort-" + field);
+  if (indicator) indicator.textContent = moSortDir === "asc" ? "▲" : "▼";
+  renderMoPage();
 }
 
 function renderNotesTags(notes) {
