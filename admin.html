@@ -2489,23 +2489,14 @@ function openNotesEditor(el, id) {
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;align-items:center";
 
-  // Free text input
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = selectedTags.filter(t => !MO_NOTE_TAGS.includes(t)).join(", ");
-  input.placeholder = "+ 自定义备注";
-  input.style.cssText = "border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;width:120px;outline:none;font-family:var(--font)";
-
-  function getCustomText() {
-    return input.value.split(",").map(t => t.trim()).filter(Boolean);
+  function saveAll() {
+    saveMoNotes(id, selectedTags.join(", "));
   }
 
   function saveAndClose() {
-    const custom = getCustomText();
-    const all = [...selectedTags, ...custom];
-    el.innerHTML = renderNotesTags(all.join(", "));
+    el.innerHTML = renderNotesTags(selectedTags.join(", "));
     el.classList.remove("editing");
-    saveMoNotes(id, all.join(", "));
+    saveAll();
     document.removeEventListener("mousedown", closeOnClickOutside);
   }
 
@@ -2515,7 +2506,27 @@ function openNotesEditor(el, id) {
     }
   }
 
-  // Chips — use mousedown so it fires BEFORE input blur, preventing DOM destruction
+  // 渲染自定义备注 chip（可点击删除）
+  function renderCustomChips() {
+    wrapper.querySelectorAll(".custom-tag-chip").forEach(c => c.remove());
+    const customTags = selectedTags.filter(t => !MO_NOTE_TAGS.includes(t));
+    customTags.forEach(tag => {
+      const chip = document.createElement("span");
+      chip.className = "custom-tag-chip";
+      chip.innerHTML = esc(tag) + ' <span style="font-weight:700;margin-left:2px">&times;</span>';
+      chip.style.cssText = "display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:#f1f5f9;color:var(--text2)";
+      chip.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        const idx = selectedTags.indexOf(tag);
+        if (idx !== -1) selectedTags.splice(idx, 1);
+        chip.remove();
+        saveAll();
+      });
+      wrapper.insertBefore(chip, input);
+    });
+  }
+
+  // 预设标签 chips（toggle 切换）
   MO_NOTE_TAGS.forEach(tag => {
     const chip = document.createElement("span");
     chip.textContent = tag;
@@ -2535,19 +2546,36 @@ function openNotesEditor(el, id) {
         this.style.background = "var(--accent-light)";
         this.style.color = "var(--accent)";
       }
-      const customText = getCustomText();
-      saveMoNotes(id, [...selectedTags, ...customText].join(", "));
-      return false;
+      saveAll();
     });
     wrapper.appendChild(chip);
   });
 
+  // 输入框（仅用于添加新备注，Enter 添加、不清空；Escape 关闭）
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "+ 添加新备注";
+  input.style.cssText = "border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;width:130px;outline:none;font-family:var(--font)";
+
   input.onkeydown = function(e) {
-    if (e.key === "Enter") { e.preventDefault(); saveAndClose(); }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (val) {
+        val.split(",").map(t => t.trim()).filter(Boolean).forEach(t => {
+          if (!selectedTags.includes(t)) selectedTags.push(t);
+        });
+        input.value = "";
+        renderCustomChips();
+        saveAll();
+      }
+    }
     if (e.key === "Escape") { e.preventDefault(); saveAndClose(); }
   };
 
   wrapper.appendChild(input);
+  renderCustomChips();
+
   el.innerHTML = "";
   el.classList.add("editing");
   el.appendChild(wrapper);
