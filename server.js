@@ -57,6 +57,8 @@ const LOCAL_OFFERS = path.join(DATA_DIR, "offers.json");
 const LOCAL_SUBMISSIONS = path.join(DATA_DIR, "submissions.json");
 const LOCAL_ACCOUNTS = path.join(DATA_DIR, "accounts.json");
 const LOCAL_TOKENS = path.join(DATA_DIR, "tokens.json"); // #2 Token persistence
+const LOCAL_AUDIT = path.join(DATA_DIR, "audit.json"); // #12 Audit log
+const LOCAL_EMAIL_TEMPLATES = path.join(DATA_DIR, "email_templates.json"); // #16 Email templates
 const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
 
 let octokit = null;
@@ -129,6 +131,21 @@ if (GH_TOKEN && GH_OWNER) {
         createdAt: new Date().toISOString()
       }], null, 2), "utf-8");
     })();
+  }
+  // #12: Initialize audit.json
+  if (!fs.existsSync(LOCAL_AUDIT)) {
+    fs.writeFileSync(LOCAL_AUDIT, "[]", "utf-8");
+  }
+  // #16: Initialize email_templates.json with default template
+  if (!fs.existsSync(LOCAL_EMAIL_TEMPLATES)) {
+    const defaultTemplates = {
+      default: {
+        name: "默认模板",
+        subject: "MobiReach - {offerName} Offer Details",
+        body: "Hi {publisher},\n\nHere are the details for {offerName}...\n\nPayout: {payout}\nGEO: {geo}\n\nBest regards,\nMobiReach Team"
+      }
+    };
+    fs.writeFileSync(LOCAL_EMAIL_TEMPLATES, JSON.stringify(defaultTemplates, null, 2), "utf-8");
   }
 }
 
@@ -382,6 +399,103 @@ async function writeManagedOrders(data) {
   });
 }
 
+// ── Audit Log (#12) ──
+async function readAuditLog() {
+  if (useGitHub) {
+    const data = await ghRead("audit.json");
+    return data || [];
+  }
+  try { return JSON.parse(fs.readFileSync(LOCAL_AUDIT, "utf-8")); }
+  catch (e) { return []; }
+}
+
+async function writeAuditLogData(data) {
+  await withWriteLock("audit", async () => {
+    if (useGitHub) {
+      await ghWrite("audit.json", data);
+    } else {
+      if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(LOCAL_AUDIT, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
+}
+
+/**
+ * Write an audit log entry. Wrapped in try-catch so audit failure never blocks business.
+ * @param {string} action - create/update/delete/batch_delete/batch_update/export/import/login
+ * @param {string} target - offers/submissions/orders/accounts/email_templates
+ * @param {string} targetId - ID of the affected resource
+ * @param {object|string} detail - Details about the change
+ * @param {object} req - Express request object (for user info)
+ */
+async function writeAudit(action, target, targetId, detail, req) {
+  try {
+    const audit = await readAuditLog();
+    let user = "system";
+    if (req && req.headers && req.headers["x-auth-token"]) {
+      const session = tokens.get(req.headers["x-auth-token"]);
+      if (session) user = session.username;
+    } else if (req && req.body && req.body.username) {
+      user = req.body.username;
+    }
+    audit.push({
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      user,
+      action,
+      target,
+      targetId: String(targetId || ""),
+      detail: typeof detail === "string" ? detail : JSON.stringify(detail || {})
+    });
+    // Keep last 10000 entries to prevent unbounded growth
+    if (audit.length > 10000) audit.splice(0, audit.length - 10000);
+    await writeAuditLogData(audit);
+  } catch (e) {
+    console.error("❌ Audit write failed:", e.message);
+    // Audit failure must not block business operations
+  }
+}
+
+// ── Email Templates (#16) ──
+async function readEmailTemplates() {
+  if (useGitHub) {
+    const data = await ghRead("email_templates.json");
+    if (data) return data;
+    const def = {
+      default: {
+        name: "默认模板",
+        subject: "MobiReach - {offerName} Offer Details",
+        body: "Hi {publisher},\n\nHere are the details for {offerName}...\n\nPayout: {payout}\nGEO: {geo}\n\nBest regards,\nMobiReach Team"
+      }
+    };
+    await ghWrite("email_templates.json", def);
+    return def;
+  }
+  try { return JSON.parse(fs.readFileSync(LOCAL_EMAIL_TEMPLATES, "utf-8")); }
+  catch (e) {
+    const def = {
+      default: {
+        name: "默认模板",
+        subject: "MobiReach - {offerName} Offer Details",
+        body: "Hi {publisher},\n\nHere are the details for {offerName}...\n\nPayout: {payout}\nGEO: {geo}\n\nBest regards,\nMobiReach Team"
+      }
+    };
+    fs.writeFileSync(LOCAL_EMAIL_TEMPLATES, JSON.stringify(def, null, 2), "utf-8");
+    return def;
+  }
+}
+
+async function writeEmailTemplatesData(data) {
+  await withWriteLock("email_templates", async () => {
+    if (useGitHub) {
+      await ghWrite("email_templates.json", data);
+    } else {
+      if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(LOCAL_EMAIL_TEMPLATES, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
+}
+
 // ── Password hashing with bcryptjs (#1) ──
 const BCRYPT_ROUNDS = 10;
 
@@ -517,6 +631,8 @@ app.post("/api/auth/login", loginLimiter, async (req, res) => {
     username: account.username,
     role: account.role
   });
+  // #12: Audit login
+  writeAudit("login", "accounts", account.id, { username: account.username }, req);
 });
 
 // Check token validity
@@ -616,6 +732,9 @@ app.post("/api/accounts", async (req, res) => {
   accounts.push(newAccount);
   await writeAccounts(accounts);
 
+  // #12: Audit
+  writeAudit("create", "accounts", newAccount.id, { username: newAccount.username, role: newAccount.role }, req);
+
   res.status(201).json({
     success: true,
     account: { id: newAccount.id, username: newAccount.username, role: newAccount.role, createdAt: newAccount.createdAt }
@@ -643,6 +762,8 @@ app.put("/api/accounts/:id", async (req, res) => {
 
   account.role = role;
   await writeAccounts(accounts);
+  // #12: Audit
+  writeAudit("update", "accounts", account.id, { role }, req);
   res.json({ success: true, account: { id: account.id, username: account.username, role: account.role } });
 });
 
@@ -663,6 +784,8 @@ app.post("/api/accounts/:id/reset-password", async (req, res) => {
   // #1: Use bcrypt hash for reset password
   account.password = await hashPassword(newPassword);
   await writeAccounts(accounts);
+  // #12: Audit
+  writeAudit("update", "accounts", account.id, { action: "reset_password" }, req);
   res.json({ success: true });
 });
 
@@ -689,6 +812,8 @@ app.delete("/api/accounts/:id", async (req, res) => {
 
   const filtered = accounts.filter(a => a.id !== parseInt(req.params.id));
   await writeAccounts(filtered);
+  // #12: Audit
+  writeAudit("delete", "accounts", req.params.id, { username: account.username }, req);
   res.json({ success: true });
 });
 
@@ -735,6 +860,46 @@ app.get("/api/offers", async (req, res) => {
   res.json({ data: all.slice(start, start + limit), total: all.length, page, limit });
 });
 
+// Export Offers to Excel (must be before /:id route)
+app.get("/api/offers/export", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const offers = await readOffers();
+  // #12: Audit
+  writeAudit("export", "offers", "all", { count: offers.length }, req);
+  const headers = ["名称", "平台", "单价", "GEO", "商店链接", "状态", "KPI", "PRT", "PID", "集成方式", "备注"];
+  const rows = [headers];
+  for (const o of offers) {
+    const d = o.details || {};
+    rows.push([
+      o.name || "",
+      o.platform || "",
+      o.payout || 0,
+      (o.geos || []).join(", "),
+      d.storeUrl || "",
+      "active",
+      d.kpi || "",
+      d.prt || "",
+      d.payableEvent || "",
+      (d.integrations || []).join(", "),
+      d.flow || ""
+    ]);
+  }
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const colWidths = headers.map((h, i) => {
+    let max = h.length;
+    rows.forEach(r => { if (r[i] && String(r[i]).length > max) max = String(r[i]).length; });
+    return { wch: Math.min(max + 2, 40) };
+  });
+  ws['!cols'] = colWidths;
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Offers");
+  const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+  const filename = `offers_${new Date().toISOString().slice(0,10)}.xlsx`;
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+  res.send(buf);
+});
+
 // Get Single Offer (public)
 app.get("/api/offers/:id", async (req, res) => {
   const offers = await readOffers();
@@ -770,7 +935,55 @@ app.patch("/api/submissions/:id/status", async (req, res) => {
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   submissions[idx].status = status;
   await writeSubmissions(submissions);
+  // #12: Audit
+  writeAudit("update", "submissions", req.params.id, { status }, req);
   res.json({ success: true });
+});
+
+// Batch Delete Submissions
+app.delete("/api/submissions/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.length) {
+    return res.status(400).json({ error: "ids array required" });
+  }
+  let submissions = await readSubmissions();
+  const idSet = new Set(ids);
+  const before = submissions.length;
+  submissions = submissions.filter(s => !idSet.has(s.id));
+  const deleted = before - submissions.length;
+  await writeSubmissions(submissions);
+  // #12: Audit
+  writeAudit("batch_delete", "submissions", ids.length + " items", { deleted }, req);
+  res.json({ success: true, deleted });
+});
+
+// Batch Update Submissions
+app.patch("/api/submissions/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids, updates } = req.body;
+  if (!Array.isArray(ids) || !ids.length) {
+    return res.status(400).json({ error: "ids array required" });
+  }
+  if (!updates || typeof updates !== "object") {
+    return res.status(400).json({ error: "updates object required" });
+  }
+  if (updates.status && !["new", "viewed", "contacted"].includes(updates.status)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+  const submissions = await readSubmissions();
+  const idSet = new Set(ids);
+  let updated = 0;
+  for (const sub of submissions) {
+    if (idSet.has(sub.id)) {
+      if (updates.status !== undefined) sub.status = updates.status;
+      updated++;
+    }
+  }
+  await writeSubmissions(submissions);
+  // #12: Audit
+  writeAudit("batch_update", "submissions", ids.length + " items", { updates, updated }, req);
+  res.json({ success: true, updated });
 });
 
 // Delete Submission
@@ -779,6 +992,8 @@ app.delete("/api/submissions/:id", async (req, res) => {
   let submissions = await readSubmissions();
   submissions = submissions.filter(s => s.id !== req.params.id);
   await writeSubmissions(submissions);
+  // #12: Audit
+  writeAudit("delete", "submissions", req.params.id, {}, req);
   res.json({ success: true });
 });
 
@@ -797,6 +1012,8 @@ app.put("/api/offers/:id", async (req, res) => {
   });
 
   await writeOffers(offers);
+  // #12: Audit
+  writeAudit("update", "offers", req.params.id, { updatedFields: allowedFields.filter(f => req.body[f] !== undefined) }, req);
   res.json({ success: true, offer: offers[idx] });
 });
 
@@ -821,7 +1038,57 @@ app.post("/api/offers", async (req, res) => {
   };
   offers.push(newOffer);
   await writeOffers(offers);
+  // #12: Audit
+  writeAudit("create", "offers", newOffer.id, { name: newOffer.name, platform: newOffer.platform }, req);
   res.status(201).json({ success: true, offer: newOffer });
+});
+
+// Batch Delete Offers
+app.delete("/api/offers/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.length) {
+    return res.status(400).json({ error: "ids array required" });
+  }
+  let offers = await readOffers();
+  const idSet = new Set(ids.map(id => parseInt(id)));
+  const before = offers.length;
+  offers = offers.filter(o => !idSet.has(o.id));
+  const deleted = before - offers.length;
+  await writeOffers(offers);
+  // #12: Audit
+  writeAudit("batch_delete", "offers", ids.length + " items", { deleted }, req);
+  res.json({ success: true, deleted });
+});
+
+// Batch Update Offers
+app.patch("/api/offers/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids, updates } = req.body;
+  if (!Array.isArray(ids) || !ids.length) {
+    return res.status(400).json({ error: "ids array required" });
+  }
+  if (!updates || typeof updates !== "object") {
+    return res.status(400).json({ error: "updates object required" });
+  }
+  const allowedFields = ["name", "platform", "payout", "currency", "geos", "icon", "iconLetter", "details"];
+  const updateFields = Object.keys(updates).filter(k => allowedFields.includes(k));
+  if (!updateFields.length) {
+    return res.status(400).json({ error: "No valid fields to update" });
+  }
+  const offers = await readOffers();
+  const idSet = new Set(ids.map(id => parseInt(id)));
+  let updated = 0;
+  for (const offer of offers) {
+    if (idSet.has(offer.id)) {
+      updateFields.forEach(field => { offer[field] = updates[field]; });
+      updated++;
+    }
+  }
+  await writeOffers(offers);
+  // #12: Audit
+  writeAudit("batch_update", "offers", ids.length + " items", { updateFields, updated }, req);
+  res.json({ success: true, updated });
 });
 
 // Delete Offer
@@ -832,6 +1099,8 @@ app.delete("/api/offers/:id", async (req, res) => {
   offers = offers.filter(o => o.id !== parseInt(req.params.id));
   if (offers.length === before) return res.status(404).json({ error: "Not found" });
   await writeOffers(offers);
+  // #12: Audit
+  writeAudit("delete", "offers", req.params.id, {}, req);
   res.json({ success: true });
 });
 
@@ -888,6 +1157,9 @@ app.post("/api/orders", async (req, res) => {
   const orders = await readOrders();
   orders.unshift(order);
   await writeOrders(orders);
+
+  // #12: Audit
+  writeAudit("create", "orders", order.id, { publisher, offerName, status: "saved" }, req);
 
   // Auto-update submission status to "contacted"
   if (order.submissionId) {
@@ -949,6 +1221,9 @@ app.post("/api/orders/send", async (req, res) => {
   const orders = await readOrders();
   orders.unshift(order);
   await writeOrders(orders);
+
+  // #12: Audit
+  writeAudit("create", "orders", order.id, { publisher, offerName, status: "sending" }, req);
 
   if (!transporter) {
     order.status = "saved_no_email";
@@ -1096,6 +1371,8 @@ app.post("/api/managed-orders/import", upload.single("file"), async (req, res) =
   }
 
   await writeManagedOrders(existing);
+  // #12: Audit
+  writeAudit("import", "orders", added + " items", { added, skipped, total: existing.length }, req);
   res.json({ success: true, added, skipped, total: existing.length });
 });
 
@@ -1157,6 +1434,8 @@ app.patch("/api/managed-orders/:id", async (req, res) => {
   }
 
   await writeManagedOrders(orders);
+  // #12: Audit
+  writeAudit("update", "orders", req.params.id, { status: req.body.status, notes: req.body.notes !== undefined }, req);
   res.json({ success: true, order: orders[idx] });
 });
 
@@ -1171,6 +1450,8 @@ app.delete("/api/managed-orders/:id", async (req, res) => {
   if (orders.length === before) return res.status(404).json({ error: "Not found" });
 
   await writeManagedOrders(orders);
+  // #12: Audit
+  writeAudit("delete", "orders", req.params.id, {}, req);
   res.json({ success: true });
 });
 
@@ -1383,6 +1664,271 @@ app.get("/api/pub-bills/download/:id", async (req, res) => {
   }
 });
 
+// ── Stats Trend API (7-day daily counts) ──
+app.get("/api/stats/trend", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  const now = new Date();
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    days.push(d);
+  }
+
+  const offers = await readOffers();
+  const submissions = await readSubmissions();
+  const orders = await readOrders();
+
+  const offersTrend = days.map(dayStart => {
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+    return offers.filter(o => {
+      const created = new Date(o.createdAt || o.id || 0);
+      return created >= dayStart && created < dayEnd;
+    }).length;
+  });
+
+  const submissionsTrend = days.map(dayStart => {
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+    return submissions.filter(s => {
+      const created = new Date(s.timestamp || 0);
+      return created >= dayStart && created < dayEnd;
+    }).length;
+  });
+
+  const ordersTrend = days.map(dayStart => {
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+    return orders.filter(o => {
+      const created = new Date(o.createdAt || 0);
+      return created >= dayStart && created < dayEnd;
+    }).length;
+  });
+
+  res.json({
+    offers: offersTrend,
+    submissions: submissionsTrend,
+    orders: ordersTrend
+  });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  AUDIT LOG API (#12)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app.get("/api/audit", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  let audit = await readAuditLog();
+
+  // Filter by target
+  if (req.query.target) {
+    audit = audit.filter(a => a.target === req.query.target);
+  }
+  // Filter by action
+  if (req.query.action) {
+    audit = audit.filter(a => a.action === req.query.action);
+  }
+
+  // Sort by timestamp descending (newest first)
+  audit.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+  const start = (page - 1) * limit;
+  const data = audit.slice(start, start + limit);
+
+  res.json({ data, total: audit.length, page, limit });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  DATA BACKUP / RESTORE (#15)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app.get("/api/backup", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+
+  try {
+    const backup = {
+      _meta: {
+        version: "1.0",
+        createdAt: new Date().toISOString(),
+        source: useGitHub ? "github" : "local"
+      },
+      offers: await readOffers(),
+      submissions: await readSubmissions(),
+      managed_orders: await readManagedOrders(),
+      accounts: (await readAccounts()).map(a => ({ ...a, password: "[REDACTED]" })),
+      audit: await readAuditLog()
+    };
+
+    // #12: Audit
+    writeAudit("export", "backup", "all", { offers: backup.offers.length, submissions: backup.submissions.length }, req);
+
+    const filename = `mobireach_backup_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+    res.json(backup);
+  } catch (e) {
+    console.error("❌ Backup failed:", e.message);
+    res.status(500).json({ error: "Backup failed: " + e.message });
+  }
+});
+
+app.post("/api/restore", upload.single("file"), async (req, res) => {
+  const session = await checkAuth(req, res, true); // super_admin only
+  if (!session) return;
+
+  if (!req.file) return res.status(400).json({ error: "No backup file uploaded" });
+
+  try {
+    const filePath = req.file.path;
+    let backup;
+    try {
+      const content = fs.readFileSync(filePath, "utf-8");
+      backup = JSON.parse(content);
+    } catch (e) {
+      try { fs.unlinkSync(filePath); } catch (_) {}
+      return res.status(400).json({ error: "Invalid backup file: " + e.message });
+    }
+
+    // Validate backup structure
+    if (!backup._meta || !backup.offers || !backup.submissions) {
+      try { fs.unlinkSync(filePath); } catch (_) {}
+      return res.status(400).json({ error: "Invalid backup format: missing _meta, offers, or submissions" });
+    }
+
+    // Create snapshot of current data before restore
+    const snapshot = {
+      _meta: {
+        version: "1.0",
+        createdAt: new Date().toISOString(),
+        type: "pre-restore-snapshot"
+      },
+      offers: await readOffers(),
+      submissions: await readSubmissions(),
+      managed_orders: await readManagedOrders(),
+      accounts: await readAccounts(),
+      audit: await readAuditLog()
+    };
+    const snapshotDir = path.join(DATA_DIR, "snapshots");
+    if (!fs.existsSync(snapshotDir)) fs.mkdirSync(snapshotDir, { recursive: true });
+    const snapshotPath = path.join(snapshotDir, `snapshot_${Date.now()}.json`);
+    fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2), "utf-8");
+
+    // Restore data
+    if (backup.offers) await writeOffers(backup.offers);
+    if (backup.submissions) await writeSubmissions(backup.submissions);
+    if (backup.managed_orders) await writeManagedOrders(backup.managed_orders);
+    if (backup.accounts && backup.accounts.length) {
+      // Preserve existing passwords if backup has redacted passwords
+      const currentAccounts = await readAccounts();
+      const restored = backup.accounts.map(a => {
+        if (a.password === "[REDACTED]") {
+          const existing = currentAccounts.find(ca => ca.id === a.id);
+          if (existing) return { ...a, password: existing.password };
+        }
+        return a;
+      });
+      await writeAccounts(restored);
+    }
+
+    // Clean up uploaded file
+    try { fs.unlinkSync(filePath); } catch (_) {}
+
+    // #12: Audit
+    writeAudit("import", "backup", "all", {
+      source: backup._meta.createdAt,
+      offers: (backup.offers || []).length,
+      submissions: (backup.submissions || []).length,
+      snapshotPath
+    }, req);
+
+    res.json({
+      success: true,
+      restored: {
+        offers: (backup.offers || []).length,
+        submissions: (backup.submissions || []).length,
+        managed_orders: (backup.managed_orders || []).length,
+        accounts: (backup.accounts || []).length
+      },
+      snapshot: snapshotPath
+    });
+  } catch (e) {
+    console.error("❌ Restore failed:", e.message);
+    res.status(500).json({ error: "Restore failed: " + e.message });
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  EMAIL TEMPLATES API (#16)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app.get("/api/email-templates", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const templates = await readEmailTemplates();
+  res.json(templates);
+});
+
+app.post("/api/email-templates", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { id, name, subject, body } = req.body;
+  if (!id || !name || !subject || !body) {
+    return res.status(400).json({ error: "id, name, subject and body are required" });
+  }
+  // id must be alphanumeric + underscore
+  if (!/^[a-zA-Z0-9_]+$/.test(id)) {
+    return res.status(400).json({ error: "Template ID must be alphanumeric (letters, numbers, underscore)" });
+  }
+  const templates = await readEmailTemplates();
+  if (templates[id]) {
+    return res.status(409).json({ error: "Template ID already exists" });
+  }
+  templates[id] = { name, subject, body };
+  await writeEmailTemplatesData(templates);
+  // #12: Audit
+  writeAudit("create", "email_templates", id, { name }, req);
+  res.status(201).json({ success: true, templates });
+});
+
+app.put("/api/email-templates/:id", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const templates = await readEmailTemplates();
+  const tid = req.params.id;
+  if (!templates[tid]) {
+    return res.status(404).json({ error: "Template not found" });
+  }
+  const { name, subject, body } = req.body;
+  if (name) templates[tid].name = name;
+  if (subject) templates[tid].subject = subject;
+  if (body) templates[tid].body = body;
+  await writeEmailTemplatesData(templates);
+  // #12: Audit
+  writeAudit("update", "email_templates", tid, { name, subject: !!subject, body: !!body }, req);
+  res.json({ success: true, templates });
+});
+
+app.delete("/api/email-templates/:id", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const templates = await readEmailTemplates();
+  const tid = req.params.id;
+  if (!templates[tid]) {
+    return res.status(404).json({ error: "Template not found" });
+  }
+  if (tid === "default") {
+    return res.status(400).json({ error: "Cannot delete the default template" });
+  }
+  const deleted = templates[tid].name;
+  delete templates[tid];
+  await writeEmailTemplatesData(templates);
+  // #12: Audit
+  writeAudit("delete", "email_templates", tid, { name: deleted }, req);
+  res.json({ success: true, templates });
+});
+
 // ── Admin Page ──
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
@@ -1423,6 +1969,19 @@ app.listen(PORT, async () => {
       }
       if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
         fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
+      }
+      if (!fs.existsSync(LOCAL_AUDIT)) {
+        fs.writeFileSync(LOCAL_AUDIT, "[]", "utf-8");
+      }
+      if (!fs.existsSync(LOCAL_EMAIL_TEMPLATES)) {
+        const defaultTemplates = {
+          default: {
+            name: "默认模板",
+            subject: "MobiReach - {offerName} Offer Details",
+            body: "Hi {publisher},\n\nHere are the details for {offerName}...\n\nPayout: {payout}\nGEO: {geo}\n\nBest regards,\nMobiReach Team"
+          }
+        };
+        fs.writeFileSync(LOCAL_EMAIL_TEMPLATES, JSON.stringify(defaultTemplates, null, 2), "utf-8");
       }
     } catch (e) {
       console.warn("Failed to initialize local files:", e.message);

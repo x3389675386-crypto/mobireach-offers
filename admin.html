@@ -25,6 +25,40 @@
       --radius: 10px; --radius-sm: 6px;
       --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
     }
+    /* ── DARK MODE ── */
+    [data-theme="dark"] {
+      --bg: #0f172a; --card: #1e293b; --border: #334155;
+      --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+      --accent: #818cf8; --accent-hover: #6366f1; --accent-light: rgba(129,140,248,0.12);
+      --green: #34d399; --green-light: rgba(52,211,153,0.12);
+      --orange: #fbbf24; --orange-light: rgba(251,191,36,0.12);
+      --red: #f87171; --red-light: rgba(248,113,113,0.12);
+    }
+    [data-theme="dark"] body { background: var(--bg); color: var(--text); }
+    [data-theme="dark"] .login-box { background: var(--card); }
+    [data-theme="dark"] .login-input { background: #1e293b; border-color: #475569; color: var(--text); }
+    [data-theme="dark"] th { background: #1e293b; color: var(--text3); }
+    [data-theme="dark"] td { border-bottom-color: #334155; }
+    [data-theme="dark"] tr:hover td { background: rgba(255,255,255,0.04); }
+    [data-theme="dark"] .filter-bar input, [data-theme="dark"] .filter-bar select { background: #1e293b; border-color: #475569; color: var(--text); }
+    [data-theme="dark"] .status-select { background: #1e293b; border-color: #475569; color: var(--text); }
+    [data-theme="dark"] .form-input, [data-theme="dark"] .form-textarea { background: #1e293b; border-color: #475569; color: var(--text); }
+    [data-theme="dark"] .inline-input { background: transparent; color: var(--text); }
+    [data-theme="dark"] .inline-input:hover { background: #1e293b; border-color: #475569; }
+    [data-theme="dark"] .inline-input:focus { background: #1e293b; border-color: var(--accent); }
+    [data-theme="dark"] .tag-edit-wrap { background: #1e293b; border-color: #475569; }
+    [data-theme="dark"] .tag-edit-input { color: var(--text); }
+    [data-theme="dark"] .modal { background: var(--card); }
+    [data-theme="dark"] .modal-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    [data-theme="dark"] .confirm-box { background: var(--card); }
+    [data-theme="dark"] .confirm-box p { color: var(--text); }
+    [data-theme="dark"] .status-tab { background: #1e293b; border-color: #475569; color: var(--text2); }
+    [data-theme="dark"] .status-tab:hover { background: var(--accent-light); border-color: var(--accent); }
+    [data-theme="dark"] .tag-chip { background: #334155; color: var(--text2); }
+    [data-theme="dark"] .btn-secondary { background: #1e293b; border-color: #475569; color: var(--text2); }
+    [data-theme="dark"] .btn-danger { background: #1e293b; border-color: #475569; }
+    [data-theme="dark"] .skel-line { background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%); }
+
     body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.6; }
 
     /* ── LOGIN ── */
@@ -63,45 +97,6 @@
 
     /* ── DASHBOARD ── */
     .dashboard { display: none; }
-
-    /* ── NAV ── */
-    .admin-nav {
-      background: var(--nav-bg); color: var(--nav-text);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 52px;
-    }
-    .admin-nav-left { display: flex; align-items: center; gap: 20px; }
-    .admin-nav .logo { font-weight: 700; font-size: 15px; color: #fff; }
-    .admin-nav .logo span { color: #818cf8; }
-    .tab-nav { display: flex; gap: 4px; }
-    .tab-nav button {
-      background: transparent; border: none; color: #94a3b8;
-      padding: 8px 18px; border-radius: 8px; font-size: 13px;
-      font-weight: 500; cursor: pointer; font-family: var(--font);
-      transition: all 0.2s;
-    }
-    .tab-nav button:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
-    .tab-nav button.active { color: #fff; background: rgba(99,102,241,0.3); }
-    .admin-nav-right { display: flex; align-items: center; gap: 12px; }
-    .user-info {
-      font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.08);
-      padding: 4px 12px; border-radius: 6px;
-    }
-    .user-info .badge-super { color: #818cf8; font-weight: 600; }
-    .user-info .badge-admin { color: #34d399; font-weight: 600; }
-    .logout-btn {
-      padding: 6px 14px; border: 1px solid #334155; border-radius: 8px;
-      background: transparent; color: #94a3b8; font-size: 12px;
-      cursor: pointer; font-family: var(--font); transition: all 0.2s;
-    }
-    .logout-btn:hover { color: #fff; border-color: #6366f1; }
-    .lang-toggle {
-      padding: 6px 12px; border: 1px solid #334155; border-radius: 8px;
-      background: transparent; color: #94a3b8; font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: var(--font); transition: all 0.2s; margin-right: 8px;
-      white-space: nowrap;
-    }
-    .lang-toggle:hover { color: #fff; border-color: #6366f1; }
 
     /* ── CONTENT ── */
     .content { max-width: 1300px; margin: 0 auto; padding: 24px; }
@@ -177,6 +172,71 @@
     .badge-super { background: #ede9fe; color: #7c3aed; }
     .badge-admin { background: #d1fae5; color: #059669; }
     .empty { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 13px; display: none; }
+
+    /* ── SEARCH/FILTER BAR ── */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .filter-bar input, .filter-bar select {
+      padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 12px; font-family: var(--font); background: #fff; color: var(--text2);
+      outline: none; transition: border-color 0.2s;
+    }
+    .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent); }
+
+    /* ── STATUS FILTER TABS ── */
+    .status-tabs {
+      display: flex; gap: 4px; padding: 10px 20px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .status-tab {
+      padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border); background: #fff;
+      color: var(--text2); transition: all 0.15s; font-family: var(--font);
+    }
+    .status-tab:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    .status-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .status-tab .count {
+      display: inline-block; min-width: 18px; height: 18px; line-height: 18px;
+      text-align: center; border-radius: 9px; font-size: 10px; font-weight: 700;
+      margin-left: 4px; padding: 0 5px;
+    }
+    .status-tab.active .count { background: rgba(255,255,255,0.25); }
+    .status-tab:not(.active) .count { background: #f1f5f9; color: var(--text3); }
+
+    /* ── NOTIFICATION BADGE ── */
+    .notif-badge {
+      display: inline-block; min-width: 18px; height: 18px; line-height: 18px;
+      text-align: center; border-radius: 9px; font-size: 10px; font-weight: 700;
+      background: #ef4444; color: #fff; margin-left: 4px; padding: 0 5px;
+      vertical-align: middle; animation: badge-pulse 2s ease-in-out infinite;
+    }
+    @keyframes badge-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    /* ── CHECKBOX COLUMN ── */
+    .cb-col { width: 36px; text-align: center !important; }
+    .cb-col input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); }
+
+    /* ── BATCH ACTION BAR ── */
+    .batch-bar {
+      display: none; align-items: center; gap: 8px; padding: 8px 20px;
+      background: var(--accent-light); border-bottom: 1px solid var(--accent);
+      font-size: 12px; color: var(--accent);
+    }
+    .batch-bar.show { display: flex; }
+    .batch-bar .batch-count { font-weight: 600; }
+
+    /* ── SORT INDICATOR ── */
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--accent); }
+    th .sort-arrow { font-size: 10px; margin-left: 2px; }
+
+    /* ── PAGINATION ── */
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 12px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text2);
+    }
 
     /* ── INLINE EDIT ── */
     .inline-input {
@@ -298,20 +358,6 @@
     /* Change password modal */
     .pw-row { display: flex; gap: 8px; margin-top: 8px; }
 
-    @media (max-width: 768px) {
-      .admin-nav { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
-      .table-wrap { overflow-x: auto; }
-      table { min-width: 900px; }
-      .form-row { flex-direction: column; }
-      .admin-nav-left { flex-wrap: wrap; }
-      /* #26: Order search bar wraps on small screens */
-      .table-header > div { flex-wrap: wrap; }
-      /* #26: Stats bar stacks vertically on small screens */
-      .stats-row { flex-direction: column; gap: 8px; }
-      .stats-row .stat-card { min-width: 0; }
-      .tab-nav { overflow-x: auto; }
-    }
-
     /* ── CUSTOM CONFIRM DIALOG ── */
     .confirm-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 10000;
@@ -330,6 +376,282 @@
     .confirm-cancel:hover { background: #e4e4ea; }
     .confirm-danger { background: #ef4444; color: #fff; }
     .confirm-danger:hover { background: #dc2626; }
+
+    /* ── SIDEBAR NAV ── */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 220px; z-index: 200;
+      background: var(--nav-bg); color: var(--nav-text);
+      display: flex; flex-direction: column; overflow-y: auto;
+      transition: transform 0.3s;
+    }
+    .sidebar-logo {
+      padding: 18px 20px 14px; font-weight: 700; font-size: 15px; color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-logo span { color: #818cf8; }
+    .sidebar-nav { flex: 1; padding: 8px 0; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px; cursor: pointer; font-size: 13px; font-weight: 500;
+      color: #94a3b8; border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .sidebar-item:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+    .sidebar-item.active {
+      color: #fff; background: rgba(99,102,241,0.15);
+      border-left-color: #818cf8;
+    }
+    .sidebar-item .sidebar-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-item .notif-badge { margin-left: auto; }
+    .sidebar-bottom {
+      padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-bottom .theme-toggle-btn {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid #334155;
+      background: transparent; color: #94a3b8; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .sidebar-bottom .theme-toggle-btn:hover { border-color: #6366f1; color: #fff; }
+    .sidebar-bottom .logout-btn { flex: 1; }
+    .sidebar-bottom .lang-toggle { margin: 0; }
+    .user-info {
+      font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.08);
+      padding: 4px 12px; border-radius: 6px; margin-left: auto;
+    }
+    .user-info .badge-super { color: #818cf8; font-weight: 600; }
+    .user-info .badge-admin { color: #34d399; font-weight: 600; }
+    .logout-btn {
+      padding: 6px 14px; border: 1px solid #334155; border-radius: 8px;
+      background: transparent; color: #94a3b8; font-size: 12px;
+      cursor: pointer; font-family: var(--font); transition: all 0.2s;
+    }
+    .logout-btn:hover { color: #fff; border-color: #6366f1; }
+    .lang-toggle {
+      padding: 6px 12px; border: 1px solid #334155; border-radius: 8px;
+      background: transparent; color: #94a3b8; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font); transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .lang-toggle:hover { color: #fff; border-color: #6366f1; }
+
+    /* ── MAIN CONTENT OFFSET ── */
+    .main-content { margin-left: 220px; min-height: 100vh; }
+    .main-content .content { max-width: 1300px; margin: 0 auto; padding: 24px; }
+
+    /* ── HAMBURGER (mobile) ── */
+    .hamburger-btn {
+      display: none; position: fixed; top: 10px; left: 10px; z-index: 300;
+      width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); cursor: pointer; font-size: 18px;
+      align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 199;
+      background: rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; }
+      .hamburger-btn { display: flex; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 900px; }
+      .form-row { flex-direction: column; }
+      .stats-row { flex-direction: column; gap: 8px; }
+      .stats-row .stat-card { min-width: 0; }
+    }
+
+    /* ── SKELETON LOADING ── */
+    .skel-line {
+      border-radius: 4px;
+      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skel-row td { padding: 10px 16px; }
+    .skel-cell { height: 14px; border-radius: 4px; }
+
+    /* ── TOAST UPGRADE ── */
+    .toast-container {
+      position: fixed; top: 20px; right: 20px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 500;
+      background: var(--card); box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      pointer-events: auto; position: relative; overflow: hidden;
+      min-width: 260px; max-width: 400px;
+      animation: toastSlideIn 0.3s ease-out forwards;
+    }
+    .toast-item.removing { animation: toastSlideOut 0.3s ease-in forwards; }
+    .toast-icon { font-size: 16px; flex-shrink: 0; }
+    .toast-item.success .toast-icon { color: var(--green); }
+    .toast-item.error .toast-icon { color: var(--red); }
+    .toast-item.warning .toast-icon { color: var(--orange); }
+    .toast-item.info .toast-icon { color: #3b82f6; }
+    .toast-item.success { border-left: 3px solid var(--green); }
+    .toast-item.error { border-left: 3px solid var(--red); }
+    .toast-item.warning { border-left: 3px solid var(--orange); }
+    .toast-item.info { border-left: 3px solid #3b82f6; }
+    .toast-progress {
+      position: absolute; bottom: 0; left: 0; height: 3px;
+      border-radius: 0 0 10px 10px;
+      animation: toastProgress 3s linear forwards;
+    }
+    .toast-item.success .toast-progress { background: var(--green); }
+    .toast-item.error .toast-progress { background: var(--red); }
+    .toast-item.warning .toast-progress { background: var(--orange); }
+    .toast-item.info .toast-progress { background: #3b82f6; }
+    @keyframes toastSlideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes toastSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+    @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
+
+    /* ── SPARKLINE ── */
+    .stat-card { position: relative; }
+    .stat-card-inner { display: flex; align-items: flex-end; justify-content: space-between; }
+    .stat-card-inner .stat-text { flex: 1; }
+    .sparkline-wrap { width: 80px; height: 30px; flex-shrink: 0; margin-left: 8px; }
+
+    /* ── KEYBOARD SHORTCUT HELP ── */
+    .shortcut-help-btn {
+      position: fixed; bottom: 20px; right: 20px; z-index: 100;
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--card); color: var(--text3); font-size: 16px; font-weight: 700;
+      cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .shortcut-help-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .shortcut-list { text-align: left; padding: 0; list-style: none; }
+    .shortcut-list li { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 13px; color: var(--text2); }
+    .shortcut-list kbd {
+      display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px;
+      font-family: 'SF Mono','Consolas',monospace; background: #f1f5f9; border: 1px solid var(--border);
+      color: var(--text); min-width: 60px; text-align: center;
+    }
+    [data-theme="dark"] .shortcut-list kbd { background: #334155; border-color: #475569; }
+
+    /* ── ROW ANIMATIONS ── */
+    @keyframes rowFadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes rowFadeOut { from { opacity: 1; max-height: 60px; } to { opacity: 0; max-height: 0; padding: 0; } }
+    .row-enter { animation: rowFadeIn 0.3s ease-out forwards; }
+    .row-removing { animation: rowFadeOut 0.3s ease-in forwards; overflow: hidden; }
+
+    /* ── DASHBOARD (#19) ── */
+    .dashboard-grid { display: grid; gap: 20px; }
+    .dashboard-row { display: grid; gap: 16px; }
+    .dashboard-row-2 { grid-template-columns: 1fr 1fr; }
+    .dashboard-row-stats { grid-template-columns: repeat(4, 1fr); }
+    .chart-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    }
+    .chart-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text2); }
+    .chart-card svg { width: 100%; height: auto; }
+    .recent-list { list-style: none; padding: 0; margin: 0; }
+    .recent-list li {
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-size: 12px; color: var(--text2);
+    }
+    .recent-list li:last-child { border-bottom: none; }
+    .recent-list li strong { color: var(--text); font-weight: 600; }
+
+    /* ── AUDIT LOG (#12) ── */
+    .audit-detail { font-size: 11px; color: var(--text3); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .audit-detail:hover { white-space: normal; word-break: break-all; }
+    .audit-action-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+    }
+    .audit-create { background: var(--green-light); color: var(--green); }
+    .audit-update { background: var(--accent-light); color: var(--accent); }
+    .audit-delete { background: var(--red-light); color: var(--red); }
+    .audit-batch_delete { background: var(--red-light); color: var(--red); }
+    .audit-batch_update { background: var(--orange-light); color: var(--orange); }
+    .audit-export { background: #e0f2fe; color: #0284c7; }
+    .audit-import { background: #fef3c7; color: #d97706; }
+    .audit-login { background: #f3e8ff; color: #7c3aed; }
+
+    /* ── EMAIL TEMPLATES (#16) ── */
+    .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .template-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .template-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(99,102,241,0.12); }
+    .template-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .template-card .template-subject { font-size: 12px; color: var(--text3); margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .template-card .template-actions { display: flex; gap: 6px; }
+    .template-var-hint {
+      display: inline-block; padding: 2px 6px; margin: 2px; border-radius: 3px;
+      font-size: 10px; font-family: 'SF Mono','Consolas',monospace;
+      background: var(--accent-light); color: var(--accent);
+    }
+
+    /* ── BACKUP MODAL (#15) ── */
+    .backup-section { margin-bottom: 20px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); }
+    .backup-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .backup-info { font-size: 12px; color: var(--text3); margin-top: 8px; }
+
+    /* ── RESPONSIVE (#18) ── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; }
+      .hamburger-btn { display: flex; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 900px; }
+      .form-row { flex-direction: column; }
+      .stats-row { flex-direction: column; gap: 8px; }
+      .stats-row .stat-card { min-width: 0; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar input, .filter-bar select { width: 100% !important; }
+      .batch-bar { flex-wrap: wrap; }
+      .modal { max-width: 100% !important; max-height: 100vh; border-radius: 0; }
+      .overlay { padding: 0; }
+      .dashboard-row-stats { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-row-2 { grid-template-columns: 1fr; }
+      .template-grid { grid-template-columns: 1fr; }
+      .stat-card .num { font-size: 22px; }
+      .btn-primary, .btn-secondary, .btn-danger { padding: 6px 10px; font-size: 11px; }
+      .table-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+      .table-header > div { width: 100%; justify-content: flex-start; }
+      .content { padding: 16px !important; padding-top: 56px !important; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .sidebar { width: 60px; }
+      .sidebar .sidebar-item span:not(.sidebar-icon):not(.notif-badge) { display: none; }
+      .sidebar .sidebar-logo span { display: none; }
+      .sidebar .sidebar-logo { font-size: 12px; padding: 18px 12px 14px; text-align: center; }
+      .sidebar .sidebar-item { padding: 11px 0; justify-content: center; border-left-width: 2px; }
+      .sidebar .sidebar-bottom { flex-wrap: wrap; justify-content: center; padding: 8px; }
+      .sidebar .sidebar-bottom .user-info { display: none; }
+      .sidebar .sidebar-bottom .logout-btn { font-size: 10px; padding: 4px 8px; }
+      .main-content { margin-left: 60px; }
+      .dashboard-row-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1025px) {
+      .sidebar { width: 220px; }
+      .main-content { margin-left: 220px; }
+    }
+
+    [data-theme="dark"] .audit-create { background: rgba(52,211,153,0.12); color: var(--green); }
+    [data-theme="dark"] .audit-update { background: rgba(129,140,248,0.12); color: var(--accent); }
+    [data-theme="dark"] .audit-delete, [data-theme="dark"] .audit-batch_delete { background: rgba(248,113,113,0.12); color: var(--red); }
+    [data-theme="dark"] .audit-batch_update { background: rgba(251,191,36,0.12); color: var(--orange); }
+    [data-theme="dark"] .audit-export { background: rgba(56,189,248,0.12); color: #38bdf8; }
+    [data-theme="dark"] .audit-import { background: rgba(251,191,36,0.12); color: var(--orange); }
+    [data-theme="dark"] .audit-login { background: rgba(168,85,247,0.12); color: #a855f7; }
+    [data-theme="dark"] .chart-card { background: var(--card); border-color: var(--border); }
+    [data-theme="dark"] .template-card { background: var(--card); border-color: var(--border); }
+    [data-theme="dark"] .template-card:hover { border-color: var(--accent); }
+    [data-theme="dark"] .backup-section { background: #1e293b; border-color: var(--border); }
   </style>
 </head>
 <body>
@@ -349,48 +671,131 @@
 
 <!-- ── DASHBOARD ── -->
 <div class="dashboard" id="dashboard">
-  <nav class="admin-nav">
-    <div class="admin-nav-left">
-      <div class="logo">Mobi<span>reach</span> 管理后台</div>
-      <div class="tab-nav">
-        <button class="active" data-tab="offers" id="tab-offers">Offers</button>
-        <button data-tab="applications" id="tab-apps">Applications</button>
-        <button data-tab="accounts" id="tab-accounts" style="display:none">账号管理</button>
-        <button data-tab="managed-orders" id="tab-managed-orders">订单管理</button>
-        <button data-tab="pub-bills" id="tab-pub-bills">PUB账单分类</button>
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">Mobi<span>reach</span> 管理后台</div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <span class="sidebar-icon">📊</span> <span data-i18n="tabDashboard">Dashboard</span>
       </div>
-    </div>
-    <div class="admin-nav-right">
+      <div class="sidebar-item" data-tab="offers" onclick="switchTab('offers')">
+        <span class="sidebar-icon">📋</span> Offers
+      </div>
+      <div class="sidebar-item" data-tab="applications" onclick="switchTab('applications')">
+        <span class="sidebar-icon">📨</span> Applications
+        <span class="notif-badge" id="apps-notif-badge" style="display:none">0</span>
+      </div>
+      <div class="sidebar-item" data-tab="managed-orders" onclick="switchTab('managed-orders')">
+        <span class="sidebar-icon">📦</span> <span data-i18n="tabOrders">订单管理</span>
+      </div>
+      <div class="sidebar-item" data-tab="pub-bills" onclick="switchTab('pub-bills')">
+        <span class="sidebar-icon">💰</span> <span data-i18n="tabPubBills">PUB账单</span>
+      </div>
+      <div class="sidebar-item" data-tab="accounts" id="sidebar-accounts" style="display:none" onclick="switchTab('accounts')">
+        <span class="sidebar-icon">👤</span> <span data-i18n="tabAccounts">账号管理</span>
+      </div>
+      <div class="sidebar-item" data-tab="audit" onclick="switchTab('audit')">
+        <span class="sidebar-icon">📋</span> <span data-i18n="tabAudit">审计日志</span>
+      </div>
+      <div class="sidebar-item" data-tab="email-templates" onclick="switchTab('email-templates')">
+        <span class="sidebar-icon">✉️</span> <span data-i18n="tabEmailTemplates">邮件模板</span>
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
       <button class="lang-toggle" id="lang-toggle" onclick="switchLang()">中</button>
+      <button class="logout-btn" id="change-pw-btn" onclick="document.getElementById('pw-overlay').classList.add('open')" style="font-size:11px">🔑</button>
+      <button class="logout-btn" id="backup-btn" onclick="openBackupModal()" style="font-size:11px" title="💾">💾</button>
       <span class="user-info" id="user-info-display"></span>
-      <button class="btn-secondary btn-xs" id="change-pw-btn" style="font-size:11px">改密</button>
       <button class="logout-btn" id="logout-btn">退出</button>
     </div>
-  </nav>
+  </aside>
+
+  <!-- ── HAMBURGER (mobile) ── -->
+  <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="main-content">
 
   <div class="content">
+    <!-- ── DASHBOARD TAB (#19) ── -->
+    <div class="tab-content" id="content-dashboard">
+      <div class="dashboard-grid">
+        <!-- Stats Row -->
+        <div class="dashboard-row dashboard-row-stats" id="dashboard-stats"></div>
+        <!-- Charts Row -->
+        <div class="dashboard-row dashboard-row-2">
+          <div class="chart-card">
+            <h4 data-i18n="dashboardSubmissionsTrend">📊 7天提交趋势</h4>
+            <div id="trend-chart-container" style="height:180px"></div>
+          </div>
+          <div class="chart-card">
+            <h4 data-i18n="dashboardPlatformDist">📱 平台分布</h4>
+            <div id="platform-chart-container" style="height:180px;display:flex;align-items:center;justify-content:center"></div>
+          </div>
+        </div>
+        <!-- Recent Lists Row -->
+        <div class="dashboard-row dashboard-row-2">
+          <div class="chart-card">
+            <h4 data-i18n="dashboardRecentApps">📨 最近 Applications</h4>
+            <ul class="recent-list" id="dashboard-recent-apps"></ul>
+          </div>
+          <div class="chart-card">
+            <h4 data-i18n="dashboardRecentAudit">📋 最近审计日志</h4>
+            <ul class="recent-list" id="dashboard-recent-audit"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── OFFERS TAB ── -->
-    <div class="tab-content" id="content-offers">
+    <div class="tab-content" id="content-offers" style="display:none">
       <div class="stats-row" id="offers-stats"></div>
       <div class="table-wrap">
         <div class="table-header">
           <h2 id="offers-title">全部 Offers</h2>
-          <button class="btn-primary" onclick="openOfferModal()">+ 新建 Offer</button>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn-secondary btn-sm" id="offers-export-btn" onclick="exportOffersExcel()">📤 <span data-i18n="exportExcel">导出Excel</span></button>
+            <button class="btn-primary" onclick="openOfferModal()">+ <span data-i18n="newOffer">新建 Offer</span></button>
+          </div>
+        </div>
+        <div class="filter-bar" id="offers-filter-bar">
+          <input type="text" id="offers-search" placeholder="搜索 Offer 名称..." style="width:200px" />
+          <select id="offers-platform-filter">
+            <option value="" data-i18n-opt="allPlatforms">全部平台</option>
+            <option value="ios">iOS</option>
+            <option value="android">Android</option>
+          </select>
+        </div>
+        <div class="batch-bar" id="offers-batch-bar">
+          <span>已选 <span class="batch-count" id="offers-selected-count">0</span> 项</span>
+          <button class="btn-secondary btn-sm" onclick="batchOfferStatus('active')" id="batch-activate-btn">▶ 激活</button>
+          <button class="btn-secondary btn-sm" onclick="batchOfferStatus('paused')" id="batch-pause-btn">⏸ 暂停</button>
+          <button class="btn-danger btn-sm" onclick="batchDeleteOffers()">🗑 删除</button>
+          <button class="btn-secondary btn-sm" onclick="clearOfferSelection()" style="margin-left:auto">取消选择</button>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
-                <th style="width:200px">Offer</th>
-                <th>平台</th>
-                <th style="width:90px">单价</th>
+                <th class="cb-col"><input type="checkbox" id="offers-select-all" onchange="toggleAllOffers(this.checked)" /></th>
+                <th style="width:200px" class="sortable" onclick="sortOffers('name')">Offer <span class="sort-arrow" id="sort-name"></span></th>
+                <th class="sortable" onclick="sortOffers('platform')">平台 <span class="sort-arrow" id="sort-platform"></span></th>
+                <th style="width:90px" class="sortable" onclick="sortOffers('payout')">单价 <span class="sort-arrow" id="sort-payout"></span></th>
                 <th>GEOs</th>
                 <th style="width:280px">图标 URL</th>
-                <th style="width:100px">操作</th>
+                <th style="width:120px">操作</th>
               </tr>
             </thead>
             <tbody id="offers-tbody"></tbody>
           </table>
+        </div>
+        <div class="pagination-bar" id="offers-pagination" style="display:none">
+          <button class="btn-secondary btn-xs" id="offers-prev-btn" onclick="offersPrevPage()">上一页</button>
+          <span id="offers-page-info">1 / 1</span>
+          <button class="btn-secondary btn-xs" id="offers-next-btn" onclick="offersNextPage()">下一页</button>
         </div>
         <div class="empty" id="offers-empty">${t("noOffers")}</div>
       </div>
@@ -404,10 +809,25 @@
           <h2>Applications</h2>
           <button class="btn-secondary" id="refresh-apps-btn" onclick="loadSubmissions()" title="刷新">↻ 刷新</button>
         </div>
+        <div class="status-tabs" id="apps-status-tabs">
+          <button class="status-tab active" data-status="" onclick="filterAppsByStatus('')">All <span class="count" id="apps-count-all">0</span></button>
+          <button class="status-tab" data-status="new" onclick="filterAppsByStatus('new')">New <span class="count" id="apps-count-new">0</span></button>
+          <button class="status-tab" data-status="viewed" onclick="filterAppsByStatus('viewed')">Viewed <span class="count" id="apps-count-viewed">0</span></button>
+          <button class="status-tab" data-status="contacted" onclick="filterAppsByStatus('contacted')">Contacted <span class="count" id="apps-count-contacted">0</span></button>
+        </div>
+        <div class="batch-bar" id="apps-batch-bar">
+          <span>已选 <span class="batch-count" id="apps-selected-count">0</span> 项</span>
+          <button class="btn-secondary btn-sm" onclick="batchSubStatus('new')">🆕 New</button>
+          <button class="btn-secondary btn-sm" onclick="batchSubStatus('viewed')">👁 Viewed</button>
+          <button class="btn-secondary btn-sm" onclick="batchSubStatus('contacted')">✉ Contacted</button>
+          <button class="btn-danger btn-sm" onclick="batchDeleteSubs()">🗑 删除</button>
+          <button class="btn-secondary btn-sm" onclick="clearSubSelection()" style="margin-left:auto">取消选择</button>
+        </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
               <tr>
+                <th class="cb-col"><input type="checkbox" id="apps-select-all" onchange="toggleAllSubs(this.checked)" /></th>
                 <th>日期</th>
                 <th>Offer</th>
                 <th>Publisher</th>
@@ -420,6 +840,11 @@
             </thead>
             <tbody id="apps-tbody"></tbody>
           </table>
+        </div>
+        <div class="pagination-bar" id="apps-pagination" style="display:none">
+          <button class="btn-secondary btn-xs" id="apps-prev-btn" onclick="appsPrevPage()">上一页</button>
+          <span id="apps-page-info">1 / 1</span>
+          <button class="btn-secondary btn-xs" id="apps-next-btn" onclick="appsNextPage()">下一页</button>
         </div>
         <div class="empty" id="apps-empty">暂无申请。</div>
       </div>
@@ -546,11 +971,73 @@
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- ── AUDIT LOG TAB (#12) ── -->
+    <div class="tab-content" id="content-audit" style="display:none">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2 data-i18n="tabAudit">📋 审计日志</h2>
+        </div>
+        <div class="filter-bar">
+          <select id="audit-target-filter" onchange="loadAuditLog()" style="width:140px">
+            <option value="" data-i18n-opt="auditAllTargets">全部目标</option>
+            <option value="offers">Offers</option>
+            <option value="submissions">Submissions</option>
+            <option value="orders">Orders</option>
+            <option value="accounts">Accounts</option>
+            <option value="email_templates">Email Templates</option>
+            <option value="backup">Backup</option>
+          </select>
+          <select id="audit-action-filter" onchange="loadAuditLog()" style="width:140px">
+            <option value="" data-i18n-opt="auditAllActions">全部操作</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+            <option value="batch_delete">Batch Delete</option>
+            <option value="batch_update">Batch Update</option>
+            <option value="export">Export</option>
+            <option value="import">Import</option>
+            <option value="login">Login</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:160px" data-i18n="auditTime">时间</th>
+                <th style="width:100px" data-i18n="auditUser">用户</th>
+                <th style="width:100px" data-i18n="auditAction">操作</th>
+                <th style="width:110px" data-i18n="auditTarget">目标</th>
+                <th style="width:100px" data-i18n="auditTargetId">目标ID</th>
+                <th data-i18n="auditDetail">详情</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar" id="audit-pagination" style="display:none">
+          <button class="btn-secondary btn-xs" id="audit-prev-btn" onclick="auditPrevPage()">上一页</button>
+          <span id="audit-page-info">1 / 1</span>
+          <button class="btn-secondary btn-xs" id="audit-next-btn" onclick="auditNextPage()">下一页</button>
+        </div>
+        <div class="empty" id="audit-empty">暂无审计日志。</div>
+      </div>
+    </div>
 
-<!-- ── TOAST ── -->
-<div class="toast" id="toast"></div>
+    <!-- ── EMAIL TEMPLATES TAB (#16) ── -->
+    <div class="tab-content" id="content-email-templates" style="display:none">
+      <div class="table-wrap" style="background:transparent;border:none;box-shadow:none">
+        <div class="table-header" style="background:transparent;border:none;padding:0 0 16px">
+          <h2>✉️ <span data-i18n="tabEmailTemplates">邮件模板</span></h2>
+          <button class="btn-primary" onclick="openTemplateModal()">+ <span data-i18n="newTemplate">新建模板</span></button>
+        </div>
+        <div class="template-grid" id="template-grid"></div>
+      </div>
+    </div>
+
+  </div><!-- .content -->
+  </div><!-- .main-content -->
+  </div><!-- .dashboard -->
+<div class="toast-container" id="toast-container"></div>
 
 <!-- ── OFFER EDIT MODAL ── -->
 <div class="overlay" id="offer-overlay">
@@ -854,6 +1341,12 @@
         <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
         <h4 id="ord-section-email" style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">📧 邮件文案</h4>
         <div class="form-group">
+          <label class="form-label" id="ord-lbl-template">邮件模板</label>
+          <select class="form-input" id="ord-template-select" onchange="applyOrderTemplate()">
+            <option value="">— 手动输入 —</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label class="form-label" id="ord-lbl-subject">邮件主题</label>
           <input class="form-input" id="ord-email-subject" placeholder="邮件主题" />
         </div>
@@ -887,6 +1380,78 @@
   </div>
 </div>
 
+<!-- ── BACKUP MODAL (#15) ── -->
+<div class="overlay" id="backup-overlay">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>💾 <span data-i18n="backupTitle">数据备份</span></h3>
+      <button class="modal-close" onclick="closeBackupModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="backup-section">
+        <h4 data-i18n="backupExport">📥 导出备份</h4>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px" data-i18n="backupExportDesc">下载包含所有数据的 JSON 备份文件</p>
+        <button class="btn-primary" onclick="exportBackup()" id="backup-export-btn">📥 <span data-i18n="backupExportBtn">导出备份</span></button>
+      </div>
+      <div class="backup-section">
+        <h4 data-i18n="backupRestore">📤 恢复数据</h4>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px" data-i18n="backupRestoreDesc">上传备份 JSON 文件恢复所有数据（需要超级管理员权限）</p>
+        <label class="btn-danger" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 16px">
+          📤 <span data-i18n="backupRestoreBtn">选择备份文件</span>
+          <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="handleRestoreFile(this)" />
+        </label>
+        <div id="restore-file-info" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EMAIL TEMPLATE EDIT MODAL (#16) ── -->
+<div class="overlay" id="template-overlay">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3 id="template-modal-title">编辑模板</h3>
+      <button class="modal-close" onclick="closeTemplateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="template-form">
+        <input type="hidden" id="tpl-id" />
+        <div class="form-group">
+          <label class="form-label" data-i18n="templateName">模板 ID</label>
+          <input class="form-input" id="tpl-key" placeholder="例如: welcome, follow_up" />
+          <div class="form-hint" data-i18n="templateIdHint">仅限字母、数字和下划线，创建后不可修改</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="templateDisplayName">模板名称</label>
+          <input class="form-input" id="tpl-name" placeholder="模板显示名称" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="templateSubject">邮件主题</label>
+          <input class="form-input" id="tpl-subject" placeholder="邮件主题模板" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="templateBody">邮件正文</label>
+          <textarea class="form-textarea" id="tpl-body" style="min-height:200px;font-family:'SF Mono','Consolas',monospace;font-size:12px" placeholder="邮件正文模板..."></textarea>
+        </div>
+        <div style="margin-bottom:12px">
+          <span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px" data-i18n="templateVars">可用变量：</span>
+          <span class="template-var-hint">{offerName}</span>
+          <span class="template-var-hint">{publisher}</span>
+          <span class="template-var-hint">{payout}</span>
+          <span class="template-var-hint">{geo}</span>
+          <span class="template-var-hint">{pid}</span>
+          <span class="template-var-hint">{prt}</span>
+          <span class="template-var-hint">{integration}</span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeTemplateModal()">取消</button>
+          <button type="submit" class="btn-save" id="tpl-save-btn">保存模板</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ── MAILTO CONFIRM MODAL ── -->
 <div class="overlay" id="mailto-overlay">
   <div class="modal" style="max-width:400px;text-align:center">
@@ -912,7 +1477,7 @@ let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 let offers = [];
 let submissions = [];
 let accounts = [];
-let currentTab = "offers";
+let currentTab = "dashboard";
 let editGeos = [];
 let editIntegrations = [];
 
@@ -924,6 +1489,21 @@ const moPageSize = 50;
 // #25: Sort state for managed orders
 let moSortField = "";
 let moSortDir = "asc"; // "asc" or "desc"
+
+// Offers: search/filter/sort/pagination/batch state
+let offersSearchQuery = "";
+let offersPlatformFilter = "";
+let offersSortField = "";
+let offersSortDir = "asc";
+let offersCurrentPage = 1;
+const offersPageSize = 20;
+let offersSelectedIds = new Set();
+
+// Applications: filter/pagination/batch state
+let appsStatusFilter = "";
+let appsCurrentPage = 1;
+const appsPageSize = 20;
+let appsSelectedIds = new Set();
 
 // #15: Debounce utility
 function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
@@ -1143,6 +1723,98 @@ const L = {
 
     // Reset Password Modal
     resetPwTitle: "重置密码",
+
+    // Batch 1 features
+    searchOffers: "搜索 Offer 名称...",
+    allPlatforms: "全部平台",
+    exportExcel: "导出Excel",
+    copy: "复制",
+    copySuffix: "(副本)",
+    allStatus: "全部",
+    activate: "激活",
+    pause: "暂停",
+    batchDelete: "批量删除",
+    batchDeleteConfirm: "确认删除选中的 {n} 项？此操作不可撤销。",
+    batchUpdateConfirm: "确认将选中的 {n} 项状态改为「{status}」？",
+    batchDeleted: "已批量删除 {n} 项",
+    batchUpdated: "已批量更新 {n} 项",
+    selected: "已选",
+    items: "项",
+    cancelSelection: "取消选择",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    exportFailed: "导出失败",
+    offerExported: "Offer 导出成功",
+
+    // Batch 2: Dark mode & shortcuts
+    darkMode: "暗色模式",
+    lightMode: "亮色模式",
+    keyboardShortcuts: "键盘快捷键",
+    closeModal: "关闭弹窗",
+    saveForm: "保存当前表单",
+    tabOffers: "Offers",
+    tabApps: "Applications",
+    tabAccounts: "账号管理",
+    tabOrders: "订单管理",
+    tabPubBills: "PUB账单",
+
+    // Batch 3: Dashboard, Audit, Backup, Email Templates, Responsive
+    tabDashboard: "Dashboard",
+    tabAudit: "审计日志",
+    tabEmailTemplates: "邮件模板",
+    dashboardTitle: "📊 Dashboard",
+    dashboardSubmissionsTrend: "📊 7天提交趋势",
+    dashboardPlatformDist: "📱 平台分布",
+    dashboardRecentApps: "📨 最近 Applications",
+    dashboardRecentAudit: "📋 最近审计日志",
+    dashboardTotalOffers: "总 Offers",
+    dashboardActiveOffers: "活跃 Offers",
+    dashboardNewApps: "新 Applications（本周）",
+    dashboardTotalOrders: "总 Orders",
+    dashboardNewOrders: "本周新增",
+    dashboardTotalPayout: "总 Payout",
+
+    auditTime: "时间",
+    auditUser: "用户",
+    auditAction: "操作",
+    auditTarget: "目标",
+    auditTargetId: "目标ID",
+    auditDetail: "详情",
+    auditAllTargets: "全部目标",
+    auditAllActions: "全部操作",
+
+    backupTitle: "数据备份",
+    backupExport: "📥 导出备份",
+    backupExportDesc: "下载包含所有数据的 JSON 备份文件",
+    backupExportBtn: "导出备份",
+    backupRestore: "📤 恢复数据",
+    backupRestoreDesc: "上传备份 JSON 文件恢复所有数据（需要超级管理员权限）",
+    backupRestoreBtn: "选择备份文件",
+    backupConfirm: "⚠️ 恢复将覆盖所有现有数据，确认继续？",
+    backupDoubleConfirm: "⚠️ 此操作不可撤销！再次确认恢复数据？",
+    backupExporting: "正在导出...",
+    backupRestoring: "正在恢复...",
+    backupSuccess: "备份导出成功！",
+    restoreSuccess: "数据恢复成功！",
+    restoreFailed: "恢复失败",
+    restoreFileInvalid: "无效的备份文件",
+
+    newTemplate: "新建模板",
+    templateName: "模板 ID",
+    templateIdHint: "仅限字母、数字和下划线，创建后不可修改",
+    templateDisplayName: "模板名称",
+    templateSubject: "邮件主题",
+    templateBody: "邮件正文",
+    templateVars: "可用变量：",
+    templateCreated: "模板已创建！",
+    templateUpdated: "模板已更新！",
+    templateDeleted: "模板已删除！",
+    templateDeleteConfirm: "确认删除此模板？",
+    templateDefaultLabel: "默认",
+    templateSetDefault: "设为默认",
+    editTemplate: "编辑模板",
+    deleteTemplate: "删除",
+    orderTemplateLabel: "邮件模板",
   },
 
   en: {
@@ -1337,6 +2009,98 @@ const L = {
     mailtoClose: "Send Later",
 
     resetPwTitle: "Reset Password",
+
+    // Batch 1 features
+    searchOffers: "Search offer name...",
+    allPlatforms: "All Platforms",
+    exportExcel: "Export Excel",
+    copy: "Copy",
+    copySuffix: "(Copy)",
+    allStatus: "All",
+    activate: "Activate",
+    pause: "Pause",
+    batchDelete: "Batch Delete",
+    batchDeleteConfirm: "Delete {n} selected items? This cannot be undone.",
+    batchUpdateConfirm: "Change status of {n} selected items to \"{status}\"?",
+    batchDeleted: "{n} items deleted",
+    batchUpdated: "{n} items updated",
+    selected: "Selected",
+    items: "items",
+    cancelSelection: "Cancel",
+    prevPage: "Prev",
+    nextPage: "Next",
+    exportFailed: "Export failed",
+    offerExported: "Offers exported",
+
+    // Batch 2: Dark mode & shortcuts
+    darkMode: "Dark Mode",
+    lightMode: "Light Mode",
+    keyboardShortcuts: "Keyboard Shortcuts",
+    closeModal: "Close modal",
+    saveForm: "Save current form",
+    tabOffers: "Offers",
+    tabApps: "Applications",
+    tabAccounts: "Accounts",
+    tabOrders: "Orders",
+    tabPubBills: "PUB Bills",
+
+    // Batch 3
+    tabDashboard: "Dashboard",
+    tabAudit: "Audit Log",
+    tabEmailTemplates: "Email Templates",
+    dashboardTitle: "📊 Dashboard",
+    dashboardSubmissionsTrend: "📊 7-Day Submissions Trend",
+    dashboardPlatformDist: "📱 Platform Distribution",
+    dashboardRecentApps: "📨 Recent Applications",
+    dashboardRecentAudit: "📋 Recent Audit Log",
+    dashboardTotalOffers: "Total Offers",
+    dashboardActiveOffers: "Active Offers",
+    dashboardNewApps: "New Apps (This Week)",
+    dashboardTotalOrders: "Total Orders",
+    dashboardNewOrders: "New This Week",
+    dashboardTotalPayout: "Total Payout",
+
+    auditTime: "Time",
+    auditUser: "User",
+    auditAction: "Action",
+    auditTarget: "Target",
+    auditTargetId: "Target ID",
+    auditDetail: "Detail",
+    auditAllTargets: "All Targets",
+    auditAllActions: "All Actions",
+
+    backupTitle: "Data Backup",
+    backupExport: "📥 Export Backup",
+    backupExportDesc: "Download a JSON backup file with all data",
+    backupExportBtn: "Export Backup",
+    backupRestore: "📤 Restore Data",
+    backupRestoreDesc: "Upload a backup JSON file to restore all data (requires super admin)",
+    backupRestoreBtn: "Select Backup File",
+    backupConfirm: "⚠️ Restore will overwrite all existing data. Continue?",
+    backupDoubleConfirm: "⚠️ This cannot be undone! Confirm restore again?",
+    backupExporting: "Exporting...",
+    backupRestoring: "Restoring...",
+    backupSuccess: "Backup exported successfully!",
+    restoreSuccess: "Data restored successfully!",
+    restoreFailed: "Restore failed",
+    restoreFileInvalid: "Invalid backup file",
+
+    newTemplate: "New Template",
+    templateName: "Template ID",
+    templateIdHint: "Alphanumeric and underscore only. Cannot be changed after creation.",
+    templateDisplayName: "Template Name",
+    templateSubject: "Email Subject",
+    templateBody: "Email Body",
+    templateVars: "Available Variables:",
+    templateCreated: "Template created!",
+    templateUpdated: "Template updated!",
+    templateDeleted: "Template deleted!",
+    templateDeleteConfirm: "Delete this template?",
+    templateDefaultLabel: "Default",
+    templateSetDefault: "Set as Default",
+    editTemplate: "Edit Template",
+    deleteTemplate: "Delete",
+    orderTemplateLabel: "Email Template",
   }
 };
 
@@ -1361,34 +2125,40 @@ function applyLanguage() {
   document.getElementById("login-pw").placeholder = t("loginPwPlaceholder");
   document.getElementById("pw-btn").textContent = t("loginBtn");
 
-  // Nav
-  document.getElementById("tab-offers").textContent = t("tabOffers");
-  document.getElementById("tab-apps").textContent = t("tabApps");
-  document.getElementById("tab-accounts").textContent = t("tabAccounts");
-  document.getElementById("change-pw-btn").textContent = t("changePw");
+  // Nav (sidebar items)
+  const sidebarAccounts = document.getElementById("sidebar-accounts");
+  if (sidebarAccounts) sidebarAccounts.querySelector("[data-i18n]").textContent = t("tabAccounts");
   document.getElementById("logout-btn").textContent = t("logout");
   document.getElementById("offers-title").textContent = t("allOffers");
 
-  // Offers table headers
+  // Offers filter bar
+  const searchInput = document.getElementById("offers-search");
+  if (searchInput) searchInput.placeholder = t("searchOffers");
+  const platformFilter = document.getElementById("offers-platform-filter");
+  if (platformFilter && platformFilter.options[0]) platformFilter.options[0].textContent = t("allPlatforms");
+
+  // Offers table headers (with sort)
   const oth = document.querySelectorAll("#content-offers thead th");
-  if (oth.length >= 6) {
-    oth[0].textContent = "Offer";
-    oth[1].textContent = t("platformLabel");
-    oth[2].textContent = t("payoutLabel");
-    oth[3].textContent = "GEOs";
-    oth[4].textContent = t("iconUrl");
-    oth[5].textContent = t("actions");
+  if (oth.length >= 7) {
+    oth[0].innerHTML = '<input type="checkbox" id="offers-select-all" onchange="toggleAllOffers(this.checked)" />';
+    oth[1].textContent = "Offer";
+    oth[2].textContent = t("platformLabel");
+    oth[3].textContent = t("payoutLabel");
+    oth[4].textContent = "GEOs";
+    oth[5].textContent = t("iconUrl");
+    oth[6].textContent = t("actions");
   }
   // Applications table headers
   const ath = document.querySelectorAll("#content-apps thead th");
-  if (ath.length >= 7) {
-    ath[0].textContent = t("date");
-    ath[1].textContent = t("offer");
-    ath[2].textContent = t("publisher");
-    ath[3].textContent = t("pids");
-    ath[4].textContent = t("emails");
-    ath[5].textContent = t("comment");
-    ath[6].textContent = t("status");
+  if (ath.length >= 9) {
+    ath[0].innerHTML = '<input type="checkbox" id="apps-select-all" onchange="toggleAllSubs(this.checked)" />';
+    ath[1].textContent = t("date");
+    ath[2].textContent = t("offer");
+    ath[3].textContent = t("publisher");
+    ath[4].textContent = t("pids");
+    ath[5].textContent = t("emails");
+    ath[6].textContent = t("comment");
+    ath[7].textContent = t("status");
   }
   // Accounts table headers
   const ach = document.querySelectorAll("#content-accounts thead th");
@@ -1595,6 +2365,7 @@ async function tryLogin() {
     applyLanguage();
     updateUserDisplay();
     loadAll();
+    startNotifPoll();
   } catch (e) {
     document.getElementById("login-error").textContent = t("loginConnError");
     document.getElementById("login-error").style.display = "block";
@@ -1619,46 +2390,96 @@ document.getElementById("logout-btn").onclick = async () => {
 function updateUserDisplay() {
   const el = document.getElementById("user-info-display");
   if (currentUser.role === "super_admin") {
-    el.innerHTML = `<span class="badge-super">👑 ${currentUser.username}</span> (${t("superAdmin")})`;
-    document.getElementById("tab-accounts").style.display = "inline-block";
+    el.innerHTML = `<span class="badge-super">👑 ${esc(currentUser.username)}</span>`;
+    document.getElementById("sidebar-accounts").style.display = "flex";
   } else {
-    el.innerHTML = `<span class="badge-admin">${currentUser.username}</span> (${t("admin")})`;
-    document.getElementById("tab-accounts").style.display = "none";
+    el.innerHTML = `<span class="badge-admin">${esc(currentUser.username)}</span>`;
+    document.getElementById("sidebar-accounts").style.display = "none";
   }
+}
+
+// ────────────────────────────────────
+// DARK MODE
+// ────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    document.documentElement.setAttribute("data-theme", "dark");
+    const btn = document.getElementById("theme-toggle-btn");
+    if (btn) btn.textContent = "☀️";
+  }
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("theme", next);
+  const btn = document.getElementById("theme-toggle-btn");
+  if (btn) btn.textContent = next === "dark" ? "☀️" : "🌙";
+}
+initTheme();
+
+// ────────────────────────────────────
+// SIDEBAR
+// ────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sidebar-overlay").classList.toggle("open");
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.remove("open");
 }
 
 // ────────────────────────────────────
 // TAB SWITCHING
 // ────────────────────────────────────
-document.querySelectorAll(".tab-nav button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    currentTab = btn.dataset.tab;
-    document.querySelectorAll(".tab-nav button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("content-offers").style.display = currentTab === "offers" ? "block" : "none";
-    document.getElementById("content-apps").style.display = currentTab === "applications" ? "block" : "none";
-    document.getElementById("content-accounts").style.display = currentTab === "accounts" ? "block" : "none";
-    document.getElementById("content-managed-orders").style.display = currentTab === "managed-orders" ? "block" : "none";
-    document.getElementById("content-pub-bills").style.display = currentTab === "pub-bills" ? "block" : "none";
-    if (currentTab === "accounts") loadAccounts();
-    if (currentTab === "managed-orders") loadManagedOrders();
-  });
-});
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".sidebar-item").forEach(el => el.classList.toggle("active", el.dataset.tab === tab));
+  document.getElementById("content-dashboard").style.display = tab === "dashboard" ? "block" : "none";
+  document.getElementById("content-offers").style.display = tab === "offers" ? "block" : "none";
+  document.getElementById("content-apps").style.display = tab === "applications" ? "block" : "none";
+  document.getElementById("content-accounts").style.display = tab === "accounts" ? "block" : "none";
+  document.getElementById("content-managed-orders").style.display = tab === "managed-orders" ? "block" : "none";
+  document.getElementById("content-pub-bills").style.display = tab === "pub-bills" ? "block" : "none";
+  document.getElementById("content-audit").style.display = tab === "audit" ? "block" : "none";
+  document.getElementById("content-email-templates").style.display = tab === "email-templates" ? "block" : "none";
+  if (tab === "accounts") loadAccounts();
+  if (tab === "managed-orders") loadManagedOrders();
+  if (tab === "audit") loadAuditLog();
+  if (tab === "email-templates") loadEmailTemplates();
+  if (tab === "dashboard") loadDashboard();
+  closeSidebar();
+}
 
 // ────────────────────────────────────
 // LOAD ALL
 // ────────────────────────────────────
 async function loadAll() {
-  await Promise.all([loadOffers(), loadSubmissions()]);
+  await Promise.all([loadOffers(), loadSubmissions(), loadTrendData(), loadDashboard()]);
+}
+
+// ── Skeleton helper ──
+function showSkeleton(tbodyId, cols, rows = 4) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  tbody.innerHTML = Array.from({ length: rows }, () =>
+    `<tr class="skel-row">${Array.from({ length: cols }, () =>
+      `<td><div class="skel-line skel-cell" style="width:${60 + Math.random() * 40}%"></div></td>`
+    ).join("")}</tr>`
+  ).join("");
 }
 
 async function loadOffers() {
+  showSkeleton("offers-tbody", 7);
   const res = await fetch("/api/offers");
   offers = await res.json();
   renderOffers();
 }
 
 async function loadSubmissions() {
+  showSkeleton("apps-tbody", 9);
   const res = await fetch("/api/submissions", { headers: authHeaders() });
   if (handleAuthError(res)) return;
   if (!res.ok) return;
@@ -1675,41 +2496,108 @@ async function loadAccounts() {
 }
 
 // ────────────────────────────────────
-// TOAST
+// TOAST (upgraded)
 // ────────────────────────────────────
+const TOAST_ICONS = { success: "✓", error: "✗", warning: "⚠", info: "ℹ" };
 function showToast(msg, type = "success") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove("show"), 2500);
+  const container = document.getElementById("toast-container");
+  const el = document.createElement("div");
+  el.className = `toast-item ${type}`;
+  el.innerHTML = `<span class="toast-icon">${TOAST_ICONS[type] || TOAST_ICONS.success}</span><span>${escHtml(msg)}</span><div class="toast-progress"></div>`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.add("removing");
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
 }
+function escHtml(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
 // ────────────────────────────────────
-// RENDER OFFERS
+// RENDER OFFERS (with search/filter/sort/pagination/batch)
 // ────────────────────────────────────
+function getFilteredOffers() {
+  let list = [...offers];
+  // Search filter
+  if (offersSearchQuery) {
+    const q = offersSearchQuery.toLowerCase();
+    list = list.filter(o => (o.name || "").toLowerCase().includes(q) || (o.platform || "").toLowerCase().includes(q));
+  }
+  // Platform filter
+  if (offersPlatformFilter) {
+    list = list.filter(o => o.platform === offersPlatformFilter);
+  }
+  // Sort
+  if (offersSortField) {
+    list.sort((a, b) => {
+      let va = a[offersSortField], vb = b[offersSortField];
+      if (offersSortField === "payout") {
+        va = parseFloat(va) || 0; vb = parseFloat(vb) || 0;
+      } else {
+        va = String(va || "").toLowerCase(); vb = String(vb || "").toLowerCase();
+      }
+      if (va < vb) return offersSortDir === "asc" ? -1 : 1;
+      if (va > vb) return offersSortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+  return list;
+}
+
+// ── Sparkline helper ──
+let trendData = { offers: [], submissions: [], orders: [] };
+async function loadTrendData() {
+  try {
+    const res = await fetch("/api/stats/trend", { headers: authHeaders() });
+    if (res.ok) trendData = await res.json();
+  } catch(e) {}
+}
+function sparklineSVG(data, color, w = 80, h = 30) {
+  if (!data || !data.length) return "";
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="display:block"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
 function renderOffers() {
   const tbody = document.getElementById("offers-tbody");
   const empty = document.getElementById("offers-empty");
   const stats = document.getElementById("offers-stats");
+  const pagination = document.getElementById("offers-pagination");
 
   const iosCount = offers.filter(o => o.platform === "ios").length;
   const adrCount = offers.filter(o => o.platform === "android").length;
   const topPayout = offers.length ? Math.max(...offers.map(o => o.payout)) : 0;
   const withIcon = offers.filter(o => o.icon).length;
   stats.innerHTML = `
-    <div class="stat-card"><div class="num">${offers.length}</div><div class="lbl">${t("totalOffers")}</div></div>
-    <div class="stat-card"><div class="num">${iosCount}</div><div class="lbl">iOS</div></div>
-    <div class="stat-card"><div class="num">${adrCount}</div><div class="lbl">Android</div></div>
-    <div class="stat-card"><div class="num">${topPayout > 0 ? '$'+topPayout.toFixed(2) : '—'}</div><div class="lbl">${t("topPayout")}</div></div>
-    <div class="stat-card"><div class="num">${withIcon}/${offers.length}</div><div class="lbl">${t("withIcon")}</div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${offers.length}</div><div class="lbl">${t("totalOffers")}</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.offers, "#6366f1")}</div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${iosCount}</div><div class="lbl">iOS</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${adrCount}</div><div class="lbl">Android</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${topPayout > 0 ? '$'+topPayout.toFixed(2) : '—'}</div><div class="lbl">${t("topPayout")}</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${withIcon}/${offers.length}</div><div class="lbl">${t("withIcon")}</div></div></div></div>
   `;
 
-  if (!offers.length) {
-    tbody.innerHTML = ""; empty.style.display = "block"; return;
+  const filtered = getFilteredOffers();
+
+  if (!filtered.length) {
+    tbody.innerHTML = ""; empty.style.display = "block";
+    pagination.style.display = "none";
+    return;
   }
   empty.style.display = "none";
 
-  tbody.innerHTML = offers.map(o => {
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filtered.length / offersPageSize));
+  if (offersCurrentPage > totalPages) offersCurrentPage = totalPages;
+  const start = (offersCurrentPage - 1) * offersPageSize;
+  const pageOffers = filtered.slice(start, start + offersPageSize);
+
+  tbody.innerHTML = pageOffers.map(o => {
     const iconHtml = o.icon
       ? `<div class="icon-preview"><img src="${esc(o.icon)}" alt="" /></div>`
       : `<div class="icon-preview"><span>${esc(o.iconLetter || o.name[0])}</span></div>`;
@@ -1717,8 +2605,10 @@ function renderOffers() {
     const platformLabel = o.platform === "ios" ? "iOS" : "Android";
     const geos = (o.geos || []).slice(0, 6);
     const moreGeo = (o.geos || []).length > 6 ? ` +${o.geos.length - 6}` : "";
+    const checked = offersSelectedIds.has(o.id) ? "checked" : "";
 
-    return `<tr>
+    return `<tr data-id="${o.id}">
+      <td class="cb-col"><input type="checkbox" data-offer-id="${o.id}" ${checked} onchange="toggleOfferSelect(${o.id}, this.checked)" /></td>
       <td>
         <div class="offer-name-cell">
           ${iconHtml}
@@ -1737,12 +2627,25 @@ function renderOffers() {
                placeholder="${t("iconUrlPlaceholderInline")}"
                onchange="quickUpdate(${o.id}, 'icon', this.value)" />
       </td>
-      <td>
-        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="${t("edit")}">✎ ${t("edit")}</button>
+      <td style="white-space:nowrap">
+        <button class="btn-secondary btn-sm" onclick="openOfferModal(${o.id})" title="${t("edit")}">✎</button>
+        <button class="btn-secondary btn-sm" onclick="cloneOffer(${o.id})" title="${t("copy")}">📋</button>
         <button class="btn-danger btn-sm" onclick="deleteOffer(${o.id})" title="Delete">×</button>
       </td>
     </tr>`;
   }).join("");
+
+  // Pagination controls
+  if (filtered.length > offersPageSize) {
+    pagination.style.display = "flex";
+    document.getElementById("offers-page-info").textContent = `${offersCurrentPage} / ${totalPages}`;
+    document.getElementById("offers-prev-btn").disabled = offersCurrentPage <= 1;
+    document.getElementById("offers-next-btn").disabled = offersCurrentPage >= totalPages;
+  } else {
+    pagination.style.display = "none";
+  }
+
+  updateOffersBatchBar();
 }
 
 async function quickUpdate(id, field, value) {
@@ -1759,15 +2662,168 @@ async function quickUpdate(id, field, value) {
   }
 }
 
+// ── Row animation helpers ──
+function animateNewRow(tbody) {
+  const firstRow = tbody.querySelector("tr");
+  if (firstRow) { firstRow.classList.add("row-enter"); firstRow.addEventListener("animationend", () => firstRow.classList.remove("row-enter"), { once: true }); }
+}
+function removeRowWithAnim(id, callback) {
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  if (row) {
+    row.classList.add("row-removing");
+    row.addEventListener("animationend", () => { callback(); }, { once: true });
+  } else {
+    callback();
+  }
+}
+
 async function deleteOffer(id) {
   if (!await customConfirm(t("deleteConfirm"))) return;
-  const res = await fetch(`/api/offers/${id}`, { method: "DELETE", headers: authHeaders() });
+  removeRowWithAnim(id, async () => {
+    const res = await fetch(`/api/offers/${id}`, { method: "DELETE", headers: authHeaders() });
+    if (res.ok) { showToast(t("offerDeleted"), "success"); loadOffers(); }
+    else { showToast(t("deleteFailed"), "error"); }
+  });
+}
+
+// ── Offers: Sort ──
+function sortOffers(field) {
+  if (offersSortField === field) {
+    offersSortDir = offersSortDir === "asc" ? "desc" : "asc";
+  } else {
+    offersSortField = field;
+    offersSortDir = "asc";
+  }
+  document.querySelectorAll(".sort-arrow").forEach(el => el.textContent = "");
+  const indicator = document.getElementById("sort-" + field);
+  if (indicator) indicator.textContent = offersSortDir === "asc" ? "▲" : "▼";
+  offersCurrentPage = 1;
+  renderOffers();
+}
+
+// ── Offers: Search & Filter ──
+document.getElementById("offers-search").addEventListener("input", debounce(function() {
+  offersSearchQuery = this.value.trim();
+  offersCurrentPage = 1;
+  renderOffers();
+}, 200));
+document.getElementById("offers-platform-filter").addEventListener("change", function() {
+  offersPlatformFilter = this.value;
+  offersCurrentPage = 1;
+  renderOffers();
+});
+
+// ── Offers: Pagination ──
+function offersPrevPage() {
+  if (offersCurrentPage > 1) { offersCurrentPage--; renderOffers(); }
+}
+function offersNextPage() {
+  const filtered = getFilteredOffers();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / offersPageSize));
+  if (offersCurrentPage < totalPages) { offersCurrentPage++; renderOffers(); }
+}
+
+// ── Offers: Batch Selection ──
+function toggleOfferSelect(id, checked) {
+  if (checked) offersSelectedIds.add(id); else offersSelectedIds.delete(id);
+  updateOffersBatchBar();
+}
+function toggleAllOffers(checked) {
+  const filtered = getFilteredOffers();
+  const start = (offersCurrentPage - 1) * offersPageSize;
+  const pageOffers = filtered.slice(start, start + offersPageSize);
+  pageOffers.forEach(o => {
+    if (checked) offersSelectedIds.add(o.id); else offersSelectedIds.delete(o.id);
+  });
+  renderOffers();
+}
+function clearOfferSelection() {
+  offersSelectedIds.clear();
+  document.getElementById("offers-select-all").checked = false;
+  renderOffers();
+}
+function updateOffersBatchBar() {
+  const bar = document.getElementById("offers-batch-bar");
+  const count = offersSelectedIds.size;
+  document.getElementById("offers-selected-count").textContent = count;
+  if (count > 0) bar.classList.add("show"); else bar.classList.remove("show");
+}
+
+// ── Offers: Batch Operations ──
+async function batchDeleteOffers() {
+  const ids = Array.from(offersSelectedIds);
+  if (!ids.length) return;
+  if (!await customConfirm(t("batchDeleteConfirm").replace("{n}", ids.length))) return;
+  // Animate all selected rows out before deleting
+  const rows = ids.map(id => document.querySelector(`tr[data-id="${id}"]`)).filter(Boolean);
+  rows.forEach(r => r.classList.add("row-removing"));
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const res = await fetch("/api/offers/batch", {
+    method: "DELETE", headers: authHeaders(), body: JSON.stringify({ ids })
+  });
   if (res.ok) {
-    showToast(t("offerDeleted"), "success");
+    const data = await res.json();
+    showToast(t("batchDeleted").replace("{n}", data.deleted), "success");
+    offersSelectedIds.clear();
     loadOffers();
   } else {
     showToast(t("deleteFailed"), "error");
   }
+}
+async function batchOfferStatus(status) {
+  const ids = Array.from(offersSelectedIds);
+  if (!ids.length) return;
+  const statusLabel = status === "active" ? t("activate") : t("pause");
+  if (!await customConfirm(t("batchUpdateConfirm").replace("{n}", ids.length).replace("{status}", statusLabel))) return;
+  const res = await fetch("/api/offers/batch", {
+    method: "PATCH", headers: authHeaders(),
+    body: JSON.stringify({ ids, updates: { status } })
+  });
+  if (res.ok) {
+    const data = await res.json();
+    showToast(t("batchUpdated").replace("{n}", data.updated), "success");
+    offersSelectedIds.clear();
+    loadOffers();
+  } else {
+    showToast(t("updateFailed"), "error");
+  }
+}
+
+// ── Offers: Clone ──
+function cloneOffer(id) {
+  const offer = offers.find(o => o.id === id);
+  if (!offer) return;
+  editGeos.length = 0;
+  editIntegrations.length = 0;
+
+  document.getElementById("offer-modal-title").textContent = t("newOfferTitle");
+  document.getElementById("of-id").value = ""; // new offer
+  document.getElementById("of-name").value = (offer.name || "") + " " + t("copySuffix");
+  document.getElementById("of-platform").value = offer.platform;
+  document.getElementById("of-payout").value = offer.payout;
+  document.getElementById("of-currency").value = offer.currency || "USD";
+  document.getElementById("of-icon").value = offer.icon || "";
+  document.getElementById("of-iconLetter").value = offer.iconLetter || "N";
+  editGeos.push(...(offer.geos || []));
+  const d = offer.details || {};
+  document.getElementById("of-dgeo").value = d.geo || "";
+  document.getElementById("of-dpayout").value = d.payout || "";
+  document.getElementById("of-durl").value = d.storeUrl || "";
+  document.getElementById("of-devent").value = d.payableEvent || "";
+  document.getElementById("of-dkpi").value = d.kpi || "";
+  document.getElementById("of-dprt").value = d.prt || "";
+  document.getElementById("of-dflow").value = d.flow || "—";
+  editIntegrations.push(...(d.integrations || []));
+
+  renderGeos();
+  renderInts();
+  document.getElementById("offer-overlay").classList.add("open");
+  setTimeout(() => { offerFormSnapshot = serializeForm("offer-form"); }, 0);
+}
+
+// ── Offers: Export Excel ──
+function exportOffersExcel() {
+  window.open("/api/offers/export?token=" + encodeURIComponent(authToken), "_blank");
 }
 
 // ────────────────────────────────────
@@ -1912,58 +2968,102 @@ document.getElementById("offer-form").addEventListener("submit", async e => {
     offerFormSnapshot = ""; // clear before close to skip dirty check
     closeOfferModal();
     loadOffers();
+    // Animate new row after render
+    setTimeout(() => animateNewRow(document.getElementById("offers-tbody")), 50);
   } else {
     showToast(t("saveFailed"), "error");
   }
 });
 
 // ────────────────────────────────────
-// RENDER SUBMISSIONS
+// RENDER SUBMISSIONS (with filter/pagination/batch)
 // ────────────────────────────────────
+function getFilteredSubmissions() {
+  let list = [...submissions];
+  if (appsStatusFilter) {
+    list = list.filter(s => s.status === appsStatusFilter);
+  }
+  return list;
+}
+
 function renderSubmissions() {
   const tbody = document.getElementById("apps-tbody");
   const empty = document.getElementById("apps-empty");
   const stats = document.getElementById("apps-stats");
+  const pagination = document.getElementById("apps-pagination");
 
   const counts = { new: 0, viewed: 0, contacted: 0 };
   submissions.forEach(s => counts[s.status] = (counts[s.status] || 0) + 1);
 
+  // Update notification badge
+  updateNotifBadge(counts.new);
+
+  // Update status tab counts
+  document.getElementById("apps-count-all").textContent = submissions.length;
+  document.getElementById("apps-count-new").textContent = counts.new;
+  document.getElementById("apps-count-viewed").textContent = counts.viewed;
+  document.getElementById("apps-count-contacted").textContent = counts.contacted;
+
   stats.innerHTML = `
-    <div class="stat-card"><div class="num">${submissions.length}</div><div class="lbl">${t("totalApps")}</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">${t("statusNew")}</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--orange)">${counts.viewed}</div><div class="lbl">${t("statusViewed")}</div></div>
-    <div class="stat-card"><div class="num" style="color:var(--green)">${counts.contacted}</div><div class="lbl">${t("statusContacted")}</div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${submissions.length}</div><div class="lbl">${t("totalApps")}</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.submissions, "#10b981")}</div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">${t("statusNew")}</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--orange)">${counts.viewed}</div><div class="lbl">${t("statusViewed")}</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--green)">${counts.contacted}</div><div class="lbl">${t("statusContacted")}</div></div></div></div>
   `;
 
-  if (!submissions.length) {
-    tbody.innerHTML = ""; empty.style.display = "block"; return;
+  const filtered = getFilteredSubmissions();
+
+  if (!filtered.length) {
+    tbody.innerHTML = ""; empty.style.display = "block";
+    pagination.style.display = "none";
+    return;
   }
   empty.style.display = "none";
 
-  tbody.innerHTML = submissions.map(s => {
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filtered.length / appsPageSize));
+  if (appsCurrentPage > totalPages) appsCurrentPage = totalPages;
+  const start = (appsCurrentPage - 1) * appsPageSize;
+  const pageSubs = filtered.slice(start, start + appsPageSize);
+
+  tbody.innerHTML = pageSubs.map(s => {
     const date = new Date(s.timestamp).toLocaleDateString("en-GB", {
       day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
     });
-    const pids = (s.pids||[]).map(p => `<span class="tag-chip">${p}</span>`).join("");
-    const emails = (s.emails||[]).map(e => `<span class="tag-chip">${e}</span>`).join("");
+    const pids = (s.pids||[]).map(p => `<span class="tag-chip">${esc(p)}</span>`).join("");
+    const emails = (s.emails||[]).map(e => `<span class="tag-chip">${esc(e)}</span>`).join("");
     const statusLabels = { new: t("statusNew"), viewed: t("statusViewed"), contacted: t("statusContacted") };
     const statusOpts = ["new","viewed","contacted"]
       .map(st => `<option value="${st}" ${st===s.status?"selected":""}>${statusLabels[st]}</option>`).join("");
+    const checked = appsSelectedIds.has(s.id) ? "checked" : "";
 
-    return `<tr data-id="${s.id}">
+    return `<tr data-id="${esc(s.id)}">
+      <td class="cb-col"><input type="checkbox" data-sub-id="${esc(s.id)}" ${checked} onchange="toggleSubSelect('${esc(s.id)}', this.checked)" /></td>
       <td class="mono">${date}</td>
-      <td><strong>${s.offerName||"—"}</strong><br><span style="color:var(--text3);font-size:11px">${s.offerPlatform||"—"}</span></td>
-      <td>${s.publisher||"—"}</td>
+      <td><strong>${esc(s.offerName||"—")}</strong><br><span style="color:var(--text3);font-size:11px">${esc(s.offerPlatform||"—")}</span></td>
+      <td>${esc(s.publisher||"—")}</td>
       <td><div class="tag-list">${pids}</div></td>
       <td><div class="tag-list">${emails}</div></td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.comment||''}">${s.comment||"—"}</td>
-      <td><select class="status-select" onchange="updateStatus('${s.id}', this.value)">${statusOpts}</select></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(s.comment||'')}">${esc(s.comment||"—")}</td>
+      <td><select class="status-select" onchange="updateStatus('${esc(s.id)}', this.value)">${statusOpts}</select></td>
       <td style="white-space:nowrap">
-        <button class="btn-secondary btn-sm" onclick="openOrderModal('${s.id}')" title="${t("order")}">📋 ${t("order")}</button>
-        <button class="btn-danger btn-sm" onclick="deleteSub('${s.id}')">×</button>
+        <button class="btn-secondary btn-sm" onclick="openOrderModal('${esc(s.id)}')" title="${t("order")}">📋</button>
+        <button class="btn-danger btn-sm" onclick="deleteSub('${esc(s.id)}')">×</button>
       </td>
     </tr>`;
   }).join("");
+
+  // Pagination controls
+  if (filtered.length > appsPageSize) {
+    pagination.style.display = "flex";
+    document.getElementById("apps-page-info").textContent = `${appsCurrentPage} / ${totalPages}`;
+    document.getElementById("apps-prev-btn").disabled = appsCurrentPage <= 1;
+    document.getElementById("apps-next-btn").disabled = appsCurrentPage >= totalPages;
+  } else {
+    pagination.style.display = "none";
+  }
+
+  updateAppsBatchBar();
 }
 
 async function updateStatus(id, status) {
@@ -1976,9 +3076,131 @@ async function updateStatus(id, status) {
 
 async function deleteSub(id) {
   if (!await customConfirm(t("deleteAppConfirm"))) return;
-  await fetch(`/api/submissions/${id}`, { method: "DELETE", headers: authHeaders() });
-  showToast(t("deleted"), "success");
-  loadSubmissions();
+  removeRowWithAnim(id, async () => {
+    await fetch(`/api/submissions/${id}`, { method: "DELETE", headers: authHeaders() });
+    showToast(t("deleted"), "success");
+    loadSubmissions();
+  });
+}
+
+// ── Applications: Status Filter Tabs ──
+function filterAppsByStatus(status) {
+  appsStatusFilter = status;
+  appsCurrentPage = 1;
+  // Update active tab
+  document.querySelectorAll("#apps-status-tabs .status-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.status === status);
+  });
+  renderSubmissions();
+}
+
+// ── Applications: Pagination ──
+function appsPrevPage() {
+  if (appsCurrentPage > 1) { appsCurrentPage--; renderSubmissions(); }
+}
+function appsNextPage() {
+  const filtered = getFilteredSubmissions();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / appsPageSize));
+  if (appsCurrentPage < totalPages) { appsCurrentPage++; renderSubmissions(); }
+}
+
+// ── Applications: Batch Selection ──
+function toggleSubSelect(id, checked) {
+  if (checked) appsSelectedIds.add(id); else appsSelectedIds.delete(id);
+  updateAppsBatchBar();
+}
+function toggleAllSubs(checked) {
+  const filtered = getFilteredSubmissions();
+  const start = (appsCurrentPage - 1) * appsPageSize;
+  const pageSubs = filtered.slice(start, start + appsPageSize);
+  pageSubs.forEach(s => {
+    if (checked) appsSelectedIds.add(s.id); else appsSelectedIds.delete(s.id);
+  });
+  renderSubmissions();
+}
+function clearSubSelection() {
+  appsSelectedIds.clear();
+  document.getElementById("apps-select-all").checked = false;
+  renderSubmissions();
+}
+function updateAppsBatchBar() {
+  const bar = document.getElementById("apps-batch-bar");
+  const count = appsSelectedIds.size;
+  document.getElementById("apps-selected-count").textContent = count;
+  if (count > 0) bar.classList.add("show"); else bar.classList.remove("show");
+}
+
+// ── Applications: Batch Operations ──
+async function batchDeleteSubs() {
+  const ids = Array.from(appsSelectedIds);
+  if (!ids.length) return;
+  if (!await customConfirm(t("batchDeleteConfirm").replace("{n}", ids.length))) return;
+  // Animate all selected rows out before deleting
+  const rows = ids.map(id => document.querySelector(`tr[data-id="${id}"]`)).filter(Boolean);
+  rows.forEach(r => r.classList.add("row-removing"));
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const res = await fetch("/api/submissions/batch", {
+    method: "DELETE", headers: authHeaders(), body: JSON.stringify({ ids })
+  });
+  if (res.ok) {
+    const data = await res.json();
+    showToast(t("batchDeleted").replace("{n}", data.deleted), "success");
+    appsSelectedIds.clear();
+    loadSubmissions();
+  } else {
+    showToast(t("deleteFailed"), "error");
+  }
+}
+async function batchSubStatus(status) {
+  const ids = Array.from(appsSelectedIds);
+  if (!ids.length) return;
+  const statusMap = { new: t("statusNew"), viewed: t("statusViewed"), contacted: t("statusContacted") };
+  if (!await customConfirm(t("batchUpdateConfirm").replace("{n}", ids.length).replace("{status}", statusMap[status] || status))) return;
+  const res = await fetch("/api/submissions/batch", {
+    method: "PATCH", headers: authHeaders(),
+    body: JSON.stringify({ ids, updates: { status } })
+  });
+  if (res.ok) {
+    const data = await res.json();
+    showToast(t("batchUpdated").replace("{n}", data.updated), "success");
+    appsSelectedIds.clear();
+    loadSubmissions();
+  } else {
+    showToast(t("updateFailed"), "error");
+  }
+}
+
+// ── Applications: Notification Badge ──
+function updateNotifBadge(newCount) {
+  const badge = document.getElementById("apps-notif-badge");
+  if (!badge) return;
+  if (newCount > 0) {
+    badge.textContent = newCount > 99 ? "99+" : newCount;
+    badge.style.display = "inline-block";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+// Poll for new submissions every 60 seconds
+let _notifPollTimer = null;
+function startNotifPoll() {
+  if (_notifPollTimer) clearInterval(_notifPollTimer);
+  _notifPollTimer = setInterval(async () => {
+    if (!authToken || dashboard.style.display === "none") return;
+    try {
+      const res = await fetch("/api/submissions", { headers: authHeaders() });
+      if (!res.ok) return;
+      const allSubs = await res.json();
+      const newCount = allSubs.filter(s => s.status === "new").length;
+      updateNotifBadge(newCount);
+      // If on applications tab, also update the list
+      if (currentTab === "applications") {
+        submissions = allSubs;
+        renderSubmissions();
+      }
+    } catch (e) { /* silent */ }
+  }, 60000);
 }
 
 // ────────────────────────────────────
@@ -2095,6 +3317,17 @@ document.getElementById("reset-pw-form").addEventListener("submit", async e => {
   else { showToast(t("resetFailed"), "error"); }
 });
 
+// ── Template form submit (#16) ──
+document.getElementById("template-form").addEventListener("submit", saveTemplate);
+document.getElementById("template-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeTemplateModal();
+});
+
+// ── Backup overlay click close (#15) ──
+document.getElementById("backup-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeBackupModal();
+});
+
 async function deleteAccount(id, username) {
   if (!await customConfirm(t("deleteAccountConfirm").replace("{}", username))) return;
   const res = await fetch(`/api/accounts/${id}`, { method: "DELETE", headers: authHeaders() });
@@ -2105,7 +3338,7 @@ async function deleteAccount(id, username) {
 // ────────────────────────────────────
 // CHANGE PASSWORD
 // ────────────────────────────────────
-document.getElementById("change-pw-btn").onclick = () => document.getElementById("pw-overlay").classList.add("open");
+// change-pw-btn already has inline onclick in sidebar HTML
 function closePwModal() { document.getElementById("pw-overlay").classList.remove("open"); }
 document.getElementById("pw-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closePwModal();
@@ -2167,6 +3400,7 @@ if (authToken && currentUser) {
         applyLanguage();
         updateUserDisplay();
         loadAll();
+        startNotifPoll();
       } else {
         // Token expired or invalid — clear and show login
         authToken = "";
@@ -2532,11 +3766,11 @@ async function loadManagedOrders() {
   const done = orders.filter(o => o.status === "已完成").length;
   const cancelled = orders.filter(o => o.status === "已取消").length;
   stats.innerHTML = `
-    <div class="stat-card"><div class="num">${orders.length}</div><div class="lbl">总订单</div></div>
-    <div class="stat-card" style="border-left:3px solid var(--green)"><div class="num" style="color:var(--green)">${running}</div><div class="lbl">运行中</div></div>
-    <div class="stat-card" style="border-left:3px solid var(--orange)"><div class="num" style="color:var(--orange)">${paused}</div><div class="lbl">暂停中</div></div>
-    <div class="stat-card" style="border-left:3px solid var(--accent)"><div class="num" style="color:var(--accent)">${done}</div><div class="lbl">已完成</div></div>
-    <div class="stat-card" style="border-left:3px solid var(--red)"><div class="num" style="color:var(--red)">${cancelled}</div><div class="lbl">已取消</div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${orders.length}</div><div class="lbl">总订单</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.orders, "#6366f1")}</div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--green)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--green)">${running}</div><div class="lbl">运行中</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--orange)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--orange)">${paused}</div><div class="lbl">暂停中</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--accent)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--accent)">${done}</div><div class="lbl">已完成</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--red)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--red)">${cancelled}</div><div class="lbl">已取消</div></div></div></div>
   `;
 
   if (!orders.length) {
@@ -2592,6 +3826,7 @@ function renderMoPage() {
   tbody.innerHTML = "";
   for (const o of pageOrders) {
     const tr = document.createElement("tr");
+    tr.dataset.id = o.id;
 
     tr.innerHTML = `
       <td><span class="mono">${esc(String(o.customer_id))}</span></td>
@@ -2817,17 +4052,19 @@ async function updateMoStatus(sel) {
 
 async function deleteManagedOrder(id) {
   if (!await customConfirm("确定删除这条订单吗？")) return;
-  try {
-    const res = await fetch(`/api/managed-orders/${id}`, {
-      method: "DELETE",
-      headers: authHeaders()
-    });
-    if (handleAuthError(res)) return;
-    if (res.ok) {
-      loadManagedOrders();
-      showToast("已删除", "success");
-    }
-  } catch (e) { showToast("删除失败", "error"); }
+  removeRowWithAnim(id, async () => {
+    try {
+      const res = await fetch(`/api/managed-orders/${id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+      });
+      if (handleAuthError(res)) return;
+      if (res.ok) {
+        loadManagedOrders();
+        showToast("已删除", "success");
+      }
+    } catch (e) { showToast("删除失败", "error"); }
+  });
 }
 
 // Import Excel
@@ -2977,6 +4214,496 @@ function resetPubUpload() {
   pubResultId = null;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  DASHBOARD (#19)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function loadDashboard() {
+  try {
+    // Stats cards
+    const statsEl = document.getElementById("dashboard-stats");
+    const allOffers = offers;
+    const iosCount = allOffers.filter(o => o.platform === "ios").length;
+    const adrCount = allOffers.filter(o => o.platform === "android").length;
+    const totalPayout = allOffers.reduce((sum, o) => sum + (parseFloat(o.payout) || 0), 0);
+
+    // New apps this week
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const newAppsThisWeek = submissions.filter(s => new Date(s.timestamp) >= weekAgo).length;
+
+    // Orders
+    let ordersData = [];
+    try {
+      const ordersRes = await fetch("/api/orders", { headers: authHeaders() });
+      if (ordersRes.ok) ordersData = await ordersRes.json();
+      if (ordersData.data) ordersData = ordersData.data;
+    } catch(e) {}
+    const newOrdersThisWeek = ordersData.filter(o => new Date(o.createdAt) >= weekAgo).length;
+
+    statsEl.innerHTML = `
+      <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${allOffers.length}</div><div class="lbl">${t("dashboardTotalOffers")} / ${iosCount + adrCount > 0 ? "✅" : ""}</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.offers, "#6366f1")}</div></div></div>
+      <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${newAppsThisWeek}</div><div class="lbl">${t("dashboardNewApps")}</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.submissions, "#10b981")}</div></div></div>
+      <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${ordersData.length}<span style="font-size:14px;color:var(--text3);font-weight:400"> +${newOrdersThisWeek}</span></div><div class="lbl">${t("dashboardTotalOrders")}</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.orders, "#f59e0b")}</div></div></div>
+      <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">$${totalPayout.toFixed(0)}</div><div class="lbl">${t("dashboardTotalPayout")}</div></div></div></div>
+    `;
+
+    // Trend chart (7-day submissions line chart)
+    renderTrendChart();
+
+    // Platform distribution pie chart
+    renderPlatformPieChart(iosCount, adrCount);
+
+    // Recent applications
+    const recentApps = submissions.slice(0, 5);
+    const recentAppsList = document.getElementById("dashboard-recent-apps");
+    recentAppsList.innerHTML = recentApps.length ? recentApps.map(s =>
+      `<li><strong>${escHtml(s.publisher || "—")}</strong> → ${escHtml(s.offerName || "—")} <span style="color:var(--text3);font-size:10px">${new Date(s.timestamp).toLocaleDateString()}</span></li>`
+    ).join("") : `<li style="color:var(--text3)">${currentLang === "zh" ? "暂无" : "None"}</li>`;
+
+    // Recent audit logs
+    try {
+      const auditRes = await fetch("/api/audit?limit=5", { headers: authHeaders() });
+      if (auditRes.ok) {
+        const auditData = await auditRes.json();
+        const recentAuditList = document.getElementById("dashboard-recent-audit");
+        recentAuditList.innerHTML = auditData.data && auditData.data.length
+          ? auditData.data.map(a => `<li><span class="audit-action-badge audit-${escHtml(a.action)}">${escHtml(a.action)}</span> <strong>${escHtml(a.user)}</strong> → ${escHtml(a.target)} <span style="color:var(--text3);font-size:10px">${new Date(a.timestamp).toLocaleString()}</span></li>`).join("")
+          : `<li style="color:var(--text3)">${currentLang === "zh" ? "暂无" : "None"}</li>`;
+      }
+    } catch(e) {}
+  } catch(e) {
+    console.error("Dashboard load error:", e);
+  }
+}
+
+function renderTrendChart() {
+  const container = document.getElementById("trend-chart-container");
+  if (!container) return;
+  const data = trendData.submissions || [];
+  if (!data.length) { container.innerHTML = `<span style="color:var(--text3);font-size:12px">No data</span>`; return; }
+
+  const w = container.clientWidth || 400;
+  const h = 160;
+  const padding = { top: 10, right: 20, bottom: 30, left: 40 };
+  const chartW = w - padding.left - padding.right;
+  const chartH = h - padding.top - padding.bottom;
+  const max = Math.max(...data, 1);
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    days.push((d.getMonth() + 1) + "/" + d.getDate());
+  }
+
+  const points = data.map((v, i) => {
+    const x = padding.left + (i / (data.length - 1)) * chartW;
+    const y = padding.top + chartH - (v / max) * chartH;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const areaPoints = [...points, `${(padding.left + chartW).toFixed(1)},${(padding.top + chartH).toFixed(1)}`, `${padding.left.toFixed(1)},${(padding.top + chartH).toFixed(1)}`];
+
+  const xLabels = days.map((label, i) => {
+    const x = padding.left + (i / (days.length - 1)) * chartW;
+    return `<text x="${x}" y="${h - 5}" text-anchor="middle" fill="var(--text3)" font-size="10" font-family="Inter">${label}</text>`;
+  }).join("");
+
+  const yLabels = [0, max].map((v, i) => {
+    const y = padding.top + chartH - (i * chartH);
+    return `<text x="${padding.left - 6}" y="${y + 4}" text-anchor="end" fill="var(--text3)" font-size="10" font-family="Inter">${v}</text>`;
+  }).join("");
+
+  container.innerHTML = `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polygon points="${areaPoints.join(" ")}" fill="rgba(99,102,241,0.08)" />
+    <polyline points="${points.join(" ")}" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${data.map((v, i) => `<circle cx="${padding.left + (i / (data.length - 1)) * chartW}" cy="${padding.top + chartH - (v / max) * chartH}" r="3" fill="#6366f1"/>`).join("")}
+    ${xLabels}${yLabels}
+  </svg>`;
+}
+
+function renderPlatformPieChart(iosCount, adrCount) {
+  const container = document.getElementById("platform-chart-container");
+  if (!container) return;
+  const total = iosCount + adrCount;
+  if (!total) { container.innerHTML = `<span style="color:var(--text3);font-size:12px">No data</span>`; return; }
+
+  const size = 160;
+  const cx = size / 2, cy = size / 2, r = 60;
+  const iosPct = iosCount / total;
+  const iosEnd = iosPct * 2 * Math.PI;
+  const iosX = cx + r * Math.sin(iosEnd);
+  const iosY = cy - r * Math.cos(iosEnd);
+  const largeArc = iosPct > 0.5 ? 1 : 0;
+
+  const iosPath = iosPct >= 1
+    ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#6366f1"/>`
+    : `<path d="M${cx},${cy - r} A${r},${r} 0 ${largeArc} 1 ${iosX.toFixed(1)},${iosY.toFixed(1)} L${cx},${cy} Z" fill="#6366f1"/>`;
+  const adrPath = iosPct >= 1
+    ? ""
+    : `<path d="M${iosX.toFixed(1)},${iosY.toFixed(1)} A${r},${r} 0 ${1 - largeArc} 1 ${cx},${cy - r} L${cx},${cy} Z" fill="#10b981"/>`;
+
+  container.innerHTML = `<div style="display:flex;align-items:center;gap:24px">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      ${iosPath}${adrPath}
+      <circle cx="${cx}" cy="${cy}" r="30" fill="var(--card)"/>
+      <text x="${cx}" y="${cy + 4}" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700" font-family="Inter">${total}</text>
+    </svg>
+    <div style="font-size:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#6366f1"></span>
+        iOS: <strong>${iosCount}</strong> (${(iosPct * 100).toFixed(0)}%)
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#10b981"></span>
+        Android: <strong>${adrCount}</strong> (${((1 - iosPct) * 100).toFixed(0)}%)
+      </div>
+    </div>
+  </div>`;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  AUDIT LOG (#12)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+let auditCurrentPage = 1;
+const auditPageSize = 50;
+
+async function loadAuditLog() {
+  const target = document.getElementById("audit-target-filter")?.value || "";
+  const action = document.getElementById("audit-action-filter")?.value || "";
+  const tbody = document.getElementById("audit-tbody");
+  if (!tbody) return;
+
+  showSkeleton("audit-tbody", 6, 5);
+
+  let url = `/api/audit?page=${auditCurrentPage}&limit=${auditPageSize}`;
+  if (target) url += `&target=${encodeURIComponent(target)}`;
+  if (action) url += `&action=${encodeURIComponent(action)}`;
+
+  try {
+    const res = await fetch(url, { headers: authHeaders() });
+    if (!res.ok) { tbody.innerHTML = ""; return; }
+    const data = await res.json();
+    const items = data.data || [];
+    const total = data.total || 0;
+
+    const empty = document.getElementById("audit-empty");
+    const pagination = document.getElementById("audit-pagination");
+
+    if (!items.length) {
+      tbody.innerHTML = "";
+      empty.style.display = "block";
+      pagination.style.display = "none";
+      return;
+    }
+    empty.style.display = "none";
+
+    tbody.innerHTML = items.map(a => {
+      const actionBadge = `<span class="audit-action-badge audit-${escHtml(a.action)}">${escHtml(a.action)}</span>`;
+      const detailText = a.detail && a.detail !== "{}" ? escHtml(a.detail.length > 80 ? a.detail.slice(0, 80) + "..." : a.detail) : "—";
+      return `<tr>
+        <td style="font-size:11px;color:var(--text3)">${new Date(a.timestamp).toLocaleString()}</td>
+        <td>${escHtml(a.user)}</td>
+        <td>${actionBadge}</td>
+        <td>${escHtml(a.target)}</td>
+        <td class="mono">${escHtml(a.targetId)}</td>
+        <td class="audit-detail" title="${escHtml(a.detail || '')}">${detailText}</td>
+      </tr>`;
+    }).join("");
+
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(total / auditPageSize));
+    if (auditCurrentPage > totalPages) auditCurrentPage = totalPages;
+    document.getElementById("audit-page-info").textContent = `${auditCurrentPage} / ${totalPages}`;
+    document.getElementById("audit-prev-btn").disabled = auditCurrentPage <= 1;
+    document.getElementById("audit-next-btn").disabled = auditCurrentPage >= totalPages;
+    pagination.style.display = total > auditPageSize ? "flex" : "none";
+  } catch(e) {
+    console.error("Audit load error:", e);
+  }
+}
+
+function auditPrevPage() { if (auditCurrentPage > 1) { auditCurrentPage--; loadAuditLog(); } }
+function auditNextPage() { auditCurrentPage++; loadAuditLog(); }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  DATA BACKUP / RESTORE (#15)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function openBackupModal() {
+  document.getElementById("backup-overlay").classList.add("open");
+}
+
+function closeBackupModal() {
+  document.getElementById("backup-overlay").classList.remove("open");
+  document.getElementById("restore-file-info").style.display = "none";
+}
+
+async function exportBackup() {
+  const btn = document.getElementById("backup-export-btn");
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> ${t("backupExporting")}`;
+  try {
+    const res = await fetch("/api/backup", { headers: authHeaders() });
+    if (!res.ok) throw new Error("Export failed");
+    const data = await res.json();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mobireach_backup_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(t("backupSuccess"), "success");
+  } catch(e) {
+    showToast(t("restoreFailed") + ": " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }
+}
+
+async function handleRestoreFile(input) {
+  if (!input.files || !input.files.length) return;
+  const file = input.files[0];
+  const info = document.getElementById("restore-file-info");
+
+  // Preview file
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    info.style.display = "block";
+    info.innerHTML = `
+      <div style="padding:12px;background:var(--accent-light);border-radius:8px;font-size:12px">
+        <strong>${escHtml(file.name)}</strong> (${(file.size / 1024).toFixed(1)} KB)<br/>
+        ${data._meta ? `创建时间: ${escHtml(data._meta.createdAt || "—")}<br/>` : ""}
+        Offers: ${(data.offers || []).length} / Submissions: ${(data.submissions || []).length} / Orders: ${(data.managed_orders || []).length} / Accounts: ${(data.accounts || []).length}
+      </div>
+      <button class="btn-danger" style="margin-top:8px" onclick="confirmRestore()" id="restore-confirm-btn">⚠️ 确认恢复数据</button>
+    `;
+  } catch(e) {
+    info.style.display = "block";
+    info.innerHTML = `<span style="color:var(--red)">${t("restoreFileInvalid")}: ${escHtml(e.message)}</span>`;
+  }
+}
+
+async function confirmRestore() {
+  // First confirmation
+  const ok1 = await customConfirm(t("backupConfirm"), currentLang === "zh" ? "确认" : "Confirm");
+  if (!ok1) return;
+
+  // Second confirmation (double-check)
+  const ok2 = await customConfirm(t("backupDoubleConfirm"), currentLang === "zh" ? "最终确认" : "FINAL CONFIRM");
+  if (!ok2) return;
+
+  const fileInput = document.getElementById("restore-file-input");
+  if (!fileInput.files || !fileInput.files.length) return;
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  const btn = document.getElementById("restore-confirm-btn");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> ${t("backupRestoring")}`;
+
+  try {
+    const res = await fetch("/api/restore", {
+      method: "POST",
+      headers: { "x-auth-token": authToken },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Restore failed");
+    showToast(t("restoreSuccess"), "success");
+    closeBackupModal();
+    // Reload all data
+    await loadAll();
+  } catch(e) {
+    showToast(t("restoreFailed") + ": " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "⚠️ 确认恢复数据";
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  EMAIL TEMPLATES (#16)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+let emailTemplates = {};
+let editingTemplateKey = null;
+
+async function loadEmailTemplates() {
+  try {
+    const res = await fetch("/api/email-templates", { headers: authHeaders() });
+    if (!res.ok) return;
+    emailTemplates = await res.json();
+    renderEmailTemplates();
+    // Also update order modal template dropdown
+    updateOrderTemplateDropdown();
+  } catch(e) {
+    console.error("Email templates load error:", e);
+  }
+}
+
+function renderEmailTemplates() {
+  const grid = document.getElementById("template-grid");
+  if (!grid) return;
+  const keys = Object.keys(emailTemplates);
+  if (!keys.length) {
+    grid.innerHTML = `<div class="empty" style="display:block">${currentLang === "zh" ? "暂无邮件模板" : "No email templates"}</div>`;
+    return;
+  }
+  grid.innerHTML = keys.map(key => {
+    const tpl = emailTemplates[key];
+    const isDefault = key === "default";
+    return `<div class="template-card">
+      <h4>${escHtml(tpl.name)} ${isDefault ? `<span style="font-size:10px;padding:1px 6px;background:var(--accent-light);color:var(--accent);border-radius:3px;margin-left:6px">${t("templateDefaultLabel")}</span>` : ""}</h4>
+      <div class="template-subject">${escHtml(tpl.subject)}</div>
+      <div class="template-actions">
+        <button class="btn-secondary btn-sm" onclick="openTemplateModal('${escHtml(key)}')">${t("editTemplate")}</button>
+        ${!isDefault ? `<button class="btn-danger btn-sm" onclick="deleteTemplate('${escHtml(key)}')">${t("deleteTemplate")}</button>` : ""}
+        ${!isDefault ? `<button class="btn-secondary btn-sm" onclick="setDefaultTemplate('${escHtml(key)}')">${t("templateSetDefault")}</button>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openTemplateModal(key) {
+  editingTemplateKey = key || null;
+  const tpl = key ? emailTemplates[key] : null;
+  document.getElementById("tpl-key").value = key || "";
+  document.getElementById("tpl-key").disabled = !!key;
+  document.getElementById("tpl-name").value = tpl ? tpl.name : "";
+  document.getElementById("tpl-subject").value = tpl ? tpl.subject : "";
+  document.getElementById("tpl-body").value = tpl ? tpl.body : "";
+  document.getElementById("template-modal-title").textContent = key ? t("editTemplate") : t("newTemplate");
+  document.getElementById("template-overlay").classList.add("open");
+}
+
+function closeTemplateModal() {
+  document.getElementById("template-overlay").classList.remove("open");
+  editingTemplateKey = null;
+}
+
+async function saveTemplate(e) {
+  e.preventDefault();
+  const key = document.getElementById("tpl-key").value.trim();
+  const name = document.getElementById("tpl-name").value.trim();
+  const subject = document.getElementById("tpl-subject").value.trim();
+  const body = document.getElementById("tpl-body").value.trim();
+  if (!key || !name || !subject || !body) {
+    showToast(currentLang === "zh" ? "所有字段必填" : "All fields required", "error");
+    return;
+  }
+
+  const btn = document.getElementById("tpl-save-btn");
+  btn.disabled = true;
+
+  try {
+    let res;
+    if (editingTemplateKey) {
+      res = await fetch(`/api/email-templates/${encodeURIComponent(editingTemplateKey)}`, {
+        method: "PUT",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ name, subject, body })
+      });
+    } else {
+      res = await fetch("/api/email-templates", {
+        method: "POST",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ id: key, name, subject, body })
+      });
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed");
+    showToast(editingTemplateKey ? t("templateUpdated") : t("templateCreated"), "success");
+    closeTemplateModal();
+    await loadEmailTemplates();
+  } catch(e) {
+    showToast(e.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function deleteTemplate(key) {
+  const ok = await customConfirm(t("templateDeleteConfirm"), t("deleteTemplate"));
+  if (!ok) return;
+  try {
+    const res = await fetch(`/api/email-templates/${encodeURIComponent(key)}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed");
+    showToast(t("templateDeleted"), "success");
+    await loadEmailTemplates();
+  } catch(e) {
+    showToast(e.message, "error");
+  }
+}
+
+async function setDefaultTemplate(key) {
+  // Set this template as default by copying its content to the "default" template
+  try {
+    const tpl = emailTemplates[key];
+    if (!tpl) return;
+    const res = await fetch(`/api/email-templates/default`, {
+      method: "PUT",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: tpl.name, subject: tpl.subject, body: tpl.body })
+    });
+    if (!res.ok) throw new Error("Failed");
+    showToast(currentLang === "zh" ? "已设为默认模板" : "Set as default", "success");
+    await loadEmailTemplates();
+  } catch(e) {
+    showToast(e.message, "error");
+  }
+}
+
+function updateOrderTemplateDropdown() {
+  const select = document.getElementById("ord-template-select");
+  if (!select) return;
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">— 手动输入 —</option>';
+  Object.keys(emailTemplates).forEach(key => {
+    const tpl = emailTemplates[key];
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = tpl.name + (key === "default" ? " (默认)" : "");
+    select.appendChild(opt);
+  });
+  select.value = currentVal;
+}
+
+function applyOrderTemplate() {
+  const key = document.getElementById("ord-template-select").value;
+  if (!key || !emailTemplates[key]) return;
+  const tpl = emailTemplates[key];
+  const offerName = document.getElementById("ord-offer")?.textContent || "";
+  const publisher = document.getElementById("ord-publisher")?.textContent || "";
+  const payout = document.getElementById("ord-ext-price")?.value || "";
+  const geo = ""; // not available in order context
+  const pid = document.getElementById("ord-pid")?.value || "";
+  const prt = document.getElementById("ord-prt")?.value || "";
+  const integration = "";
+
+  const replace = (str) => str
+    .replace(/\{offerName\}/g, offerName)
+    .replace(/\{publisher\}/g, publisher)
+    .replace(/\{payout\}/g, payout)
+    .replace(/\{geo\}/g, geo)
+    .replace(/\{pid\}/g, pid)
+    .replace(/\{prt\}/g, prt)
+    .replace(/\{integration\}/g, integration);
+
+  document.getElementById("ord-email-subject").value = replace(tpl.subject);
+  document.getElementById("ord-email-body").value = replace(tpl.body);
+}
+
 </script>
 
 <!-- ── CUSTOM CONFIRM DIALOG ── -->
@@ -3026,6 +4753,90 @@ window.addEventListener("beforeunload", e => {
     e.returnValue = "";
   }
 });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  KEYBOARD SHORTCUTS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+document.addEventListener("keydown", e => {
+  // Escape: close any open modal/overlay
+  if (e.key === "Escape") {
+    document.querySelectorAll(".overlay.open").forEach(ov => ov.classList.remove("open"));
+    const confirmOv = document.getElementById("confirm-overlay");
+    if (confirmOv && confirmOv.classList.contains("open")) confirmOv.classList.remove("open");
+    return;
+  }
+
+  // Ctrl+S / Cmd+S: save current form
+  if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+    e.preventDefault();
+    // Find the currently open modal and submit its form
+    const offerOv = document.getElementById("offer-overlay");
+    const orderOv = document.getElementById("order-overlay");
+    const acOv = document.getElementById("account-overlay");
+    const pwOv = document.getElementById("pw-overlay");
+    const rpOv = document.getElementById("reset-pw-overlay");
+    if (offerOv && offerOv.classList.contains("open")) {
+      document.getElementById("offer-form").dispatchEvent(new Event("submit", { cancelable: true }));
+    } else if (orderOv && orderOv.classList.contains("open")) {
+      document.getElementById("order-form").dispatchEvent(new Event("submit", { cancelable: true }));
+    } else if (acOv && acOv.classList.contains("open")) {
+      document.getElementById("account-form").dispatchEvent(new Event("submit", { cancelable: true }));
+    } else if (pwOv && pwOv.classList.contains("open")) {
+      document.getElementById("pw-form").dispatchEvent(new Event("submit", { cancelable: true }));
+    } else if (rpOv && rpOv.classList.contains("open")) {
+      document.getElementById("reset-pw-form").dispatchEvent(new Event("submit", { cancelable: true }));
+    }
+    return;
+  }
+
+  // Number keys 1-5: switch tabs (only when no modal is open and not in an input)
+  if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+    const tag = document.activeElement?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    const openModal = document.querySelector(".overlay.open");
+    if (openModal) return;
+
+    const tabMap = { "1": "dashboard", "2": "offers", "3": "applications", "4": "managed-orders", "5": "pub-bills", "6": "audit", "7": "email-templates" };
+    if (tabMap[e.key]) {
+      switchTab(tabMap[e.key]);
+      return;
+    }
+  }
+});
+
+// ── Keyboard shortcut help button ──
+(function() {
+  const btn = document.createElement("button");
+  btn.className = "shortcut-help-btn";
+  btn.textContent = "?";
+  btn.title = "Keyboard shortcuts";
+  btn.onclick = () => {
+    const overlay = document.createElement("div");
+    overlay.className = "overlay open";
+    overlay.innerHTML = `<div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <h3>⌨️ ${currentLang === "zh" ? "键盘快捷键" : "Keyboard Shortcuts"}</h3>
+        <button class="modal-close" onclick="this.closest('.overlay').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <ul class="shortcut-list">
+          <li><kbd>Esc</kbd> ${currentLang === "zh" ? "关闭弹窗" : "Close modal"}</li>
+          <li><kbd>Ctrl+S</kbd> ${currentLang === "zh" ? "保存当前表单" : "Save current form"}</li>
+          <li><kbd>1</kbd> Dashboard</li>
+          <li><kbd>2</kbd> Offers</li>
+          <li><kbd>3</kbd> Applications</li>
+          <li><kbd>4</kbd> ${currentLang === "zh" ? "订单管理" : "Orders"}</li>
+          <li><kbd>5</kbd> PUB ${currentLang === "zh" ? "账单" : "Bills"}</li>
+          <li><kbd>6</kbd> ${currentLang === "zh" ? "审计日志" : "Audit"}</li>
+          <li><kbd>7</kbd> ${currentLang === "zh" ? "邮件模板" : "Templates"}</li>
+        </ul>
+      </div>
+    </div>`;
+    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  };
+  document.body.appendChild(btn);
+})();
 </script>
 
 </body>
