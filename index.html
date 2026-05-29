@@ -9,6 +9,7 @@
   <!-- #23: OG tags -->
   <meta property="og:title" content="Mobireach · Direct Offers" />
   <meta property="og:description" content="Direct mobile offers ready to scale." />
+  <meta name="description" content="Browse and apply for direct mobile CPI/CPA offers on iOS and Android. Global GEOs, competitive payouts." />
   <meta property="og:type" content="website" />
   <!-- #19: Google Fonts with preconnect and fallback CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -659,6 +660,28 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── SKELETON (loading state) ── */
+    .skeleton-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .sk-line {
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--border) 50%, var(--bg-subtle) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .sk-icon { width:44px; height:44px; border-radius:10px; flex-shrink:0; }
+    .sk-title { height:14px; width:60%; }
+    .sk-sub { height:11px; width:35%; margin-top:4px; }
+    .sk-payout { height:24px; width:40%; }
+    .sk-tags { height:22px; width:80%; }
+    .sk-btns { height:34px; width:100%; border-radius:var(--radius-btn); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .stat-item { padding: 8px 18px; }
@@ -731,11 +754,19 @@
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input class="search-input" type="search" id="search-input"
-               placeholder="Search offers, apps, GEOs…" />
+               placeholder="Search offers, apps, GEOs, payout…" />
       </div>
     </div>
 
-    <div class="offers-grid" id="offers-grid"></div>
+    <div class="offers-grid" id="offers-grid">
+      <!-- Skeleton placeholders shown while loading -->
+      <div class="skeleton-card" id="sk1"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk2"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk3"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk4"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk5"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk6"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+    </div>
 
     <div class="empty-state" id="empty-state">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
@@ -1084,7 +1115,9 @@ function getFiltered() {
     const matchSearch = !q ||
       o.name.toLowerCase().includes(q) ||
       o.geos.some(g => g.toLowerCase().includes(q)) ||
-      o.platform.includes(q);
+      o.platform.includes(q) ||
+      (o.payout && String(o.payout).includes(q)) ||
+      (o.details && o.details.payout && o.details.payout.toLowerCase().includes(q));
     return matchPlatform && matchSearch;
   });
 }
@@ -1093,6 +1126,8 @@ function renderGrid() {
   const filtered = getFiltered();
   const grid = document.getElementById("offers-grid");
   const empty = document.getElementById("empty-state");
+  // Remove skeleton cards
+  grid.querySelectorAll(".skeleton-card").forEach(el => el.remove());
   if (filtered.length === 0) {
     grid.innerHTML = "";
     empty.classList.add("visible");

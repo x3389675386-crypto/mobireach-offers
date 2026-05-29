@@ -2830,6 +2830,39 @@ document.getElementById("mo-import-file").addEventListener("change", async (e) =
 
 let pubResultId = null;
 
+// ── PUB upload: drag & drop support ──
+(function() {
+  const area = document.getElementById("pub-upload-area");
+  const fileInput = document.getElementById("pub-file-input");
+  if (!area || !fileInput) return;
+
+  ["dragenter","dragover"].forEach(evt => {
+    area.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      area.style.borderColor = "var(--accent)";
+      area.style.background = "var(--accent-light)";
+    });
+  });
+
+  ["dragleave","drop"].forEach(evt => {
+    area.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      area.style.borderColor = "";
+      area.style.background = "#fafbfc";
+    });
+  });
+
+  area.addEventListener("drop", e => {
+    const files = e.dataTransfer.files;
+    if (files.length) {
+      fileInput.files = files;
+      fileInput.dispatchEvent(new Event("change"));
+    }
+  });
+})();
+
 document.getElementById("pub-file-input").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;

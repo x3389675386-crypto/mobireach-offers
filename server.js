@@ -136,6 +136,7 @@ if (GH_TOKEN && GH_OWNER) {
 let offersCache = null;
 let offersCacheTime = 0; // #10 offersCache TTL timestamp
 let submissionsCache = null;
+let submissionsCacheTime = 0; // submissionsCache TTL timestamp
 
 // ── Token store (in-memory + file persistence) (#2) ──
 const tokens = new Map(); // token → { username, role, expiresAt }
@@ -264,17 +265,23 @@ async function writeOffers(data) {
 
 // ── Submissions ──
 async function readSubmissions() {
-  if (submissionsCache) return submissionsCache;
+  // TTL check: 5 minutes
+  if (submissionsCache && submissionsCacheTime && (Date.now() - submissionsCacheTime < 5 * 60 * 1000)) {
+    return submissionsCache;
+  }
+  submissionsCache = null;
   if (useGitHub) {
     const data = await ghRead("submissions.json");
-    if (data) { submissionsCache = data; return data; }
+    if (data) { submissionsCache = data; submissionsCacheTime = Date.now(); return data; }
     await ghWrite("submissions.json", []);
     submissionsCache = [];
+    submissionsCacheTime = Date.now();
     return [];
   }
   try {
     const data = JSON.parse(fs.readFileSync(LOCAL_SUBMISSIONS, "utf-8"));
     submissionsCache = data;
+    submissionsCacheTime = Date.now();
     return data;
   } catch (e) {
     console.error("❌ readSubmissions failed:", e.message); // #11
@@ -284,6 +291,7 @@ async function readSubmissions() {
 
 async function writeSubmissions(data) {
   submissionsCache = data;
+  submissionsCacheTime = Date.now(); // update cache timestamp
   await withWriteLock("submissions", async () => { // #7
     if (useGitHub) {
       await ghWrite("submissions.json", data);
