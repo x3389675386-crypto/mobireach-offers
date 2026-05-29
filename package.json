@@ -16,6 +16,8 @@
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "express": "^4.22.2",
-    "nodemailer": "^8.0.9"
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.9",
+    "xlsx": "^0.18.5"
   }
 }

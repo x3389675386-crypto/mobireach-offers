@@ -4,6 +4,9 @@ const path = require("path");
 const crypto = require("crypto");
 const { Octokit } = require("@octokit/rest");
 const nodemailer = require("nodemailer");
+const multer = require("multer");
+const upload = multer({ dest: path.join(__dirname, "data", "uploads") });
+const XLSX = require("xlsx");
 
 // ── Prevent unhandled rejections from crashing the process ──
 process.on("unhandledRejection", (reason) => {
@@ -260,7 +263,26 @@ async function writeOrders(data) {
   }
 }
 
-// ── Auth helpers ──
+// ── Managed Orders ──
+const LOCAL_MANAGED_ORDERS = path.join(DATA_DIR, "managed_orders.json");
+
+async function readManagedOrders() {
+  if (useGitHub) {
+    const data = await ghRead("managed_orders.json");
+    return data || [];
+  }
+  try { return JSON.parse(fs.readFileSync(LOCAL_MANAGED_ORDERS, "utf-8")); }
+  catch { return []; }
+}
+
+async function writeManagedOrders(data) {
+  if (useGitHub) {
+    await ghWrite("managed_orders.json", data);
+  } else {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(LOCAL_MANAGED_ORDERS, JSON.stringify(data, null, 2), "utf-8");
+  }
+}
 function hashPassword(pw) {
   return crypto.createHash("sha256").update(pw).digest("hex");
 }
@@ -808,6 +830,191 @@ app.post("/api/orders/send", async (req, res) => {
   }
 
   res.json({ success: true, order });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  MANAGED ORDERS API (order history management)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Import managed orders from Excel
+app.post("/api/managed-orders/import", upload.single("file"), async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+  const filePath = req.file.path;
+  let parsed;
+  try {
+    const wb = XLSX.readFile(filePath, { type: "file", codepage: 65001 });
+    const wsname = wb.SheetNames[0];
+    const ws = wb.Sheets[wsname];
+    parsed = XLSX.utils.sheet_to_json(ws, { defval: null, raw: false });
+  } catch (e) {
+    try { fs.unlinkSync(filePath); } catch (_) {}
+    return res.status(400).json({ error: "Failed to parse Excel: " + e.message });
+  }
+
+  // Try to clean up temp file
+  try { fs.unlinkSync(filePath); } catch (_) {}
+
+  if (!parsed.length) return res.status(400).json({ error: "Empty Excel file" });
+
+  // Map columns to managed order fields
+  const existing = await readManagedOrders();
+  let added = 0, skipped = 0;
+
+  for (const row of parsed) {
+    // Get field by column position or header name (support multiple naming variants)
+    const cols = Object.keys(row);
+    const getVal = (idx, ...names) => {
+      // Try by header name first
+      for (const n of names) { if (n && row[n] != null && row[n] !== "") return row[n]; }
+      // Fallback to column index
+      if (idx < cols.length) return row[cols[idx]];
+      return "";
+    };
+    const cid = String(getVal(0, "客户编号", "客戶編號") || "");
+    const cn = String(getVal(3, "Campaign Name") || "");
+    const pr = String(getVal(4, "PRT") || "");
+    const pi = String(getVal(5, "PID") || "");
+    if (!cid && !cn && !pr && !pi) { skipped++; continue; }
+
+    // Dedup: same customer_id + campaign_name + prt + pid
+    const dup = existing.find(mo =>
+      String(mo.customer_id) === cid &&
+      String(mo.campaign_name || "") === cn &&
+      String(mo.prt || "") === pr &&
+      String(mo.pid || "") === pi
+    );
+    if (dup) { skipped++; continue; }
+
+    existing.push({
+      id: crypto.randomUUID(),
+      customer_id: cid,
+      channel: String(getVal(1, "下单渠道", "下單渠道") || ""),
+      platform: String(getVal(2, "平台") || ""),
+      campaign_name: cn,
+      prt: pr,
+      pid: pi,
+      conversions: getVal(6, "转化", "轉化") || null,
+      revenue: getVal(7, "流水") || null,
+      gross_profit: getVal(8, "毛利") || null,
+      payout: String(getVal(9, "Payout") || ""),
+      real_po_price: String(getVal(10, "真实PO价格", "真實PO價格") || ""),
+      link: getVal(11, "链接", "鏈接") || null,
+      adgroup_name: getVal(12, "Adgroup Name") || null,
+      imported_at: getVal(13, "创建时间", "創建時間") || getVal(14, "更新时间", "更新時間") || new Date().toISOString(),
+      owner: session.username,
+      status: "运行中",
+      notes: "",
+      created_at: new Date().toISOString()
+    });
+    added++;
+  }
+
+  await writeManagedOrders(existing);
+  res.json({ success: true, added, skipped, total: existing.length });
+});
+
+// List managed orders (owner-filtered)
+app.get("/api/managed-orders", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  let orders = await readManagedOrders();
+  orders = orders.filter(o => o.owner === session.username);
+
+  if (req.query.search) {
+    const q = req.query.search.toLowerCase();
+    orders = orders.filter(o =>
+      String(o.customer_id).includes(q) ||
+      (o.channel || "").toLowerCase().includes(q) ||
+      (o.campaign_name || "").toLowerCase().includes(q) ||
+      (o.prt || "").toLowerCase().includes(q) ||
+      (o.pid || "").toLowerCase().includes(q) ||
+      (o.notes || "").toLowerCase().includes(q)
+    );
+  }
+
+  // Sort by customer_id
+  orders.sort((a, b) => {
+    const ai = parseInt(a.customer_id) || 0;
+    const bi = parseInt(b.customer_id) || 0;
+    return ai - bi;
+  });
+
+  res.json(orders);
+});
+
+// Update single managed order (status / notes)
+app.patch("/api/managed-orders/:id", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  const orders = await readManagedOrders();
+  const idx = orders.findIndex(o => o.id === req.params.id && o.owner === session.username);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+
+  if (req.body.status !== undefined) {
+    if (!["运行中", "暂停中", "已完成", "已取消"].includes(req.body.status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+    orders[idx].status = req.body.status;
+  }
+  if (req.body.notes !== undefined) {
+    orders[idx].notes = req.body.notes;
+  }
+
+  await writeManagedOrders(orders);
+  res.json({ success: true, order: orders[idx] });
+});
+
+// Delete managed order
+app.delete("/api/managed-orders/:id", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  let orders = await readManagedOrders();
+  const before = orders.length;
+  orders = orders.filter(o => !(o.id === req.params.id && o.owner === session.username));
+  if (orders.length === before) return res.status(404).json({ error: "Not found" });
+
+  await writeManagedOrders(orders);
+  res.json({ success: true });
+});
+
+// Export managed orders to Excel
+app.get("/api/managed-orders/export", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+
+  let orders = await readManagedOrders();
+  orders = orders.filter(o => o.owner === session.username);
+
+  const headers = ["状态", "备注", "客户编号", "下单渠道", "平台", "Campaign Name", "PRT", "PID", "Payout", "真实PO价格", "Adgroup Name", "链接", "转化", "流水", "毛利", "创建时间"];
+  const rows = [headers];
+  for (const o of orders) {
+    rows.push([
+      o.status || "", o.notes || "",
+      o.customer_id, o.channel || "",
+      o.platform || "", o.campaign_name || "",
+      o.prt || "", o.pid || "",
+      o.payout || "", o.real_po_price || "",
+      o.adgroup_name || "", o.link || "",
+      o.conversions || "", o.revenue || "",
+      o.gross_profit || "", o.imported_at || ""
+    ]);
+  }
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "订单管理");
+  const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  res.setHeader("Content-Disposition", `attachment; filename="orders_${new Date().toISOString().slice(0,10)}.xlsx"`);
+  res.send(buf);
 });
 
 // ── Admin Page ──
