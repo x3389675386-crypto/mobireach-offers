@@ -326,6 +326,7 @@
         <button data-tab="applications" id="tab-apps">Applications</button>
         <button data-tab="accounts" id="tab-accounts" style="display:none">账号管理</button>
         <button data-tab="managed-orders" id="tab-managed-orders">订单管理</button>
+        <button data-tab="pub-bills" id="tab-pub-bills">PUB账单分类</button>
       </div>
     </div>
     <div class="admin-nav-right">
@@ -423,8 +424,10 @@
       <div class="table-wrap">
         <div class="table-header">
           <h2>📋 订单管理</h2>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input type="text" class="form-input" id="mo-search" placeholder="搜索订单..." style="width:180px;font-size:12px;padding:6px 10px" />
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="text" class="form-input" id="mo-cust-search" placeholder="客户编号..." style="width:120px;font-size:12px;padding:6px 10px" />
+            <input type="text" class="form-input" id="mo-chan-search" placeholder="下单渠道..." style="width:140px;font-size:12px;padding:6px 10px" />
+            <input type="text" class="form-input" id="mo-search" placeholder="其他关键词..." style="width:130px;font-size:12px;padding:6px 10px" />
             <label class="btn-secondary btn-sm" id="mo-import-label" style="cursor:pointer;display:flex;align-items:center;gap:4px">
               📥 导入Excel
               <input type="file" id="mo-import-file" accept=".xlsx" style="display:none" />
@@ -438,13 +441,13 @@
               <tr>
                 <th style="width:70px">客户编号</th>
                 <th style="width:130px">下单渠道</th>
+                <th style="width:105px">状态</th>
+                <th style="width:200px">备注 / 注意事项</th>
                 <th style="width:60px">平台</th>
                 <th style="width:120px">Campaign</th>
                 <th style="width:110px">PRT</th>
                 <th style="width:110px">PID</th>
                 <th style="width:65px">Payout</th>
-                <th style="width:105px">状态</th>
-                <th style="width:200px">备注 / 注意事项</th>
                 <th style="width:55px">操作</th>
               </tr>
             </thead>
@@ -452,6 +455,50 @@
           </table>
         </div>
         <div class="empty" id="mo-empty">暂无订单。请导入 Excel 文件开始管理。</div>
+      </div>
+    </div>
+
+    <!-- ── PUB BILLS TAB ── -->
+    <div class="tab-content" id="content-pub-bills" style="display:none">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2>📊 PUB账单分类</h2>
+          <span style="color:var(--text3);font-size:12px">上传多sheet账单Excel，按客户编号自动拆分为独立子表格</span>
+        </div>
+
+        <!-- Upload Area -->
+        <div style="padding:20px;text-align:center;border:2px dashed var(--border);border-radius:8px;margin:12px 0;background:#fafbfc" id="pub-upload-area">
+          <div style="font-size:40px;margin-bottom:8px">📁</div>
+          <p style="color:var(--text2);margin:0 0 8px 0">拖拽或点击上传 PUB 账单 Excel 文件</p>
+          <p style="color:var(--text3);font-size:11px;margin:0 0 12px 0">支持多 Sheet，自动识别客户编号列，按客户拆分</p>
+          <label class="btn-primary btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            📥 选择文件
+            <input type="file" id="pub-file-input" accept=".xlsx,.xls" style="display:none" />
+          </label>
+          <div style="margin-top:8px">
+            <span style="font-size:11px;color:var(--text3)">拆分列名：</span>
+            <input type="text" id="pub-col-name" value="客户编号" style="width:100px;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px" />
+          </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="pub-result-area" style="display:none">
+          <div class="stats-row" id="pub-stats"></div>
+          <div style="padding:12px 0">
+            <button class="btn-primary btn-sm" id="pub-download-btn" style="display:inline-flex;align-items:center;gap:6px">
+              📥 下载拆分结果 Excel
+            </button>
+            <button class="btn-secondary btn-sm" id="pub-reset-btn" style="margin-left:8px">重新上传</button>
+          </div>
+          <div class="table-header"><h3>客户列表预览</h3></div>
+          <div id="pub-cust-list" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 0"></div>
+        </div>
+
+        <!-- Loading -->
+        <div id="pub-loading" style="display:none;text-align:center;padding:40px">
+          <div class="spinner" style="margin:0 auto"></div>
+          <p style="color:var(--text2);margin-top:8px">正在解析拆分...</p>
+        </div>
       </div>
     </div>
 
@@ -1536,6 +1583,7 @@ document.querySelectorAll(".tab-nav button").forEach(btn => {
     document.getElementById("content-apps").style.display = currentTab === "applications" ? "block" : "none";
     document.getElementById("content-accounts").style.display = currentTab === "accounts" ? "block" : "none";
     document.getElementById("content-managed-orders").style.display = currentTab === "managed-orders" ? "block" : "none";
+    document.getElementById("content-pub-bills").style.display = currentTab === "pub-bills" ? "block" : "none";
     if (currentTab === "accounts") loadAccounts();
     if (currentTab === "managed-orders") loadManagedOrders();
   });
@@ -2340,8 +2388,16 @@ const MO_NOTE_TAGS = ["需要追报告", "注意PA", "高优先级", "待跟进"
 async function loadManagedOrders() {
   const tbody = document.getElementById("mo-tbody");
   const empty = document.getElementById("mo-empty");
-  const q = document.getElementById("mo-search").value.trim();
-  const url = q ? `/api/managed-orders?search=${encodeURIComponent(q)}` : "/api/managed-orders";
+  const custQ = document.getElementById("mo-cust-search").value.trim();
+  const chanQ = document.getElementById("mo-chan-search").value.trim();
+  const genQ = document.getElementById("mo-search").value.trim();
+
+  const params = new URLSearchParams();
+  if (custQ) params.set("customer_id", custQ);
+  if (chanQ) params.set("channel", chanQ);
+  if (genQ) params.set("search", genQ);
+  const qs = params.toString();
+  const url = qs ? `/api/managed-orders?${qs}` : "/api/managed-orders";
 
   let orders = [];
   try {
@@ -2382,11 +2438,6 @@ async function loadManagedOrders() {
     tr.innerHTML = `
       <td><span class="mono">${esc(String(o.customer_id))}</span></td>
       <td>${esc(o.channel || "")}</td>
-      <td>${esc(o.platform || "")}</td>
-      <td>${esc(o.campaign_name || "")}</td>
-      <td class="mono">${esc(o.prt || "")}</td>
-      <td class="mono">${esc(o.pid || "")}</td>
-      <td>${esc(String(o.payout || ""))}</td>
       <td>
         <select class="status-select" data-id="${o.id}" onchange="updateMoStatus(this)">
           ${MO_STATUSES.map(s => `<option value="${s}" ${o.status === s ? "selected" : ""}>${s}</option>`).join("")}
@@ -2397,6 +2448,11 @@ async function loadManagedOrders() {
           ${renderNotesTags(o.notes)}
         </div>
       </td>
+      <td>${esc(o.platform || "")}</td>
+      <td>${esc(o.campaign_name || "")}</td>
+      <td class="mono">${esc(o.prt || "")}</td>
+      <td class="mono">${esc(o.pid || "")}</td>
+      <td>${esc(String(o.payout || ""))}</td>
       <td><button class="btn-danger btn-xs" onclick="deleteManagedOrder('${o.id}')" title="删除">🗑</button></td>
     `;
     tbody.appendChild(tr);
@@ -2548,11 +2604,84 @@ document.getElementById("mo-import-file").addEventListener("change", async (e) =
   }
 });
 
-// Search
-document.getElementById("mo-search").addEventListener("input", () => {
-  clearTimeout(window._moSearchTimer);
-  window._moSearchTimer = setTimeout(loadManagedOrders, 300);
+// Search — three fields share one debounce timer
+["mo-cust-search", "mo-chan-search", "mo-search"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => {
+    clearTimeout(window._moSearchTimer);
+    window._moSearchTimer = setTimeout(loadManagedOrders, 300);
+  });
 });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PUB BILL CATEGORIZATION (PUB账单分类)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+let pubResultId = null;
+
+document.getElementById("pub-file-input").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const colName = document.getElementById("pub-col-name").value.trim() || "客户编号";
+  const uploadArea = document.getElementById("pub-upload-area");
+  const loading = document.getElementById("pub-loading");
+  const resultArea = document.getElementById("pub-result-area");
+
+  uploadArea.style.display = "none";
+  loading.style.display = "block";
+  resultArea.style.display = "none";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("column", colName);
+
+  try {
+    const res = await fetch("/api/pub-bills/split", {
+      method: "POST",
+      headers: { "X-Auth-Token": authToken },
+      body: formData
+    });
+    const data = await res.json();
+    if (handleAuthError(res)) { resetPubUpload(); return; }
+    if (!res.ok) { showToast(data.error || "拆分失败", "error"); resetPubUpload(); return; }
+
+    pubResultId = data.resultId;
+    loading.style.display = "none";
+    resultArea.style.display = "block";
+
+    // Stats
+    document.getElementById("pub-stats").innerHTML = `
+      <div class="stat-card"><div class="num">${data.customerCount}</div><div class="lbl">客户数</div></div>
+      <div class="stat-card"><div class="num">${data.totalRows}</div><div class="lbl">总行数</div></div>
+      <div class="stat-card"><div class="num">${data.sheets.length}</div><div class="lbl">Sheet数</div></div>
+    `;
+
+    // Customer list
+    const list = document.getElementById("pub-cust-list");
+    list.innerHTML = data.customers.map(c =>
+      `<span style="display:inline-block;padding:4px 12px;background:var(--accent-light);color:var(--accent);border-radius:20px;font-size:12px;font-weight:500">客户 ${esc(c)}</span>`
+    ).join("");
+
+    // Download button
+    document.getElementById("pub-download-btn").onclick = () => {
+      window.open(`/api/pub-bills/download/${pubResultId}?token=${encodeURIComponent(authToken)}`, "_blank");
+    };
+
+  } catch (err) {
+    showToast("上传失败: " + err.message, "error");
+    resetPubUpload();
+  }
+});
+
+document.getElementById("pub-reset-btn").addEventListener("click", resetPubUpload);
+
+function resetPubUpload() {
+  document.getElementById("pub-upload-area").style.display = "";
+  document.getElementById("pub-loading").style.display = "none";
+  document.getElementById("pub-result-area").style.display = "none";
+  document.getElementById("pub-file-input").value = "";
+  pubResultId = null;
+}
 
 </script>
 </body>

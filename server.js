@@ -925,6 +925,14 @@ app.get("/api/managed-orders", async (req, res) => {
   let orders = await readManagedOrders();
   orders = orders.filter(o => o.owner === session.username);
 
+  if (req.query.customer_id) {
+    const cid = String(req.query.customer_id).toLowerCase();
+    orders = orders.filter(o => String(o.customer_id).toLowerCase().includes(cid));
+  }
+  if (req.query.channel) {
+    const ch = req.query.channel.toLowerCase();
+    orders = orders.filter(o => (o.channel || "").toLowerCase().includes(ch));
+  }
   if (req.query.search) {
     const q = req.query.search.toLowerCase();
     orders = orders.filter(o =>
@@ -1015,6 +1023,149 @@ app.get("/api/managed-orders/export", async (req, res) => {
   res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   res.setHeader("Content-Disposition", `attachment; filename="orders_${new Date().toISOString().slice(0,10)}.xlsx"`);
   res.send(buf);
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PUB BILL CATEGORIZATION (PUB账单分类)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// In-memory store for split results (keyed by session token hash)
+const pubSplitCache = new Map();
+
+// Split PUB bill Excel by customer ID
+app.post("/api/pub-bills/split", upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+  let wb, sheets;
+  try {
+    wb = XLSX.readFile(req.file.path, { type: "file", codepage: 65001 });
+    sheets = wb.SheetNames;
+    if (!sheets.length) throw new Error("Empty workbook");
+  } catch (e) {
+    try { fs.unlinkSync(req.file.path); } catch (_) {}
+    return res.status(400).json({ error: "无法解析 Excel 文件: " + e.message });
+  }
+
+  // Identify the "客户编号" column and collect all rows
+  const colName = req.body.column || "客户编号";
+  const allRows = [];
+  const sheetMeta = [];
+
+  for (const sname of sheets) {
+    const ws = wb.Sheets[sname];
+    const data = XLSX.utils.sheet_to_json(ws, { defval: "", raw: false });
+    if (!data.length) continue;
+
+    const headers = Object.keys(data[0]);
+
+    // Find the customer ID column
+    let cidKey = null;
+    for (const h of headers) {
+      if (h && h.includes(colName)) { cidKey = h; break; }
+    }
+    if (!cidKey) {
+      // Try positional fallback: first column
+      cidKey = headers[0];
+    }
+
+    // Label each row with source sheet
+    for (const row of data) {
+      row._sheet = sname;
+      row._cid_key = cidKey;
+      allRows.push(row);
+    }
+    sheetMeta.push({ name: sname, rows: data.length, headers });
+  }
+
+  // Group by customer ID
+  const groups = {};
+  for (const row of allRows) {
+    const cid = String(row[row._cid_key] || "未分类").trim();
+    if (!groups[cid]) groups[cid] = [];
+    groups[cid].push(row);
+  }
+
+  // Build output workbook: one sheet per customer
+  const outWb = XLSX.utils.book_new();
+  const customerList = Object.keys(groups).sort((a, b) => {
+    const ai = parseInt(a) || 0;
+    const bi = parseInt(b) || 0;
+    return ai - bi;
+  });
+
+  for (const cid of customerList) {
+    const rows = groups[cid];
+    // Collect all unique headers across rows (in order of first occurrence)
+    const seenHeaders = new Set();
+    const orderedHeaders = [];
+    for (const row of rows) {
+      for (const k of Object.keys(row)) {
+        if (!seenHeaders.has(k) && !k.startsWith("_")) {
+          seenHeaders.add(k);
+          orderedHeaders.push(k);
+        }
+      }
+    }
+
+    const aoa = [orderedHeaders];
+    for (const row of rows) {
+      const r = orderedHeaders.map(h => row[h] !== undefined ? row[h] : "");
+      aoa.push(r);
+    }
+
+    // Sheet name limited to 31 chars (Excel limit)
+    const sheetName = `客户${cid}`.slice(0, 31);
+    const outWs = XLSX.utils.aoa_to_sheet(aoa);
+    XLSX.utils.book_append_sheet(outWb, outWs, sheetName);
+  }
+
+  // Write to temp file
+  const resultId = crypto.randomUUID();
+  const outPath = path.join(DATA_DIR, "uploads", `pub-split-${resultId}.xlsx`);
+  if (!fs.existsSync(path.join(DATA_DIR, "uploads"))) {
+    fs.mkdirSync(path.join(DATA_DIR, "uploads"), { recursive: true });
+  }
+  XLSX.writeFile(outWb, outPath);
+
+  // Clean up
+  try { fs.unlinkSync(req.file.path); } catch (_) {}
+
+  // Cache result info
+  pubSplitCache.set(resultId, {
+    path: outPath,
+    customers: customerList.length,
+    totalRows: allRows.length,
+    sheets: sheetMeta,
+    createdAt: Date.now()
+  });
+
+  res.json({
+    success: true,
+    resultId,
+    customerCount: customerList.length,
+    totalRows: allRows.length,
+    customers: customerList,
+    sheets: sheetMeta
+  });
+});
+
+// Download split result
+app.get("/api/pub-bills/download/:id", (req, res) => {
+  const info = pubSplitCache.get(req.params.id);
+  if (!info) return res.status(404).json({ error: "结果已过期，请重新上传" });
+
+  try {
+    const buf = fs.readFileSync(info.path);
+    const filename = `PUB_${info.customers}customers_${new Date().toISOString().slice(0,10)}.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+    res.send(buf);
+  } catch (e) {
+    res.status(500).json({ error: "文件读取失败" });
+  } finally {
+    try { fs.unlinkSync(info.path); } catch (_) {}
+    pubSplitCache.delete(req.params.id);
+  }
 });
 
 // ── Admin Page ──
