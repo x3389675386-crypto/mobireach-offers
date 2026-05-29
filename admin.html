@@ -2489,6 +2489,9 @@ function openNotesEditor(el, id) {
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;align-items:center";
 
+  // 预设标签 chip 元素引用（用于 Enter 添加同名标签时同步视觉状态）
+  const presetChipMap = {};
+
   function saveAll() {
     saveMoNotes(id, selectedTags.join(", "));
   }
@@ -2517,6 +2520,7 @@ function openNotesEditor(el, id) {
       chip.style.cssText = "display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:#f1f5f9;color:var(--text2)";
       chip.addEventListener("mousedown", function(e) {
         e.preventDefault();
+        e.stopPropagation(); // 阻止冒泡到 document 的 closeOnClickOutside（chip.remove 后 el.contains 会判断为 outside）
         const idx = selectedTags.indexOf(tag);
         if (idx !== -1) selectedTags.splice(idx, 1);
         chip.remove();
@@ -2532,8 +2536,10 @@ function openNotesEditor(el, id) {
     chip.textContent = tag;
     const active = selectedTags.includes(tag);
     chip.style.cssText = `display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;border:1px solid ${active ? "var(--accent)" : "var(--border)"};background:${active ? "var(--accent-light)" : "#fff"};color:${active ? "var(--accent)" : "var(--text2)"}`;
+    presetChipMap[tag] = chip;
     chip.addEventListener("mousedown", function(e) {
       e.preventDefault();
+      e.stopPropagation(); // 阻止冒泡到 document 的 closeOnClickOutside
       const idx = selectedTags.indexOf(tag);
       if (idx !== -1) {
         selectedTags.splice(idx, 1);
@@ -2551,7 +2557,7 @@ function openNotesEditor(el, id) {
     wrapper.appendChild(chip);
   });
 
-  // 输入框（仅用于添加新备注，Enter 添加、不清空；Escape 关闭）
+  // 输入框（Enter 添加自定义备注、Escape 关闭）
   const input = document.createElement("input");
   input.type = "text";
   input.placeholder = "+ 添加新备注";
@@ -2562,10 +2568,19 @@ function openNotesEditor(el, id) {
       e.preventDefault();
       const val = input.value.trim();
       if (val) {
-        val.split(",").map(t => t.trim()).filter(Boolean).forEach(t => {
+        const newTags = val.split(",").map(t => t.trim()).filter(Boolean);
+        newTags.forEach(t => {
           if (!selectedTags.includes(t)) selectedTags.push(t);
         });
         input.value = "";
+        // 同步预设标签的视觉状态（如果输入了和预设同名的文字）
+        newTags.forEach(t => {
+          if (presetChipMap[t]) {
+            presetChipMap[t].style.borderColor = "var(--accent)";
+            presetChipMap[t].style.background = "var(--accent-light)";
+            presetChipMap[t].style.color = "var(--accent)";
+          }
+        });
         renderCustomChips();
         saveAll();
       }
@@ -2589,12 +2604,16 @@ function openNotesEditor(el, id) {
 
 async function saveMoNotes(id, notes) {
   try {
-    await fetch(`/api/managed-orders/${id}`, {
+    const res = await fetch(`/api/managed-orders/${id}`, {
       method: "PATCH",
       headers: authHeaders(),
       body: JSON.stringify({ notes })
     });
-  } catch (e) { /* silent */ }
+    if (handleAuthError(res)) return;
+    if (!res.ok) showToast("备注保存失败", "error");
+  } catch (e) {
+    showToast("备注保存失败", "error");
+  }
 }
 
 async function updateMoStatus(sel) {
