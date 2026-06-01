@@ -404,36 +404,58 @@
     .sidebar-item .sidebar-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
     .sidebar-item .notif-badge { margin-left: auto; }
     .sidebar-bottom {
-      padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.08);
       display: flex; align-items: center; gap: 8px;
     }
-    .sidebar-bottom .theme-toggle-btn {
-      width: 32px; height: 32px; border-radius: 8px; border: 1px solid #334155;
-      background: transparent; color: #94a3b8; font-size: 14px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-    }
-    .sidebar-bottom .theme-toggle-btn:hover { border-color: #6366f1; color: #fff; }
-    .sidebar-bottom .logout-btn { flex: 1; }
-    .sidebar-bottom .lang-toggle { margin: 0; }
+    .sidebar-bottom .logout-btn { flex: 0 0 auto; }
     .user-info {
       font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.08);
-      padding: 4px 12px; border-radius: 6px; margin-left: auto;
+      padding: 4px 10px; border-radius: 6px; flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .user-info .badge-super { color: #818cf8; font-weight: 600; }
     .user-info .badge-admin { color: #34d399; font-weight: 600; }
     .logout-btn {
-      padding: 6px 14px; border: 1px solid #334155; border-radius: 8px;
-      background: transparent; color: #94a3b8; font-size: 12px;
-      cursor: pointer; font-family: var(--font); transition: all 0.2s;
-    }
-    .logout-btn:hover { color: #fff; border-color: #6366f1; }
-    .lang-toggle {
       padding: 6px 12px; border: 1px solid #334155; border-radius: 8px;
-      background: transparent; color: #94a3b8; font-size: 12px; font-weight: 600;
+      background: transparent; color: #94a3b8; font-size: 12px;
       cursor: pointer; font-family: var(--font); transition: all 0.2s;
       white-space: nowrap;
     }
-    .lang-toggle:hover { color: #fff; border-color: #6366f1; }
+    .logout-btn:hover { color: #fff; border-color: #6366f1; }
+    /* ── SETTINGS DROPDOWN ── */
+    .settings-wrap { position: relative; flex-shrink: 0; }
+    .settings-btn {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid #334155;
+      background: transparent; color: #94a3b8; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .settings-btn:hover { border-color: #6366f1; color: #fff; background: rgba(99,102,241,0.15); }
+    .settings-menu {
+      position: absolute; bottom: calc(100% + 8px); left: 0;
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      padding: 6px; min-width: 180px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      opacity: 0; pointer-events: none; transform: translateY(6px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 500;
+    }
+    .settings-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .settings-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 7px; cursor: pointer;
+      font-size: 13px; color: #cbd5e1; transition: all 0.15s;
+      border: none; background: transparent; width: 100%;
+      font-family: var(--font); text-align: left;
+    }
+    .settings-item:hover { background: rgba(99,102,241,0.15); color: #fff; }
+    .settings-item .si-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+    .settings-item .si-badge {
+      margin-left: auto; font-size: 11px; padding: 2px 7px;
+      border-radius: 20px; background: rgba(255,255,255,0.1); color: #94a3b8;
+    }
+    .settings-divider { height: 1px; background: #334155; margin: 4px 6px; }
+    /* hide old standalone buttons */
+    .theme-toggle-btn, .lang-toggle { display: none; }
 
     /* ── MAIN CONTENT OFFSET ── */
     .main-content { margin-left: 220px; min-height: 100vh; }
@@ -704,12 +726,26 @@
       </div>
     </nav>
     <div class="sidebar-bottom">
-      <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
-      <button class="lang-toggle" id="lang-toggle" onclick="switchLang()">中</button>
-      <button class="logout-btn" id="change-pw-btn" onclick="document.getElementById('pw-overlay').classList.add('open')" style="font-size:11px">🔑</button>
-      <button class="logout-btn" id="backup-btn" onclick="openBackupModal()" style="font-size:11px" title="💾">💾</button>
+      <div class="settings-wrap">
+        <button class="settings-btn" id="settings-btn" onclick="toggleSettingsMenu()" title="系统设置">⚙️</button>
+        <div class="settings-menu" id="settings-menu">
+          <button class="settings-item" onclick="toggleTheme();toggleSettingsMenu();">
+            <span class="si-icon" id="si-theme-icon">🌙</span> <span id="si-theme-label" data-i18n="darkMode">暗色模式</span>
+          </button>
+          <button class="settings-item" onclick="switchLang();toggleSettingsMenu();">
+            <span class="si-icon">🌐</span> <span id="si-lang-label" data-i18n="langSwitch">切换语言</span>
+          </button>
+          <div class="settings-divider"></div>
+          <button class="settings-item" onclick="document.getElementById('pw-overlay').classList.add('open');toggleSettingsMenu();">
+            <span class="si-icon">🔑</span> <span data-i18n="changePassword">修改密码</span>
+          </button>
+          <button class="settings-item" onclick="openBackupModal();toggleSettingsMenu();">
+            <span class="si-icon">💾</span> <span data-i18n="dataBackup">数据备份</span>
+          </button>
+        </div>
+      </div>
       <span class="user-info" id="user-info-display"></span>
-      <button class="logout-btn" id="logout-btn">退出</button>
+      <button class="logout-btn" id="logout-btn" data-i18n="logout">退出</button>
     </div>
   </aside>
 
@@ -2115,9 +2151,6 @@ function switchLang() {
 }
 
 function applyLanguage() {
-  // Update lang toggle button
-  document.getElementById("lang-toggle").textContent = currentLang === "zh" ? "EN" : "中";
-
   // Login
   document.querySelector(".login-box h1").textContent = t("loginTitle");
   document.querySelector(".login-box .sub").textContent = t("loginSub");
@@ -2401,23 +2434,43 @@ function updateUserDisplay() {
 // ────────────────────────────────────
 // DARK MODE
 // ────────────────────────────────────
+function updateThemeUI(theme) {
+  const icon = document.getElementById("si-theme-icon");
+  if (icon) icon.textContent = theme === "dark" ? "☀️" : "🌙";
+}
 function initTheme() {
   const saved = localStorage.getItem("theme");
   if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
     document.documentElement.setAttribute("data-theme", "dark");
-    const btn = document.getElementById("theme-toggle-btn");
-    if (btn) btn.textContent = "☀️";
   }
+  updateThemeUI(document.documentElement.getAttribute("data-theme") || "light");
 }
 function toggleTheme() {
   const current = document.documentElement.getAttribute("data-theme");
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  const btn = document.getElementById("theme-toggle-btn");
-  if (btn) btn.textContent = next === "dark" ? "☀️" : "🌙";
+  updateThemeUI(next);
 }
 initTheme();
+
+// ────────────────────────────────────
+// SETTINGS DROPDOWN
+// ────────────────────────────────────
+function toggleSettingsMenu() {
+  document.getElementById("settings-menu").classList.toggle("open");
+}
+function closeSettingsMenu() {
+  document.getElementById("settings-menu").classList.remove("open");
+}
+// Click outside to close
+document.addEventListener("click", function(e) {
+  const menu = document.getElementById("settings-menu");
+  const btn = document.getElementById("settings-btn");
+  if (menu.classList.contains("open") && !btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove("open");
+  }
+});
 
 // ────────────────────────────────────
 // SIDEBAR
