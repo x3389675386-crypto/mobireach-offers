@@ -1452,6 +1452,19 @@ app.patch("/api/managed-orders/:id", async (req, res) => {
   res.json({ success: true, order: orders[idx] });
 });
 
+// Clear ALL managed orders (super_admin only)
+app.delete("/api/managed-orders", async (req, res) => {
+  const session = await checkAuth(req, res);
+  if (!session) return;
+  if (session.role !== "super_admin") return res.status(403).json({ error: "Forbidden" });
+
+  const orders = await readManagedOrders();
+  const count = orders.length;
+  await writeManagedOrders([]);
+  writeAudit("delete", "orders", "ALL", { count }, req);
+  res.json({ success: true, deleted: count });
+});
+
 // Delete managed order
 app.delete("/api/managed-orders/:id", async (req, res) => {
   const session = await checkAuth(req, res);

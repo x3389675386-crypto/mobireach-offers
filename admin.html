@@ -932,6 +932,7 @@
               <input type="file" id="mo-import-file" accept=".xlsx" style="display:none" />
             </label>
             <button class="btn-secondary btn-sm" id="mo-export-btn">📤 导出Excel</button>
+            <button class="btn-sm" id="mo-clear-btn" onclick="clearAllOrders()" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px;padding:5px 12px;font-size:12px;transition:all 0.2s">🗑️ 清空全部</button>
           </div>
         </div>
         <div style="overflow-x:auto">
@@ -3843,6 +3844,29 @@ async function loadManagedOrders() {
   document.getElementById("mo-export-btn").onclick = () => {
     window.open("/api/managed-orders/export?token=" + encodeURIComponent(authToken), "_blank");
   };
+}
+
+// Clear ALL managed orders
+async function clearAllOrders() {
+  const count = moAllOrders.length;
+  if (!count) { showToast("当前没有订单数据", "info"); return; }
+  const ok = await customConfirm(
+    `⚠️ 确认清空全部 ${count} 条订单？此操作不可撤销！`,
+    "清空全部", "取消"
+  );
+  if (!ok) return;
+  try {
+    const res = await fetch("/api/managed-orders", {
+      method: "DELETE",
+      headers: { "x-auth-token": authToken }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "删除失败");
+    showToast(`已清空 ${data.deleted} 条订单`, "success");
+    await loadManagedOrders();
+  } catch (e) {
+    showToast("清空失败：" + e.message, "error");
+  }
 }
 
 // #14: Render current page of managed orders
