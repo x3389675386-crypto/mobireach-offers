@@ -1337,14 +1337,33 @@ app.post("/api/managed-orders/import", upload.single("file"), async (req, res) =
     const pi = String(getVal(5, "PID") || "");
     if (!cid && !cn && !pr && !pi) { skipped++; continue; }
 
-    // Dedup: same customer_id + campaign_name + prt + pid
-    const dup = existing.find(mo =>
+    // Dedup: same customer_id + campaign_name + prt + pid → overwrite
+    const dupIdx = existing.findIndex(mo =>
       String(mo.customer_id) === cid &&
       String(mo.campaign_name || "") === cn &&
       String(mo.prt || "") === pr &&
       String(mo.pid || "") === pi
     );
-    if (dup) { skipped++; continue; }
+    if (dupIdx !== -1) {
+      // Overwrite existing record with new data, keep original id & created_at
+      const keepId = existing[dupIdx].id;
+      const keepCreated = existing[dupIdx].created_at;
+      Object.assign(existing[dupIdx], {
+        channel: String(getVal(1, "下单渠道", "下單渠道") || ""),
+        platform: String(getVal(2, "平台") || ""),
+        conversions: getVal(6, "转化", "轉化") || null,
+        revenue: getVal(7, "流水") || null,
+        gross_profit: getVal(8, "毛利") || null,
+        payout: String(getVal(9, "Payout") || ""),
+        real_po_price: String(getVal(10, "真实PO价格", "真實PO價格") || ""),
+        link: getVal(11, "链接", "鏈接") || null,
+        adgroup_name: getVal(12, "Adgroup Name") || null,
+        imported_at: getVal(13, "创建时间", "創建時間") || getVal(14, "更新时间", "更新時間") || new Date().toISOString(),
+        id: keepId,
+        created_at: keepCreated
+      });
+      skipped++; continue;
+    }
 
     existing.push({
       id: crypto.randomUUID(),
@@ -1372,8 +1391,8 @@ app.post("/api/managed-orders/import", upload.single("file"), async (req, res) =
 
   await writeManagedOrders(existing);
   // #12: Audit
-  writeAudit("import", "orders", added + " items", { added, skipped, total: existing.length }, req);
-  res.json({ success: true, added, skipped, total: existing.length });
+  writeAudit("import", "orders", `added ${added}, overwritten ${skipped}`, { added, overwritten: skipped, total: existing.length }, req);
+  res.json({ success: true, added, overwritten: skipped, total: existing.length });
 });
 
 // List managed orders (owner-filtered)
@@ -1404,13 +1423,7 @@ app.get("/api/managed-orders", async (req, res) => {
     );
   }
 
-  // Sort by customer_id
-  orders.sort((a, b) => {
-    const ai = parseInt(a.customer_id) || 0;
-    const bi = parseInt(b.customer_id) || 0;
-    return ai - bi;
-  });
-
+  // No default sort — preserve import order, let frontend sort on demand
   res.json(orders);
 });
 

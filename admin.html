@@ -4141,7 +4141,8 @@ document.getElementById("mo-import-file").addEventListener("change", async (e) =
     const data = await res.json();
     if (handleAuthError(res)) { label.innerHTML = origText; label.style.pointerEvents = ""; return; }
     if (res.ok) {
-      showToast(`导入完成：新增 ${data.added} 条，跳过 ${data.skipped} 条（重复）`, "success");
+      const overMsg = data.overwritten > 0 ? `，覆盖更新 ${data.overwritten} 条` : "";
+      showToast(`导入完成：新增 ${data.added} 条${overMsg}`, "success");
       loadManagedOrders();
     } else {
       showToast(data.error || "导入失败", "error");
