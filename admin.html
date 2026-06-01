@@ -3779,6 +3779,24 @@ document.getElementById("order-form").addEventListener("submit", async e => {
 const MO_STATUSES = ["运行中", "暂停中", "已完成", "已取消"];
 const MO_NOTE_TAGS = ["需要追报告", "注意PA", "高优先级", "待跟进"];
 
+// ── Managed Orders: Stats rendering (reusable) ──
+function renderMoStats(orders) {
+  const stats = document.getElementById("mo-stats");
+  if (!stats) return;
+  const list = orders || moAllOrders;
+  const running = list.filter(o => o.status === "运行中").length;
+  const paused = list.filter(o => o.status === "暂停中").length;
+  const done = list.filter(o => o.status === "已完成").length;
+  const cancelled = list.filter(o => o.status === "已取消").length;
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${list.length}</div><div class="lbl">总订单</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.orders, "#6366f1")}</div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--green)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--green)">${running}</div><div class="lbl">运行中</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--orange)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--orange)">${paused}</div><div class="lbl">暂停中</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--accent)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--accent)">${done}</div><div class="lbl">已完成</div></div></div></div>
+    <div class="stat-card" style="border-left:3px solid var(--red)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--red)">${cancelled}</div><div class="lbl">已取消</div></div></div></div>
+  `;
+}
+
 async function loadManagedOrders() {
   const tbody = document.getElementById("mo-tbody");
   const empty = document.getElementById("mo-empty");
@@ -3814,18 +3832,7 @@ async function loadManagedOrders() {
   moCurrentPage = 1; // reset page on reload
 
   // Stats (based on full dataset before pagination)
-  const stats = document.getElementById("mo-stats");
-  const running = orders.filter(o => o.status === "运行中").length;
-  const paused = orders.filter(o => o.status === "暂停中").length;
-  const done = orders.filter(o => o.status === "已完成").length;
-  const cancelled = orders.filter(o => o.status === "已取消").length;
-  stats.innerHTML = `
-    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${orders.length}</div><div class="lbl">总订单</div></div><div class="sparkline-wrap">${sparklineSVG(trendData.orders, "#6366f1")}</div></div></div>
-    <div class="stat-card" style="border-left:3px solid var(--green)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--green)">${running}</div><div class="lbl">运行中</div></div></div></div>
-    <div class="stat-card" style="border-left:3px solid var(--orange)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--orange)">${paused}</div><div class="lbl">暂停中</div></div></div></div>
-    <div class="stat-card" style="border-left:3px solid var(--accent)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--accent)">${done}</div><div class="lbl">已完成</div></div></div></div>
-    <div class="stat-card" style="border-left:3px solid var(--red)"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--red)">${cancelled}</div><div class="lbl">已取消</div></div></div></div>
-  `;
+  renderMoStats(orders);
 
   if (!orders.length) {
     tbody.innerHTML = "";
@@ -3863,7 +3870,10 @@ async function clearAllOrders() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "删除失败");
     showToast(`已清空 ${data.deleted} 条订单`, "success");
-    await loadManagedOrders();
+    moAllOrders = [];
+    moCurrentPage = 1;
+    renderMoPage();
+    renderMoStats();
   } catch (e) {
     showToast("清空失败：" + e.message, "error");
   }
@@ -4121,7 +4131,10 @@ async function updateMoStatus(sel) {
     });
     if (handleAuthError(res)) return;
     if (res.ok) {
-      loadManagedOrders();
+      // Update local data & re-render without resetting page
+      const order = moAllOrders.find(o => String(o.id) === String(id));
+      if (order) order.status = status;
+      renderMoPage();
       showToast("状态已更新", "success");
     }
   } catch (e) { showToast("更新失败", "error"); }
@@ -4137,7 +4150,9 @@ async function deleteManagedOrder(id) {
       });
       if (handleAuthError(res)) return;
       if (res.ok) {
-        loadManagedOrders();
+        moAllOrders = moAllOrders.filter(o => String(o.id) !== String(id));
+        renderMoPage();
+        renderMoStats();
         showToast("已删除", "success");
       }
     } catch (e) { showToast("删除失败", "error"); }
