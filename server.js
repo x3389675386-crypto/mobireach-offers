@@ -545,8 +545,8 @@ function generateToken() {
 
 // Check auth: token-based only (#3: removed legacy password auth)
 async function checkAuth(req, res, requireSuper) {
-  // Token auth (header only — removed query string to avoid token leaking into logs/history)
-  const token = req.headers["x-auth-token"] || "";
+  // Token auth: header preferred, query string fallback (needed for window.open download links)
+  const token = req.headers["x-auth-token"] || req.query.token || "";
   if (token && tokens.has(token)) {
     const session = tokens.get(token);
     if (Date.now() > session.expiresAt) {
