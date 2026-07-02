@@ -726,6 +726,317 @@
       .stat-item + .stat-item::before { display: none; }
       .stat-item { padding: 6px 18px; }
     }
+
+    /* ── HOME PAGE ── */
+
+    /* Hero Home */
+    .hero-home {
+      position: relative;
+      min-height: 440px;
+      padding: 100px 24px 80px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #312e81 70%, #1e1b4b 100%);
+      overflow: hidden;
+    }
+    .hero-home::before {
+      content: '';
+      position: absolute; top: -40%; left: -15%;
+      width: 70%; height: 70%;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-home::after {
+      content: '';
+      position: absolute; bottom: -30%; right: -10%;
+      width: 55%; height: 55%;
+      background: radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-home-tag {
+      font-size: 12px; font-weight: 700;
+      color: #a5b4fc; letter-spacing: 1.8px;
+      text-transform: uppercase; margin-bottom: 20px;
+      padding: 6px 18px;
+      border: 1px solid rgba(129,140,248,0.3);
+      border-radius: 24px;
+      background: rgba(129,140,248,0.08);
+    }
+    .hero-home-title {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 800; letter-spacing: -2px;
+      line-height: 1.05; margin-bottom: 16px;
+      background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #e879f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-home-subtitle {
+      font-size: 20px; font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 10px;
+    }
+    .hero-home-desc {
+      font-size: 16px; color: rgba(255,255,255,0.5);
+      max-width: 540px; margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .hero-home-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: #fff; font-size: 15px; font-weight: 600;
+      border: none; border-radius: 12px;
+      cursor: pointer; text-decoration: none;
+      font-family: var(--font);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.45);
+    }
+    .hero-home-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(99,102,241,0.55);
+    }
+
+    /* Stats Home */
+    .stats-home { background: var(--bg); padding: 64px 24px; }
+    .stats-home-inner {
+      max-width: 960px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .stat-home-item {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+    }
+    .stat-home-item::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .stat-home-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-card-hover);
+    }
+    .stat-home-item:hover::before { opacity: 1; }
+    .stat-home-value {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800; color: var(--accent);
+      letter-spacing: -1px; line-height: 1;
+      margin-bottom: 10px;
+    }
+    .stat-home-label {
+      font-size: 13px; color: var(--text-secondary);
+      font-weight: 500; letter-spacing: 0.3px;
+    }
+
+    /* What I Do */
+    .section-home { padding: 64px 24px; background: var(--bg); }
+    .section-home-inner { max-width: 960px; margin: 0 auto; }
+    .section-home-title {
+      font-size: 28px; font-weight: 700;
+      letter-spacing: -0.8px; text-align: center;
+      margin-bottom: 8px; color: var(--text-primary);
+    }
+    .section-home-subtitle {
+      font-size: 15px; color: var(--text-muted);
+      text-align: center; margin-bottom: 44px;
+    }
+    .cards-home-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .card-home {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      padding: 28px 24px; text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    .card-home::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: var(--radius-card);
+      padding: 1.5px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6, #c084fc);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0; transition: opacity 0.35s;
+    }
+    .card-home:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px rgba(99,102,241,0.15), 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .card-home:hover::after { opacity: 1; }
+    .card-home-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      transition: all 0.3s ease;
+    }
+    .card-home-icon svg { width: 24px; height: 24px; color: var(--accent); transition: color 0.3s; }
+    .card-home:hover .card-home-icon {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      transform: scale(1.1);
+    }
+    .card-home:hover .card-home-icon svg { color: #fff; }
+    .card-home-title {
+      font-size: 16px; font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px; letter-spacing: -0.3px;
+    }
+    .card-home-desc {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+    }
+
+    /* About Merlin */
+    .about-merlin { padding: 64px 24px; background: var(--bg-subtle); }
+    .about-merlin-inner {
+      max-width: 960px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px; align-items: start;
+    }
+    .about-merlin-left h2 {
+      font-size: 28px; font-weight: 700;
+      letter-spacing: -0.8px; color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .about-merlin-left h2::before {
+      content: ''; width: 4px; height: 28px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    }
+    .about-merlin-left p {
+      font-size: 15px; color: var(--text-secondary); line-height: 1.8;
+    }
+    .about-merlin-right {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .about-merlin-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .about-merlin-card h3 {
+      font-size: 14px; font-weight: 600;
+      color: var(--accent); margin-bottom: 12px;
+    }
+    .about-merlin-info { display: flex; flex-direction: column; gap: 8px; }
+    .about-merlin-info-row {
+      display: flex; align-items: baseline; gap: 8px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .about-merlin-info-row strong {
+      color: var(--text-primary); font-weight: 600;
+      min-width: 72px;
+    }
+    .about-merlin-links { display: flex; flex-direction: column; gap: 12px; }
+    .about-merlin-link {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--text-secondary);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .about-merlin-link:hover { color: var(--accent); }
+    .about-merlin-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* Contact Home */
+    .contact-home {
+      padding: 64px 24px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+    }
+    .contact-home-inner {
+      max-width: 600px; margin: 0 auto; text-align: center;
+    }
+    .contact-home h2 {
+      font-size: 28px; font-weight: 700;
+      color: #fff; letter-spacing: -0.8px; margin-bottom: 12px;
+    }
+    .contact-home p {
+      font-size: 15px; color: rgba(255,255,255,0.8);
+      margin-bottom: 28px; line-height: 1.7;
+    }
+    .contact-home-links {
+      display: flex; justify-content: center;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .contact-home-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 12px;
+      color: #fff; font-size: 14px; font-weight: 600;
+      text-decoration: none; font-family: var(--font);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .contact-home-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .contact-home-btn svg { width: 18px; height: 18px; }
+
+    /* ── HOME PAGE DARK MODE ── */
+    [data-theme="dark"] .hero-home {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #312e81 55%, #0f172a 100%);
+    }
+    [data-theme="dark"] .hero-home::before {
+      background: radial-gradient(circle, rgba(129,140,248,0.25) 0%, transparent 65%);
+    }
+    [data-theme="dark"] .hero-home::after {
+      background: radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 65%);
+    }
+    [data-theme="dark"] .hero-home-tag {
+      border-color: rgba(129,140,248,0.45);
+      background: rgba(129,140,248,0.15);
+      color: #c4b5fd;
+    }
+    [data-theme="dark"] .hero-home-title {
+      background: linear-gradient(135deg, #818cf8 0%, #c084fc 40%, #f0abfc 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    [data-theme="dark"] .hero-home-subtitle { color: rgba(241,245,249,0.85); }
+    [data-theme="dark"] .hero-home-desc { color: rgba(203,213,225,0.6); }
+    [data-theme="dark"] .stat-home-item { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .card-home { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .card-home-icon { background: rgba(129,140,248,0.12); }
+    [data-theme="dark"] .card-home-icon svg { color: #818cf8; }
+    [data-theme="dark"] .about-merlin { background: #0f172a; }
+    [data-theme="dark"] .about-merlin-card { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .contact-home {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+    }
+
+    /* ── HOME PAGE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .stats-home-inner { grid-template-columns: repeat(2, 1fr); }
+      .cards-home-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-merlin-inner { grid-template-columns: 1fr; gap: 32px; }
+    }
+    @media (max-width: 480px) {
+      .stats-home-inner { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .cards-home-grid { grid-template-columns: 1fr; }
+      .hero-home { min-height: 380px; padding: 80px 20px 60px; }
+      .hero-home-title { letter-spacing: -1px; }
+      .hero-home-subtitle { font-size: 16px; }
+      .hero-home-desc { font-size: 14px; }
+      .contact-home-links { flex-direction: column; align-items: center; }
+    }
   </style>
 </head>
 <body>
@@ -733,9 +1044,10 @@
 <!-- ── NAV ── -->
 <nav>
   <div class="nav-left">
-    <a class="nav-brand" onclick="showPage('about')">Mobireach</a>
+    <a class="nav-brand" onclick="showPage('home')">Mobireach</a>
     <div class="nav-links">
-      <a href="#" class="active" data-page="offers" onclick="showPage('offers');return false;">Offers</a>
+      <a href="#" class="active" data-page="home" onclick="showPage('home');return false;">Home</a>
+      <a href="#" data-page="offers" onclick="showPage('offers');return false;">Offers</a>
       <a href="#" data-page="about" onclick="showPage('about');return false;">About</a>
     </div>
   </div>
@@ -743,8 +1055,144 @@
   <button id="index-theme-toggle" onclick="toggleIndexTheme()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:#94a3b8;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:14px;transition:all 0.2s" title="Toggle dark mode">🌙</button>
 </nav>
 
+<!-- ── HOME PAGE ── -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section class="hero-home">
+    <div class="hero-home-tag">MOBILE ADVERTISING · CPI / CPA</div>
+    <h1 class="hero-home-title">Merlin</h1>
+    <p class="hero-home-subtitle">Founder &amp; Growth Lead @ Mobireach</p>
+    <p class="hero-home-desc">Data-Driven Growth for Your Affiliate Business. Connecting premium advertisers with global traffic across 50+ markets.</p>
+    <a href="mailto:merlin@mobirich.online" class="hero-home-cta">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+      Contact Us
+    </a>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-home">
+    <div class="stats-home-inner">
+      <div class="stat-home-item">
+        <div class="stat-home-value" data-count-up="50" data-suffix="+">0+</div>
+        <div class="stat-home-label">GEOs Covered</div>
+      </div>
+      <div class="stat-home-item">
+        <div class="stat-home-value" data-count-up="25" data-suffix="M+">0M+</div>
+        <div class="stat-home-label">Campaign Conversions</div>
+      </div>
+      <div class="stat-home-item">
+        <div class="stat-home-value" data-count-up="53" data-suffix="">0</div>
+        <div class="stat-home-label">Global Markets</div>
+      </div>
+      <div class="stat-home-item">
+        <div class="stat-home-value" data-count-up="15" data-suffix="+ yrs">0+ yrs</div>
+        <div class="stat-home-label">Industry Experience</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What I Do -->
+  <section class="section-home">
+    <div class="section-home-inner">
+      <h2 class="section-home-title">What I Do</h2>
+      <p class="section-home-subtitle">Driving performance and partnerships across the mobile advertising ecosystem</p>
+      <div class="cards-home-grid">
+        <div class="card-home">
+          <div class="card-home-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </div>
+          <h3 class="card-home-title">Affiliate Analytics &amp; Optimization</h3>
+          <p class="card-home-desc">Deep campaign analytics and continuous optimization to maximize ROI across all traffic sources and GEOs.</p>
+        </div>
+        <div class="card-home">
+          <div class="card-home-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <h3 class="card-home-title">Performance-Driven Growth</h3>
+          <p class="card-home-desc">Scaling campaigns with data-backed strategies, ensuring every dollar delivers measurable results and sustainable growth.</p>
+        </div>
+        <div class="card-home">
+          <div class="card-home-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="card-home-title">Global Traffic Access</h3>
+          <p class="card-home-desc">Direct access to DSP and developer traffic across US, BR, MX, IN, ID, RU and 50+ markets worldwide.</p>
+        </div>
+        <div class="card-home">
+          <div class="card-home-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="20" y1="14" x2="20" y2="20"/><line x1="20" y1="14" x2="16" y2="14"/></svg>
+          </div>
+          <h3 class="card-home-title">Premium Advertiser Partnerships</h3>
+          <p class="card-home-desc">Curated relationships with top-tier advertisers, ensuring exclusive offers and competitive payouts for partners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Merlin -->
+  <section class="about-merlin">
+    <div class="about-merlin-inner">
+      <div class="about-merlin-left">
+        <h2>About Merlin</h2>
+        <p>With over 15 years in the mobile advertising industry, I've built Mobireach from the ground up to become a trusted partner for affiliates and advertisers worldwide.</p>
+        <p style="margin-top:16px">My focus is simple: data-driven decisions, transparent partnerships, and performance that speaks for itself. Whether you're scaling CPI campaigns in the US or expanding into emerging markets like BR and ID, I bring the expertise and network to make it happen.</p>
+        <p style="margin-top:16px">At Mobireach, we combine DSP-level programmatic precision with direct developer relationships — giving our partners unmatched access to quality traffic at scale.</p>
+      </div>
+      <div class="about-merlin-right">
+        <div class="about-merlin-card">
+          <h3>Quick Info</h3>
+          <div class="about-merlin-info">
+            <div class="about-merlin-info-row"><strong>Role</strong> Founder &amp; Growth Lead</div>
+            <div class="about-merlin-info-row"><strong>Company</strong> Mobireach</div>
+            <div class="about-merlin-info-row"><strong>Focus</strong> CPI / CPA / Affiliate</div>
+            <div class="about-merlin-info-row"><strong>Traffic</strong> DSP + Developer</div>
+            <div class="about-merlin-info-row"><strong>Markets</strong> US, BR, MX, IN, ID, RU &amp; 50+</div>
+          </div>
+        </div>
+        <div class="about-merlin-card">
+          <h3>Connect</h3>
+          <div class="about-merlin-links">
+            <a href="mailto:merlin@mobirich.online" class="about-merlin-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+              merlin@mobirich.online
+            </a>
+            <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="about-merlin-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn Profile
+            </a>
+            <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="about-merlin-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              Mobireach on LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-home">
+    <div class="contact-home-inner">
+      <h2>Let's Work Together</h2>
+      <p>Ready to scale your affiliate campaigns? Reach out and let's discuss how Mobireach can drive growth for your business.</p>
+      <div class="contact-home-links">
+        <a href="mailto:merlin@mobirich.online" class="contact-home-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+          Email Me
+        </a>
+        <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="contact-home-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Connect on LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
 <!-- ── OFFERS PAGE ── -->
-<div class="page active" id="page-offers">
+<div class="page" id="page-offers">
   <section class="hero">
     <h1>Direct mobile offers<br>ready to scale.</h1>
     <p>
@@ -883,7 +1331,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <a class="footer-logo" onclick="showPage('about');return false;" href="#" style="cursor:pointer">Mobireach</a>
+      <a class="footer-logo" onclick="showPage('home');return false;" href="#" style="cursor:pointer">Mobireach</a>
       <div class="footer-tagline">Mobile advertising</div>
     </div>
     <div class="footer-contact">
@@ -1049,14 +1497,14 @@ function showPage(name) {
   if (link) link.classList.add("active");
 }
 
-// Logo and footer logo also go to About
+// Logo and footer logo go to Home page
 document.querySelector(".nav-brand").addEventListener("click", e => {
   e.preventDefault();
-  showPage("about");
+  showPage("home");
 });
 document.querySelector(".footer-logo").addEventListener("click", e => {
   e.preventDefault();
-  showPage("about");
+  showPage("home");
 });
 
 // ─────────────────────────────────────────────
@@ -1455,6 +1903,41 @@ document.addEventListener("keydown", e => {
     document.getElementById("apply-overlay").classList.remove("open");
   }
 });
+
+// ─────────────────────────────────────────────
+//  COUNT-UP ANIMATION (Intersection Observer)
+// ─────────────────────────────────────────────
+function initCountUp() {
+  const els = document.querySelectorAll('[data-count-up]');
+  if (!els.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCountUp(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  els.forEach(el => observer.observe(el));
+}
+
+function animateCountUp(el) {
+  const target = parseInt(el.dataset.countUp, 10);
+  const suffix = el.dataset.suffix || '';
+  const duration = 2000;
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    el.textContent = current + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+initCountUp();
 
 // ─────────────────────────────────────────────
 //  INIT
