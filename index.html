@@ -798,43 +798,85 @@
       box-shadow: 0 8px 28px rgba(99,102,241,0.55);
     }
 
-    /* Stats Home */
-    .stats-home { background: var(--bg); padding: 64px 24px; }
-    .stats-home-inner {
-      max-width: 960px; margin: 0 auto;
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-    .stat-home-item {
-      text-align: center;
-      padding: 28px 20px;
+    /* Quick Message */
+    .message-home { background: var(--bg); padding: 64px 24px; }
+    .message-home-inner {
+      max-width: 640px; margin: 0 auto;
       background: var(--card-bg);
       border-radius: var(--radius-card);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-card);
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 36px;
       position: relative; overflow: hidden;
     }
-    .stat-home-item::before {
+    .message-home-inner::before {
       content: ''; position: absolute;
       top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, #6366f1, #8b5cf6);
-      opacity: 0; transition: opacity 0.3s;
     }
-    .stat-home-item:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-card-hover);
+    .message-home h2 {
+      font-size: 24px; font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px; color: var(--text-primary);
+      text-align: center;
     }
-    .stat-home-item:hover::before { opacity: 1; }
-    .stat-home-value {
-      font-size: clamp(32px, 5vw, 48px);
-      font-weight: 800; color: var(--accent);
-      letter-spacing: -1px; line-height: 1;
-      margin-bottom: 10px;
+    .message-home-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
     }
-    .stat-home-label {
-      font-size: 13px; color: var(--text-secondary);
-      font-weight: 500; letter-spacing: 0.3px;
+    .message-form { display: flex; flex-direction: column; gap: 16px; }
+    .message-form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .message-form label {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .message-form input,
+    .message-form textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .message-form input:focus,
+    .message-form textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+    .message-form textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .message-form button {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      padding: 12px 28px;
+      border: none; border-radius: 10px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+    }
+    .message-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(99,102,241,0.5);
+    }
+    .message-form-note {
+      font-size: 12px; color: var(--text-muted);
+      margin-top: 8px;
     }
 
     /* What I Do */
@@ -1012,7 +1054,9 @@
     }
     [data-theme="dark"] .hero-home-subtitle { color: rgba(241,245,249,0.85); }
     [data-theme="dark"] .hero-home-desc { color: rgba(203,213,225,0.6); }
-    [data-theme="dark"] .stat-home-item { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .message-home-inner { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .message-form input,
+    [data-theme="dark"] .message-form textarea { background: #0f172a; border-color: #334155; color: #f1f5f9; }
     [data-theme="dark"] .card-home { background: #1e293b; border-color: #334155; }
     [data-theme="dark"] .card-home-icon { background: rgba(129,140,248,0.12); }
     [data-theme="dark"] .card-home-icon svg { color: #818cf8; }
@@ -1024,12 +1068,13 @@
 
     /* ── HOME PAGE RESPONSIVE ── */
     @media (max-width: 768px) {
-      .stats-home-inner { grid-template-columns: repeat(2, 1fr); }
+      .message-home-inner { padding: 28px 22px; }
+      .message-form-row { grid-template-columns: 1fr; }
       .cards-home-grid { grid-template-columns: repeat(2, 1fr); }
       .about-merlin-inner { grid-template-columns: 1fr; gap: 32px; }
     }
     @media (max-width: 480px) {
-      .stats-home-inner { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .message-home-inner { padding: 24px 18px; }
       .cards-home-grid { grid-template-columns: 1fr; }
       .hero-home { min-height: 380px; padding: 80px 20px 60px; }
       .hero-home-title { letter-spacing: -1px; }
@@ -1062,35 +1107,44 @@
   <section class="hero-home">
     <div class="hero-home-tag">MOBILE ADVERTISING · CPI / CPA</div>
     <h1 class="hero-home-title">Merlin</h1>
-    <p class="hero-home-subtitle">Founder &amp; Growth Lead @ Mobireach</p>
-    <p class="hero-home-desc">Data-Driven Growth for Your Affiliate Business. Connecting premium advertisers with global traffic across 50+ markets.</p>
+    <p class="hero-home-subtitle">Account Manager @ Mobireach</p>
+    <p class="hero-home-desc">Helping advertisers and affiliates grow through CPI / CPA mobile campaigns. If you have offers or traffic, let's talk.</p>
     <a href="mailto:merlin@mobirich.online" class="hero-home-cta">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
       Contact Us
     </a>
   </section>
 
-  <!-- Stats -->
-  <section class="stats-home">
-    <div class="stats-home-inner">
-      <div class="stat-home-item">
-        <div class="stat-home-value" data-count-up="50" data-suffix="+">0+</div>
-        <div class="stat-home-label">GEOs Covered</div>
-      </div>
-      <div class="stat-home-item">
-        <div class="stat-home-value" data-count-up="25" data-suffix="M+">0M+</div>
-        <div class="stat-home-label">Campaign Conversions</div>
-      </div>
-      <div class="stat-home-item">
-        <div class="stat-home-value" data-count-up="53" data-suffix="">0</div>
-        <div class="stat-home-label">Global Markets</div>
-      </div>
-      <div class="stat-home-item">
-        <div class="stat-home-value" data-count-up="15" data-suffix="+ yrs">0+ yrs</div>
-        <div class="stat-home-label">Industry Experience</div>
-      </div>
+  <!-- Quick Message -->
+  <section class="message-home">
+    <div class="message-home-inner">
+      <h2>Leave a Message</h2>
+      <p class="message-home-subtitle">Tell me about your offers or traffic needs. I'll get back to you within one business day.</p>
+      <form class="message-form" id="home-message-form" onsubmit="sendHomeMessage(event)">
+        <div class="message-form-row">
+          <div>
+            <label for="hm-name">Name</label>
+            <input type="text" id="hm-name" placeholder="Your name" required />
+          </div>
+          <div>
+            <label for="hm-email">Email</label>
+            <input type="email" id="hm-email" placeholder="you@company.com" required />
+          </div>
+        </div>
+        <div>
+          <label for="hm-subject">Subject</label>
+          <input type="text" id="hm-subject" placeholder="Offer inquiry / Traffic request / Partnership" required />
+        </div>
+        <div>
+          <label for="hm-body">Message</label>
+          <textarea id="hm-body" placeholder="Hi Merlin, I have..." required></textarea>
+        </div>
+        <button type="submit">Send Message</button>
+        <p class="message-form-note">This will open your email client. You can also reach me directly at <a href="mailto:merlin@mobirich.online" style="color:var(--accent)">merlin@mobirich.online</a>.</p>
+      </form>
     </div>
   </section>
+
 
   <!-- What I Do -->
   <section class="section-home">
@@ -1117,7 +1171,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
           <h3 class="card-home-title">Global Traffic Access</h3>
-          <p class="card-home-desc">Direct access to DSP and developer traffic across US, BR, MX, IN, ID, RU and 50+ markets worldwide.</p>
+          <p class="card-home-desc">Direct access to DSP and developer traffic across key markets including US, BR, MX, IN, ID and RU.</p>
         </div>
         <div class="card-home">
           <div class="card-home-icon">
@@ -1135,19 +1189,19 @@
     <div class="about-merlin-inner">
       <div class="about-merlin-left">
         <h2>About Merlin</h2>
-        <p>With over 15 years in the mobile advertising industry, I've built Mobireach from the ground up to become a trusted partner for affiliates and advertisers worldwide.</p>
-        <p style="margin-top:16px">My focus is simple: data-driven decisions, transparent partnerships, and performance that speaks for itself. Whether you're scaling CPI campaigns in the US or expanding into emerging markets like BR and ID, I bring the expertise and network to make it happen.</p>
-        <p style="margin-top:16px">At Mobireach, we combine DSP-level programmatic precision with direct developer relationships — giving our partners unmatched access to quality traffic at scale.</p>
+        <p>I'm an Account Manager at Mobireach, focused on bridging advertisers and affiliates in the mobile performance marketing space.</p>
+        <p style="margin-top:16px">My day-to-day is simple: understand what you need, match you with the right offers or traffic sources, and make sure campaigns run smoothly. Whether you're looking for CPI/CPA offers or trying to monetize your traffic, I'm here to help.</p>
+        <p style="margin-top:16px">I work closely with the Mobireach operations team to keep campaigns transparent, payouts fair, and communication direct.</p>
       </div>
       <div class="about-merlin-right">
         <div class="about-merlin-card">
           <h3>Quick Info</h3>
           <div class="about-merlin-info">
-            <div class="about-merlin-info-row"><strong>Role</strong> Founder &amp; Growth Lead</div>
+            <div class="about-merlin-info-row"><strong>Role</strong> Account Manager</div>
             <div class="about-merlin-info-row"><strong>Company</strong> Mobireach</div>
             <div class="about-merlin-info-row"><strong>Focus</strong> CPI / CPA / Affiliate</div>
             <div class="about-merlin-info-row"><strong>Traffic</strong> DSP + Developer</div>
-            <div class="about-merlin-info-row"><strong>Markets</strong> US, BR, MX, IN, ID, RU &amp; 50+</div>
+            <div class="about-merlin-info-row"><strong>Markets</strong> US, BR, MX, IN, ID, RU</div>
           </div>
         </div>
         <div class="about-merlin-card">
@@ -1905,39 +1959,25 @@ document.addEventListener("keydown", e => {
 });
 
 // ─────────────────────────────────────────────
-//  COUNT-UP ANIMATION (Intersection Observer)
+//  HOME MESSAGE FORM
 // ─────────────────────────────────────────────
-function initCountUp() {
-  const els = document.querySelectorAll('[data-count-up]');
-  if (!els.length) return;
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCountUp(entry.target);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  els.forEach(el => observer.observe(el));
-}
-
-function animateCountUp(el) {
-  const target = parseInt(el.dataset.countUp, 10);
-  const suffix = el.dataset.suffix || '';
-  const duration = 2000;
-  const startTime = performance.now();
-  function update(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.round(eased * target);
-    el.textContent = current + suffix;
-    if (progress < 1) requestAnimationFrame(update);
+function sendHomeMessage(e) {
+  e.preventDefault();
+  const name = document.getElementById("hm-name").value.trim();
+  const email = document.getElementById("hm-email").value.trim();
+  const subject = document.getElementById("hm-subject").value.trim();
+  const body = document.getElementById("hm-body").value.trim();
+  if (!name || !email || !subject || !body) {
+    alert("Please fill in all fields.");
+    return;
   }
-  requestAnimationFrame(update);
+  const mailtoSubject = encodeURIComponent("[Mobireach Contact] " + subject);
+  const mailtoBody = encodeURIComponent(
+    "Name: " + name + "\nEmail: " + email + "\n\n" + body
+  );
+  window.location.href = "mailto:merlin@mobirich.online?subject=" + mailtoSubject + "&body=" + mailtoBody;
 }
 
-initCountUp();
 
 // ─────────────────────────────────────────────
 //  INIT
