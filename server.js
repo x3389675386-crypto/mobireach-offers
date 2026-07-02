@@ -594,6 +594,30 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
+// ── Health Check (for Render) ──
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: Math.floor(process.uptime()) });
+});
+
+// ── Self-ping keep-alive (prevent Render free tier spin-down) ──
+const KEEP_ALIVE_INTERVAL = 14 * 60 * 1000; // 14 minutes (Render spins down at 15 min)
+let keepAliveTimer = null;
+
+function startKeepAlive() {
+  if (process.env.RENDER === "true" && !keepAliveTimer) {
+    const url = `https://mobireach-offers.onrender.com/health`;
+    keepAliveTimer = setInterval(async () => {
+      try {
+        const res = await fetch(url);
+        console.log(`🔄 Keep-alive ping: ${res.status}`);
+      } catch (e) {
+        console.warn(`🔄 Keep-alive ping failed: ${e.message}`);
+      }
+    }, KEEP_ALIVE_INTERVAL);
+    console.log("🔄 Keep-alive started (every 14 min)");
+  }
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  AUTH ROUTES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2031,4 +2055,7 @@ app.listen(PORT, async () => {
   ║   💾  Storage: ${useGitHub ? `GitHub (${GH_OWNER}/${GH_REPO})` : "Local"}  ║
   ╚══════════════════════════════════════╝
   `);
+
+  // Start keep-alive ping on Render
+  startKeepAlive();
 });

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: mobireach-offers
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+        # Render assigns PORT automatically, but we list it for reference
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: GH_TOKEN
+        sync: false
+      - key: GH_OWNER
+        value: x3389675386-crypto
+      - key: GH_REPO
+        value: mobireach-data
