@@ -789,15 +789,65 @@
       backdrop-filter: blur(8px);
       position: relative; z-index: 1;
     }
+    .hero-home-title-wrap {
+      display: inline-block;
+      will-change: transform;
+      animation: titleFloat 6s ease-in-out infinite alternate;
+    }
+    @keyframes titleFloat {
+      0% { transform: translateY(-6px); }
+      100% { transform: translateY(6px); }
+    }
     .hero-home-title {
       font-size: clamp(52px, 10vw, 86px);
       font-weight: 800; letter-spacing: -3px;
       line-height: 1; margin-bottom: 16px;
-      background: linear-gradient(135deg, #f8fafc 0%, #22d3ee 35%, #fbbf24 70%, #f472b6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      perspective: 600px;
       position: relative; z-index: 1;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes titleGlow {
+      0% { text-shadow: 0 0 14px rgba(34,211,238,0.45); }
+      50% { text-shadow: 0 0 24px rgba(251,191,36,0.6); }
+      100% { text-shadow: 0 0 20px rgba(244,114,182,0.6); }
+    }
+    .hero-home-title .letter {
+      display: inline-block;
+      background: linear-gradient(135deg, #f8fafc 0%, #22d3ee 30%, #fbbf24 55%, #f472b6 80%, #22d3ee 100%);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      opacity: 0;
+      transform: translateY(42px) rotateX(-55deg);
+      filter: blur(14px);
+      text-shadow: 0 0 18px rgba(34,211,238,0.45);
+      animation: letterReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                 gradientShift 7s linear infinite,
+                 titleGlow 3.6s ease-in-out infinite alternate;
+      animation-delay: calc(var(--i) * 0.09s), 0s, 0s;
+    }
+    @keyframes letterReveal {
+      to { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+    }
+    .hero-home-title .shine {
+      position: absolute; inset: 0;
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.85) 50%, transparent 65%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      background-size: 200% 100%;
+      pointer-events: none;
+      animation: titleShine 4.5s ease-in-out 1s infinite;
+    }
+    @keyframes titleShine {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
     .hero-home-subtitle {
       font-size: 22px; font-weight: 500;
@@ -988,9 +1038,20 @@
     }
     .about-merlin-left h2 {
       font-size: 28px; font-weight: 700;
-      letter-spacing: -0.8px; color: var(--text-primary);
+      letter-spacing: -0.8px;
       margin-bottom: 20px;
       display: flex; align-items: center; gap: 12px;
+      background: linear-gradient(120deg, #22d3ee 0%, #fbbf24 55%, #22d3ee 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: aboutFadeUp 0.8s ease forwards, gradientShift 9s linear infinite;
+    }
+    @keyframes aboutFadeUp {
+      to { opacity: 1; transform: translateY(0); }
     }
     .about-merlin-left h2::before {
       content: ''; width: 4px; height: 28px;
@@ -1078,7 +1139,6 @@
     /* ── HOME PAGE DARK MODE ── */
     [data-theme="dark"] .hero-home { background: transparent; }
     [data-theme="dark"] .hero-home-tag { border-color: rgba(34,211,238,0.45); background: rgba(2,6,23,0.55); color: #67e8f9; }
-    [data-theme="dark"] .hero-home-title { background: linear-gradient(135deg, #f8fafc 0%, #22d3ee 35%, #fbbf24 70%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     [data-theme="dark"] .hero-home-subtitle { color: rgba(255,255,255,0.85); }
     [data-theme="dark"] .hero-home-desc { color: rgba(255,255,255,0.55); }
     [data-theme="dark"] .message-home-inner { background: rgba(15, 23, 42, 0.72); border-color: rgba(255,255,255,0.12); }
@@ -1108,6 +1168,26 @@
       .hero-home-desc { font-size: 14px; }
       .contact-home-links { flex-direction: column; align-items: center; }
     }
+    /* ── ANIMATION ACCESSIBILITY GUARD ── */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-home-title-wrap { animation: none !important; }
+      .hero-home-title {
+        animation: none !important;
+        filter: none !important;
+      }
+      .hero-home-title .letter {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        animation: none !important;
+      }
+      .hero-home-title .shine { display: none !important; }
+      .about-merlin-left h2 {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1131,7 +1211,11 @@
   <!-- Hero -->
   <section class="hero-home">
     <div class="hero-home-tag">MOBILE ADVERTISING · CPI / CPA</div>
-    <h1 class="hero-home-title">Merlin</h1>
+    <div class="hero-home-title-wrap">
+      <h1 class="hero-home-title">
+        <span class="letter" style="--i:0">M</span><span class="letter" style="--i:1">e</span><span class="letter" style="--i:2">r</span><span class="letter" style="--i:3">l</span><span class="letter" style="--i:4">i</span><span class="letter" style="--i:5">n</span><span class="shine" aria-hidden="true">Merlin</span>
+      </h1>
+    </div>
     <p class="hero-home-subtitle">Account Manager @ Mobireach</p>
     <p class="hero-home-desc">Helping advertisers and affiliates grow through CPI / CPA mobile campaigns. If you have offers or traffic, let's talk.</p>
     <a href="mailto:merlin@mobirich.online" class="hero-home-cta">
