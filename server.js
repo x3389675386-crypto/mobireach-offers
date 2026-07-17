@@ -600,22 +600,29 @@ app.get("/health", (req, res) => {
 });
 
 // ── Self-ping keep-alive (prevent Render free tier spin-down) ──
-const KEEP_ALIVE_INTERVAL = 14 * 60 * 1000; // 14 minutes (Render spins down at 15 min)
+const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes (Render spins down after ~15 min idle)
 let keepAliveTimer = null;
+let keepAliveUrl = null;
+
+async function doKeepAlivePing() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    const res = await fetch(keepAliveUrl, { signal: controller.signal });
+    clearTimeout(timeout);
+    console.log(`🔄 Keep-alive ping: ${res.status} (${new Date().toISOString()})`);
+  } catch (e) {
+    console.warn(`🔄 Keep-alive ping failed: ${e.message} (${new Date().toISOString()})`);
+  }
+}
 
 function startKeepAlive() {
-  if (process.env.RENDER === "true" && !keepAliveTimer) {
-    const url = `https://mobireach-offers.onrender.com/health`;
-    keepAliveTimer = setInterval(async () => {
-      try {
-        const res = await fetch(url);
-        console.log(`🔄 Keep-alive ping: ${res.status}`);
-      } catch (e) {
-        console.warn(`🔄 Keep-alive ping failed: ${e.message}`);
-      }
-    }, KEEP_ALIVE_INTERVAL);
-    console.log("🔄 Keep-alive started (every 14 min)");
-  }
+  if (keepAliveTimer) return; // already running
+  keepAliveUrl = `http://localhost:${PORT}/health`;
+  keepAliveTimer = setInterval(doKeepAlivePing, KEEP_ALIVE_INTERVAL);
+  console.log(`🔄 Keep-alive started: ${keepAliveUrl} every ${KEEP_ALIVE_INTERVAL / 60000} min`);
+  // Ping immediately once, then on interval
+  doKeepAlivePing();
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2056,6 +2063,6 @@ app.listen(PORT, async () => {
   ╚══════════════════════════════════════╝
   `);
 
-  // Start keep-alive ping on Render
+  // Start self keep-alive ping (works on Render and local)
   startKeepAlive();
 });
