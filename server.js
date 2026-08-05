@@ -600,14 +600,28 @@ app.get("/health", (req, res) => {
 });
 
 // ── Self-ping keep-alive (prevent Render free tier spin-down) ──
-const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes (Render spins down after ~15 min idle)
+// Render 的空闲/休眠计时器只会被「到达其边缘的外部入站流量」重置。
+// 容器内的 localhost ping 不会离开容器，因此必须 ping 公网 URL。
+const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 分钟（远低于 Render ~15 分钟空闲阈值）
+const FALLBACK_PUBLIC_URL = "https://mobireach-offers.onrender.com";
+
+function resolveKeepAliveUrl() {
+  // 在 Render 上 RENDER_EXTERNAL_URL 由平台自动注入，例如 https://mobireach-offers.onrender.com
+  const base = (process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "");
+  if (base) return `${base}/health`;
+  // 生产环境但未注入 RENDER_EXTERNAL_URL 时，回退到已知公网地址
+  if (process.env.NODE_ENV === "production") return `${FALLBACK_PUBLIC_URL}/health`;
+  return null; // 本地开发：不做任何公网自 ping
+}
+
 let keepAliveTimer = null;
 let keepAliveUrl = null;
 
 async function doKeepAlivePing() {
+  if (!keepAliveUrl) return;
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s 超时
     const res = await fetch(keepAliveUrl, { signal: controller.signal });
     clearTimeout(timeout);
     console.log(`🔄 Keep-alive ping: ${res.status} (${new Date().toISOString()})`);
@@ -617,12 +631,15 @@ async function doKeepAlivePing() {
 }
 
 function startKeepAlive() {
-  if (keepAliveTimer) return; // already running
-  keepAliveUrl = `http://localhost:${PORT}/health`;
+  if (keepAliveTimer) return; // 已在运行
+  keepAliveUrl = resolveKeepAliveUrl();
+  if (!keepAliveUrl) {
+    console.log("🔄 Keep-alive disabled (local dev / not on Render).");
+    return;
+  }
   keepAliveTimer = setInterval(doKeepAlivePing, KEEP_ALIVE_INTERVAL);
   console.log(`🔄 Keep-alive started: ${keepAliveUrl} every ${KEEP_ALIVE_INTERVAL / 60000} min`);
-  // Ping immediately once, then on interval
-  doKeepAlivePing();
+  doKeepAlivePing(); // 立即先 ping 一次
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2063,6 +2080,6 @@ app.listen(PORT, async () => {
   ╚══════════════════════════════════════╝
   `);
 
-  // Start self keep-alive ping (works on Render and local)
+  // Start self keep-alive ping (public URL on Render; disabled in local dev)
   startKeepAlive();
 });
