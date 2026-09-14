@@ -1214,6 +1214,13 @@
       display: flex; flex-direction: column; gap: 14px;
     }
     .drama-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .drama-card-head { display: flex; align-items: center; gap: 12px; }
+    .drama-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #020617;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    }
     .drama-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
     .drama-card .btn-apply {
       margin-top: auto; width: 100%; justify-content: center;
@@ -1677,10 +1684,6 @@
         <div class="drama-form-row">
           <label>GEO / 地区</label>
           <input type="text" id="da-geo" placeholder="例如：US, BR, ID" />
-        </div>
-        <div class="drama-form-row">
-          <label>预算期望</label>
-          <input type="text" id="da-budget" placeholder="例如：CPA $10–$30" />
         </div>
         <div class="drama-form-row">
           <label>备注</label>
@@ -2244,12 +2247,23 @@ const DRAMA_PLATFORMS = [
   { name: "reelshort",  tagline: "全球头部 · CPS 分佣" }
 ];
 
+const DRAMA_ICON_GRADIENTS = [
+  "linear-gradient(135deg,#22d3ee,#0ea5e9)",
+  "linear-gradient(135deg,#fbbf24,#f59e0b)",
+  "linear-gradient(135deg,#f472b6,#ec4899)",
+  "linear-gradient(135deg,#8b5cf6,#6366f1)",
+  "linear-gradient(135deg,#34d399,#10b981)"
+];
+
 function renderDramaGrid() {
   const grid = document.getElementById("drama-grid");
   if (!grid) return;
   grid.innerHTML = DRAMA_PLATFORMS.map((p, i) => `
     <div class="drama-card">
-      <div class="drama-name">${escHtml(p.name)}</div>
+      <div class="drama-card-head">
+        <div class="drama-icon" style="background:${DRAMA_ICON_GRADIENTS[i % DRAMA_ICON_GRADIENTS.length]}">${escHtml(p.name[0].toUpperCase())}</div>
+        <div class="drama-name">${escHtml(p.name)}</div>
+      </div>
       <div class="drama-tagline">${escHtml(p.tagline)}</div>
       <button class="btn-apply" onclick="openDramaApply(${i})">填写需求</button>
     </div>`).join("");
@@ -2296,7 +2310,6 @@ document.getElementById("drama-form").addEventListener("submit", async e => {
         dramaName,
         language,
         geo: document.getElementById("da-geo").value.trim(),
-        budgetExpectation: document.getElementById("da-budget").value.trim(),
         comment: document.getElementById("da-comment").value.trim()
       })
     });
