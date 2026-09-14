@@ -898,6 +898,34 @@ app.post("/api/apply", async (req, res) => {
   res.json({ success: true, id: submission.id });
 });
 
+// ── Short Drama Promotion leads ──
+const LOCAL_DRAMA_SUBMISSIONS = path.join(DATA_DIR, "drama_submissions.json");
+
+app.post("/api/drama-apply", async (req, res) => {
+  const { platform, dramaName, language, geo, budgetExpectation, comment } = req.body || {};
+  if (!platform || !dramaName || !language) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+  const rec = {
+    id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+    platform,
+    dramaName,
+    language,
+    geo: geo || "",
+    budgetExpectation: budgetExpectation || "",
+    comment: comment || "",
+    status: "new"
+  };
+  let list = [];
+  try { list = JSON.parse(fs.readFileSync(LOCAL_DRAMA_SUBMISSIONS, "utf-8")); }
+  catch (e) { list = []; }
+  list.unshift(rec);
+  fs.writeFileSync(LOCAL_DRAMA_SUBMISSIONS, JSON.stringify(list, null, 2), "utf-8");
+  console.log(`✅ New drama lead: ${platform} / ${dramaName} (${language})`);
+  res.json({ success: true, id: rec.id });
+});
+
 // Get All Offers (public, with pagination)
 app.get("/api/offers", async (req, res) => {
   const all = await readOffers();

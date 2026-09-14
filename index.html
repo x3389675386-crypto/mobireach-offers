@@ -1188,6 +1188,95 @@
         transform: none !important;
       }
     }
+
+    /* ── DRAMA PAGE ── */
+    .drama-page { max-width: 1100px; margin: 0 auto; padding: 64px 24px 80px; }
+    .drama-hero { text-align: center; margin-bottom: 40px; }
+    .drama-title {
+      font-size: clamp(32px, 5vw, 48px); font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, #f8fafc 0%, #22d3ee 35%, #fbbf24 70%, #f472b6 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      margin-bottom: 12px;
+    }
+    .drama-sub { font-size: 16px; color: var(--text-secondary); }
+    .drama-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .drama-card {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-card);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .drama-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .drama-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .drama-budget {
+      font-size: 12px; font-weight: 600; color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+    }
+    .drama-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .drama-card .btn-apply {
+      margin-top: auto; width: 100%; justify-content: center;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+      color: #020617; border: none; border-radius: var(--radius-btn);
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .drama-card .btn-apply:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(34,211,238,0.5); }
+    .drama-cta {
+      margin-top: 56px; text-align: center;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-card);
+      padding: 40px 28px;
+      box-shadow: var(--shadow-card);
+    }
+    .drama-cta h2 { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+    .drama-cta p { font-size: 15px; color: var(--text-secondary); margin-bottom: 22px; }
+    .drama-cta-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 30px;
+      background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+      color: #020617; border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font);
+      box-shadow: 0 4px 16px rgba(34, 211, 238, 0.35);
+      transition: all 0.3s ease;
+    }
+    .drama-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(34, 211, 238, 0.5); }
+    .drama-form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .drama-form-row label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .drama-form-row .req { color: #f472b6; margin-left: 2px; }
+    .drama-form-row input, .drama-form-row textarea, .drama-form-row select {
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px; padding: 10px 12px;
+      color: var(--text-primary); font-size: 14px; font-family: var(--font);
+      outline: none; transition: border-color 0.2s;
+    }
+    .drama-form-row input:focus, .drama-form-row textarea:focus, .drama-form-row select:focus { border-color: #22d3ee; }
+    .wx-box { text-align: center; padding: 8px 0 4px; }
+    .wx-id { font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #22d3ee; margin: 12px 0 6px; word-break: break-all; }
+    .wx-copy {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; margin-top: 6px;
+      background: rgba(34, 211, 238, 0.15);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      color: #22d3ee; border-radius: 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .wx-copy:hover { background: rgba(34, 211, 238, 0.25); }
+    .wx-hint { font-size: 13px; color: var(--text-muted); margin-top: 14px; }
   </style>
 </head>
 <body>
@@ -1199,6 +1288,7 @@
     <div class="nav-links">
       <a href="#" class="active" data-page="home" onclick="showPage('home');return false;">Home</a>
       <a href="#" data-page="offers" onclick="showPage('offers');return false;">Offers</a>
+      <a href="#" data-page="drama" onclick="showPage('drama');return false;">Drama</a>
       <a href="#" data-page="about" onclick="showPage('about');return false;">About</a>
     </div>
   </div>
@@ -1422,6 +1512,22 @@
   </main>
 </div>
 
+<!-- ── DRAMA PAGE ── -->
+<div class="page" id="page-drama">
+  <div class="drama-page">
+    <div class="drama-hero">
+      <h1 class="drama-title">Short Drama Promotion</h1>
+      <p class="drama-sub">爆款短剧全球投放 · 10+ 头部平台推广预算开放中</p>
+    </div>
+    <div class="drama-grid" id="drama-grid"></div>
+    <div class="drama-cta">
+      <h2>我有流量，我想合作</h2>
+      <p>如果你手上有短剧推广流量，直接联系 Merlin 对接专属预算。</p>
+      <button class="drama-cta-btn" onclick="openWechat()">我有流量我想合作</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── ABOUT PAGE ── -->
 <div class="page" id="page-about">
   <div class="about-page">
@@ -1545,6 +1651,76 @@
     <button class="btn-cookie btn-cookie-save" id="cookie-save">Customise</button>
     <button class="btn-cookie btn-cookie-reject" id="cookie-reject">Reject optional</button>
     <button class="btn-cookie btn-cookie-accept" id="cookie-accept">Accept all</button>
+  </div>
+</div>
+
+<!-- ── DRAMA MODALS ── -->
+<div class="overlay" id="drama-apply-overlay" role="dialog" aria-modal="true">
+  <div class="modal" id="drama-apply-modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="da-title">填写需求</div>
+        <div class="modal-subtitle" id="da-subtitle"></div>
+      </div>
+      <button class="modal-close" id="da-close" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="drama-form">
+        <div class="drama-form-row">
+          <label>剧名 <span class="req">*</span></label>
+          <input type="text" id="da-dramaName" placeholder="例如：The Billionaire's Mask" />
+        </div>
+        <div class="drama-form-row">
+          <label>语言 <span class="req">*</span></label>
+          <select id="da-language">
+            <option value="">请选择</option>
+            <option value="中文">中文</option>
+            <option value="English">English</option>
+            <option value="Español">Español</option>
+            <option value="Português">Português</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="drama-form-row">
+          <label>GEO / 地区</label>
+          <input type="text" id="da-geo" placeholder="例如：US, BR, ID" />
+        </div>
+        <div class="drama-form-row">
+          <label>预算期望</label>
+          <input type="text" id="da-budget" placeholder="例如：CPA $10–$30" />
+        </div>
+        <div class="drama-form-row">
+          <label>备注</label>
+          <textarea id="da-comment" rows="3" placeholder="其他需求或说明"></textarea>
+        </div>
+        <div class="error-msg" id="da-err" style="display:none;color:#f472b6;font-size:13px;margin-bottom:12px"></div>
+        <button type="submit" class="btn-apply" id="da-submit" style="width:100%;justify-content:center">提交需求</button>
+      </form>
+      <div id="da-success" style="display:none;text-align:center;padding:20px 0">
+        <div style="font-size:40px;color:#22d3ee">✓</div>
+        <p style="color:var(--text-secondary);margin-top:8px">需求已提交，我们会尽快联系你。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="wechat-overlay" role="dialog" aria-modal="true">
+  <div class="modal" id="wechat-modal" style="max-width:420px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">合作对接</div>
+        <div class="modal-subtitle">添加 Merlin 微信，对接短剧流量预算</div>
+      </div>
+      <button class="modal-close" id="wx-close" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="wx-box">
+        <div style="font-size:14px;color:var(--text-muted)">我的微信号</div>
+        <div class="wx-id" id="wx-id"></div>
+        <button class="wx-copy" id="wx-copy">复制微信号</button>
+        <div class="wx-hint">添加时备注：短剧流量合作</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2051,8 +2227,119 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     document.getElementById("details-overlay").classList.remove("open");
     document.getElementById("apply-overlay").classList.remove("open");
+    document.getElementById("drama-apply-overlay").classList.remove("open");
+    document.getElementById("wechat-overlay").classList.remove("open");
   }
 });
+
+// ─────────────────────────────────────────────
+//  DRAMA PAGE
+// ─────────────────────────────────────────────
+// TODO(merlin): replace with the real WeChat ID before deploy
+const DRAMA_WECHAT = "wxid_merlin_drama";
+
+const DRAMA_PLATFORMS = [
+  { name: "Flickreels", budget: "CPA $8–$45 / 注册",  tagline: "爆款短剧 · 全球投放" },
+  { name: "Dramabox",   budget: "CPI $1.5–$6 / 安装", tagline: "头部短剧平台 · 预算充足" },
+  { name: "Shortmax",   budget: "CPA $10–$50 / 注册", tagline: "北美爆款 · 高转化" },
+  { name: "moboreels",  budget: "CPA $6–$30 / 注册",  tagline: "多区域覆盖 · 稳定结算" },
+  { name: "Starshort",  budget: "CPI $1.2–$5 / 安装", tagline: "东南亚强势 · 量大" },
+  { name: "Touchshort", budget: "CPA $8–$40 / 注册",  tagline: "欧洲市场 · 优质流量" },
+  { name: "Goodshort",  budget: "CPA $9–$48 / 注册",  tagline: "日韩爆款 · 高单价" },
+  { name: "KalosTV",    budget: "CPI $1.8–$7 / 安装", tagline: "拉美主力 · 预算开放" },
+  { name: "FlareFlow",  budget: "CPA $7–$35 / 注册",  tagline: "中东新兴市场 · 蓝海" },
+  { name: "reelshort",  budget: "CPA $12–$60 / 注册", tagline: "全球头部 · 顶级预算" }
+];
+
+function renderDramaGrid() {
+  const grid = document.getElementById("drama-grid");
+  if (!grid) return;
+  grid.innerHTML = DRAMA_PLATFORMS.map((p, i) => `
+    <div class="drama-card">
+      <div class="drama-card-top">
+        <div class="drama-name">${escHtml(p.name)}</div>
+        <div class="drama-budget">${escHtml(p.budget)}</div>
+      </div>
+      <div class="drama-tagline">${escHtml(p.tagline)}</div>
+      <button class="btn-apply" onclick="openDramaApply(${i})">填写需求</button>
+    </div>`).join("");
+}
+
+function openDramaApply(idx) {
+  const p = DRAMA_PLATFORMS[idx];
+  if (!p) return;
+  window.__currentDrama = p.name;
+  document.getElementById("da-title").textContent = p.name + " · 填写需求";
+  document.getElementById("da-subtitle").textContent = p.budget;
+  document.getElementById("drama-form").style.display = "block";
+  document.getElementById("da-success").style.display = "none";
+  document.getElementById("drama-form").reset();
+  document.getElementById("da-err").style.display = "none";
+  document.getElementById("drama-apply-overlay").classList.add("open");
+}
+
+document.getElementById("da-close").onclick = () =>
+  document.getElementById("drama-apply-overlay").classList.remove("open");
+document.getElementById("drama-apply-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
+});
+
+document.getElementById("drama-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const dramaName = document.getElementById("da-dramaName").value.trim();
+  const language = document.getElementById("da-language").value;
+  const err = document.getElementById("da-err");
+  if (!dramaName || !language) {
+    err.textContent = "请填写剧名和语言";
+    err.style.display = "block";
+    return;
+  }
+  err.style.display = "none";
+  const btn = document.getElementById("da-submit");
+  btn.disabled = true; btn.textContent = "提交中…";
+  try {
+    const res = await fetch("/api/drama-apply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        platform: window.__currentDrama || "",
+        dramaName,
+        language,
+        geo: document.getElementById("da-geo").value.trim(),
+        budgetExpectation: document.getElementById("da-budget").value.trim(),
+        comment: document.getElementById("da-comment").value.trim()
+      })
+    });
+    if (!res.ok) throw new Error("Server error");
+    document.getElementById("drama-form").style.display = "none";
+    document.getElementById("da-success").style.display = "block";
+  } catch (err2) {
+    alert("提交失败，请稍后重试或直接联系我们。");
+  } finally {
+    btn.disabled = false; btn.textContent = "提交需求";
+  }
+});
+
+// WeChat collaboration modal
+function openWechat() {
+  document.getElementById("wx-id").textContent = DRAMA_WECHAT;
+  document.getElementById("wechat-overlay").classList.add("open");
+}
+document.getElementById("wx-close").onclick = () =>
+  document.getElementById("wechat-overlay").classList.remove("open");
+document.getElementById("wechat-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
+});
+document.getElementById("wx-copy").addEventListener("click", () => {
+  navigator.clipboard.writeText(DRAMA_WECHAT).then(() => {
+    const b = document.getElementById("wx-copy");
+    const old = b.textContent;
+    b.textContent = "已复制 ✓";
+    setTimeout(() => { b.textContent = old; }, 1500);
+  }).catch(() => { alert("复制失败，请手动复制：" + DRAMA_WECHAT); });
+});
+
+renderDramaGrid();
 
 // ─────────────────────────────────────────────
 //  HOME MESSAGE FORM
