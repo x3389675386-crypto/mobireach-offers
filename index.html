@@ -1213,14 +1213,7 @@
       box-shadow: var(--shadow-card);
       display: flex; flex-direction: column; gap: 14px;
     }
-    .drama-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .drama-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-    .drama-budget {
-      font-size: 12px; font-weight: 600; color: #fbbf24;
-      background: rgba(251, 191, 36, 0.12);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-      padding: 4px 10px; border-radius: 999px; white-space: nowrap;
-    }
     .drama-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
     .drama-card .btn-apply {
       margin-top: auto; width: 100%; justify-content: center;
@@ -2239,16 +2232,16 @@ document.addEventListener("keydown", e => {
 const DRAMA_WECHAT = "-XU027";
 
 const DRAMA_PLATFORMS = [
-  { name: "Flickreels", budget: "CPA $8–$45 / 注册",  tagline: "爆款短剧 · 全球投放" },
-  { name: "Dramabox",   budget: "CPI $1.5–$6 / 安装", tagline: "头部短剧平台 · 预算充足" },
-  { name: "Shortmax",   budget: "CPA $10–$50 / 注册", tagline: "北美爆款 · 高转化" },
-  { name: "moboreels",  budget: "CPA $6–$30 / 注册",  tagline: "多区域覆盖 · 稳定结算" },
-  { name: "Starshort",  budget: "CPI $1.2–$5 / 安装", tagline: "东南亚强势 · 量大" },
-  { name: "Touchshort", budget: "CPA $8–$40 / 注册",  tagline: "欧洲市场 · 优质流量" },
-  { name: "Goodshort",  budget: "CPA $9–$48 / 注册",  tagline: "日韩爆款 · 高单价" },
-  { name: "KalosTV",    budget: "CPI $1.8–$7 / 安装", tagline: "拉美主力 · 预算开放" },
-  { name: "FlareFlow",  budget: "CPA $7–$35 / 注册",  tagline: "中东新兴市场 · 蓝海" },
-  { name: "reelshort",  budget: "CPA $12–$60 / 注册", tagline: "全球头部 · 顶级预算" }
+  { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣" },
+  { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣" },
+  { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣" },
+  { name: "moboreels",  tagline: "多区域覆盖 · 稳定结算 · CPS 分佣" },
+  { name: "Starshort",  tagline: "东南亚强势 · 量大 · CPS 分佣" },
+  { name: "Touchshort", tagline: "欧洲市场 · 优质流量 · CPS 分佣" },
+  { name: "Goodshort",  tagline: "日韩爆款 · 高单价 · CPS 分佣" },
+  { name: "KalosTV",    tagline: "拉美主力 · CPS 分佣" },
+  { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣" },
+  { name: "reelshort",  tagline: "全球头部 · CPS 分佣" }
 ];
 
 function renderDramaGrid() {
@@ -2256,10 +2249,7 @@ function renderDramaGrid() {
   if (!grid) return;
   grid.innerHTML = DRAMA_PLATFORMS.map((p, i) => `
     <div class="drama-card">
-      <div class="drama-card-top">
-        <div class="drama-name">${escHtml(p.name)}</div>
-        <div class="drama-budget">${escHtml(p.budget)}</div>
-      </div>
+      <div class="drama-name">${escHtml(p.name)}</div>
       <div class="drama-tagline">${escHtml(p.tagline)}</div>
       <button class="btn-apply" onclick="openDramaApply(${i})">填写需求</button>
     </div>`).join("");
@@ -2270,7 +2260,7 @@ function openDramaApply(idx) {
   if (!p) return;
   window.__currentDrama = p.name;
   document.getElementById("da-title").textContent = p.name + " · 填写需求";
-  document.getElementById("da-subtitle").textContent = p.budget;
+  document.getElementById("da-subtitle").textContent = p.tagline;
   document.getElementById("drama-form").style.display = "block";
   document.getElementById("da-success").style.display = "none";
   document.getElementById("drama-form").reset();
