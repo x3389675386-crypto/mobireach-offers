@@ -75,6 +75,28 @@ function seedDramaPlatformsIfNeeded() {
   }
 }
 
+// One-time cleanup: drop dead Google-favicon icon URLs (blocked/slow in CN region)
+// so platforms render instant letter-avatars instead of hanging on external requests.
+function normalizeDramaIconsIfNeeded() {
+  try {
+    if (!fs.existsSync(LOCAL_DRAMA_PLATFORMS)) return;
+    const list = JSON.parse(fs.readFileSync(LOCAL_DRAMA_PLATFORMS, "utf-8"));
+    let changed = false;
+    for (const p of list) {
+      if (p.icon && p.icon.includes("google.com/s2/favicons")) {
+        p.icon = "";
+        changed = true;
+      }
+    }
+    if (changed) {
+      fs.writeFileSync(LOCAL_DRAMA_PLATFORMS, JSON.stringify(list, null, 2), "utf-8");
+      console.log("🧹 Cleared dead Google-favicon icon URLs from drama platforms");
+    }
+  } catch (e) {
+    console.warn("⚠️  Could not normalize drama icons:", e.message);
+  }
+}
+
 let octokit = null;
 let useGitHub = false;
 
@@ -115,6 +137,7 @@ async function ensureDataRepo() {
       console.log("📋 Seeded offers from local seed file");
     }
     seedDramaPlatformsIfNeeded();
+    normalizeDramaIconsIfNeeded();
     if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
       fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
     }
@@ -135,6 +158,7 @@ if (GH_TOKEN && GH_OWNER) {
     fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
   }
   seedDramaPlatformsIfNeeded();
+    normalizeDramaIconsIfNeeded();
   if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
     fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
   }
@@ -316,6 +340,7 @@ async function readDramaPlatforms() {
   }
   try {
     if (!fs.existsSync(LOCAL_DRAMA_PLATFORMS)) seedDramaPlatformsIfNeeded();
+    normalizeDramaIconsIfNeeded();
     const data = JSON.parse(fs.readFileSync(LOCAL_DRAMA_PLATFORMS, "utf-8"));
     dramaPlatformsCache = data; dramaPlatformsCacheTime = Date.now();
     return data;
@@ -2176,6 +2201,7 @@ app.listen(PORT, async () => {
         fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
       }
       seedDramaPlatformsIfNeeded();
+    normalizeDramaIconsIfNeeded();
       if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
         fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
       }

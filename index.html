@@ -11,11 +11,7 @@
   <meta property="og:description" content="Direct mobile offers ready to scale." />
   <meta name="description" content="Browse and apply for direct mobile CPI/CPA offers on iOS and Android. Global GEOs, competitive payouts." />
   <meta property="og:type" content="website" />
-  <!-- #19: Google Fonts with preconnect and fallback CDN -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.loli.net" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- 字体改用系统字体栈（移除外部字体请求，首屏即渲染，不再卡在 Google Fonts） -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -48,7 +44,7 @@
       --radius-card: 14px;
       --radius-btn: 8px;
       --radius-modal: 16px;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Roboto, Helvetica, Arial, sans-serif;
     }
 
     [data-theme="dark"] {
@@ -71,7 +67,7 @@
     [data-theme="dark"] .btn-details { background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.12); color: var(--text-secondary); }
     [data-theme="dark"] .modal { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12); }
     [data-theme="dark"] .modal-close { background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
-    [data-theme="dark"] #cookie-banner { background: rgba(15, 23, 42, 0.9); border-color: rgba(255,255,255,0.12); color: var(--text-primary); backdrop-filter: blur(20px); }
+    [data-theme="dark"] #cookie-banner { background: rgba(15, 23, 42, 0.9); border-color: rgba(255,255,255,0.12); color: var(--text-primary); backdrop-filter: blur(14px); }
     [data-theme="dark"] .cookie-row { background: rgba(2, 6, 23, 0.5); border-color: rgba(255,255,255,0.12); }
     [data-theme="dark"] .btn-cookie-reject { background: rgba(15, 23, 42, 0.6); color: var(--text-secondary); border-color: rgba(255,255,255,0.15); }
     [data-theme="dark"] .btn-cookie-save { background: rgba(15, 23, 42, 0.6); color: var(--text-secondary); border-color: rgba(255,255,255,0.15); }
@@ -86,22 +82,36 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font);
+      /* 深空底色渐变：星云大图未加载时页面也立即有正确背景，避免白屏/闪烁 */
       background:
-        linear-gradient(135deg, rgba(2, 6, 23, 0.82) 0%, rgba(2, 6, 23, 0.68) 50%, rgba(2, 6, 23, 0.82) 100%),
-        url('img/hero-nebula.jpg') center/cover fixed no-repeat;
+        radial-gradient(1200px 600px at 20% 0%, rgba(34,211,238,0.10), transparent 60%),
+        radial-gradient(1000px 500px at 85% 10%, rgba(139,92,246,0.12), transparent 60%),
+        linear-gradient(135deg, #020617 0%, #060b1f 50%, #020617 100%);
       color: var(--text-primary);
       font-size: 14px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
     }
+    /* 星云大图用 fixed 伪元素承载：只合成一次，滚动时不再逐帧重绘（修复 background-attachment:fixed 卡顿） */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: url('img/hero-nebula.jpg') center/cover no-repeat;
+      will-change: transform;
+      transform: translateZ(0);
+    }
 
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--nav-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      /* 提升为独立合成层，减少滚动时毛玻璃逐帧重算 */
+      will-change: transform; transform: translateZ(0);
       padding: 0 24px;
       height: 56px;
       display: flex; align-items: center; justify-content: space-between;
@@ -156,8 +166,8 @@
     /* ── STATS ── */
     .stats-bar {
       background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid rgba(255,255,255,0.08);
       border-bottom: 1px solid rgba(255,255,255,0.08);
       padding: 20px 24px;
@@ -249,8 +259,9 @@
     /* ── OFFER CARD ── */
     .offer-card {
       background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      will-change: transform; transform: translateZ(0);
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: var(--radius-card);
       padding: 20px;
@@ -448,8 +459,8 @@
     /* ── MODAL ── */
     .modal {
       background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: var(--radius-modal);
       width: 100%; max-width: 480px;
@@ -1206,7 +1217,8 @@
     }
     .drama-card {
       background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      will-change: transform; transform: translateZ(0);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: var(--radius-card);
       padding: 22px;
@@ -2244,16 +2256,16 @@ const DRAMA_WECHAT = "-XU027";
 let DRAMA_PLATFORMS = [];
 
 const DRAMA_PLATFORMS_FALLBACK = [
-  { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣", icon: "https://www.google.com/s2/favicons?domain=flickreels.com&sz=128" },
-  { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣",        icon: "https://www.google.com/s2/favicons?domain=dramabox.com&sz=128" },
-  { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=shortmax.com&sz=128" },
-  { name: "moboreels",  tagline: "多区域覆盖 · 稳定结算 · CPS 分佣", icon: "https://www.google.com/s2/favicons?domain=moboreels.com&sz=128" },
-  { name: "Starshort",  tagline: "东南亚强势 · 量大 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=starshort.com&sz=128" },
-  { name: "Touchshort", tagline: "欧洲市场 · 优质流量 · CPS 分佣",  icon: "https://www.google.com/s2/favicons?domain=touchshort.com&sz=128" },
-  { name: "Goodshort",  tagline: "日韩爆款 · 高单价 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=goodshort.com&sz=128" },
-  { name: "KalosTV",    tagline: "拉美主力 · CPS 分佣",            icon: "https://www.google.com/s2/favicons?domain=kalostv.com&sz=128" },
-  { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣",  icon: "https://www.google.com/s2/favicons?domain=flareflow.com&sz=128" },
-  { name: "reelshort",  tagline: "全球头部 · CPS 分佣",            icon: "https://www.google.com/s2/favicons?domain=reelshort.com&sz=128" }
+  { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣", icon: "" },
+  { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣",        icon: "" },
+  { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣",    icon: "" },
+  { name: "moboreels",  tagline: "多区域覆盖 · 稳定结算 · CPS 分佣", icon: "" },
+  { name: "Starshort",  tagline: "东南亚强势 · 量大 · CPS 分佣",    icon: "" },
+  { name: "Touchshort", tagline: "欧洲市场 · 优质流量 · CPS 分佣",  icon: "" },
+  { name: "Goodshort",  tagline: "日韩爆款 · 高单价 · CPS 分佣",    icon: "" },
+  { name: "KalosTV",    tagline: "拉美主力 · CPS 分佣",            icon: "" },
+  { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣",  icon: "" },
+  { name: "reelshort",  tagline: "全球头部 · CPS 分佣",            icon: "" }
 ];
 
 // 从后台拉取平台数据并渲染（图标可在 /admin 里改）
