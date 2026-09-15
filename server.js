@@ -60,6 +60,20 @@ const LOCAL_TOKENS = path.join(DATA_DIR, "tokens.json"); // #2 Token persistence
 const LOCAL_AUDIT = path.join(DATA_DIR, "audit.json"); // #12 Audit log
 const LOCAL_EMAIL_TEMPLATES = path.join(DATA_DIR, "email_templates.json"); // #16 Email templates
 const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
+const LOCAL_DRAMA_PLATFORMS = path.join(DATA_DIR, "drama_platforms.json");
+const DRAMA_PLATFORMS_SEED = path.join(__dirname, "drama-platforms-seed.json");
+
+// Seed drama platforms from the committed seed file on first run
+function seedDramaPlatformsIfNeeded() {
+  try {
+    if (!fs.existsSync(LOCAL_DRAMA_PLATFORMS) && fs.existsSync(DRAMA_PLATFORMS_SEED)) {
+      fs.copyFileSync(DRAMA_PLATFORMS_SEED, LOCAL_DRAMA_PLATFORMS);
+      console.log("📋 Seeded drama platforms from local seed file");
+    }
+  } catch (e) {
+    console.warn("⚠️  Could not seed drama platforms:", e.message);
+  }
+}
 
 let octokit = null;
 let useGitHub = false;
@@ -100,6 +114,7 @@ async function ensureDataRepo() {
       fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
       console.log("📋 Seeded offers from local seed file");
     }
+    seedDramaPlatformsIfNeeded();
     if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
       fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
     }
@@ -119,6 +134,7 @@ if (GH_TOKEN && GH_OWNER) {
   if (!fs.existsSync(LOCAL_OFFERS) && fs.existsSync(OFFERS_SEED)) {
     fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
   }
+  seedDramaPlatformsIfNeeded();
   if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
     fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
   }
@@ -276,6 +292,46 @@ async function writeOffers(data) {
       await ghWrite("offers.json", data);
     } else {
       fs.writeFileSync(LOCAL_OFFERS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
+}
+
+// ── Drama Platforms ──
+let dramaPlatformsCache = null;
+let dramaPlatformsCacheTime = 0;
+async function readDramaPlatforms() {
+  if (dramaPlatformsCache && dramaPlatformsCacheTime && (Date.now() - dramaPlatformsCacheTime < 5 * 60 * 1000)) {
+    return dramaPlatformsCache;
+  }
+  dramaPlatformsCache = null;
+  if (useGitHub) {
+    const data = await ghRead("drama_platforms.json");
+    if (data) { dramaPlatformsCache = data; dramaPlatformsCacheTime = Date.now(); return data; }
+    if (fs.existsSync(DRAMA_PLATFORMS_SEED)) {
+      const seed = JSON.parse(fs.readFileSync(DRAMA_PLATFORMS_SEED, "utf-8"));
+      await ghWrite("drama_platforms.json", seed);
+      dramaPlatformsCache = seed; dramaPlatformsCacheTime = Date.now(); return seed;
+    }
+    return [];
+  }
+  try {
+    if (!fs.existsSync(LOCAL_DRAMA_PLATFORMS)) seedDramaPlatformsIfNeeded();
+    const data = JSON.parse(fs.readFileSync(LOCAL_DRAMA_PLATFORMS, "utf-8"));
+    dramaPlatformsCache = data; dramaPlatformsCacheTime = Date.now();
+    return data;
+  } catch (e) {
+    console.error("❌ readDramaPlatforms failed:", e.message);
+    return [];
+  }
+}
+async function writeDramaPlatforms(data) {
+  dramaPlatformsCache = data;
+  dramaPlatformsCacheTime = Date.now();
+  await withWriteLock("drama_platforms", async () => {
+    if (useGitHub) {
+      await ghWrite("drama_platforms.json", data);
+    } else {
+      fs.writeFileSync(LOCAL_DRAMA_PLATFORMS, JSON.stringify(data, null, 2), "utf-8");
     }
   });
 }
@@ -924,6 +980,56 @@ app.post("/api/drama-apply", async (req, res) => {
   fs.writeFileSync(LOCAL_DRAMA_SUBMISSIONS, JSON.stringify(list, null, 2), "utf-8");
   console.log(`✅ New drama lead: ${platform} / ${dramaName} (${language})`);
   res.json({ success: true, id: rec.id });
+});
+
+// Get All Drama Platforms (public)
+app.get("/api/drama-platforms", async (req, res) => {
+  const list = await readDramaPlatforms();
+  res.json(list);
+});
+
+// Update Drama Platform (admin)
+app.put("/api/drama-platforms/:id", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const list = await readDramaPlatforms();
+  const idx = list.findIndex(p => p.id === parseInt(req.params.id));
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const allowedFields = ["name", "tagline", "icon"];
+  allowedFields.forEach(field => {
+    if (req.body[field] !== undefined) list[idx][field] = req.body[field];
+  });
+  await writeDramaPlatforms(list);
+  writeAudit("update", "drama_platforms", req.params.id, { updatedFields: allowedFields.filter(f => req.body[f] !== undefined) }, req);
+  res.json({ success: true, platform: list[idx] });
+});
+
+// Create Drama Platform (admin)
+app.post("/api/drama-platforms", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const list = await readDramaPlatforms();
+  const maxId = list.reduce((m, p) => Math.max(m, p.id || 0), 0);
+  const newPlatform = {
+    id: maxId + 1,
+    name: req.body.name || "New Platform",
+    tagline: req.body.tagline || "",
+    icon: req.body.icon || ""
+  };
+  list.push(newPlatform);
+  await writeDramaPlatforms(list);
+  writeAudit("create", "drama_platforms", newPlatform.id, { name: newPlatform.name }, req);
+  res.status(201).json({ success: true, platform: newPlatform });
+});
+
+// Delete Drama Platform (admin)
+app.delete("/api/drama-platforms/:id", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const list = await readDramaPlatforms();
+  const before = list.length;
+  const next = list.filter(p => p.id !== parseInt(req.params.id));
+  if (next.length === before) return res.status(404).json({ error: "Not found" });
+  await writeDramaPlatforms(next);
+  writeAudit("delete", "drama_platforms", req.params.id, {}, req);
+  res.json({ success: true });
 });
 
 // Get All Offers (public, with pagination)
@@ -2069,6 +2175,7 @@ app.listen(PORT, async () => {
       if (!fs.existsSync(LOCAL_OFFERS) && fs.existsSync(OFFERS_SEED)) {
         fs.copyFileSync(OFFERS_SEED, LOCAL_OFFERS);
       }
+      seedDramaPlatformsIfNeeded();
       if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
         fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
       }

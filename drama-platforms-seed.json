@@ -1,0 +1,12 @@
+[
+  { "id": 1,  "name": "Flickreels", "tagline": "爆款短剧 · 全球投放 · CPS 分佣", "icon": "https://www.google.com/s2/favicons?domain=flickreels.com&sz=128" },
+  { "id": 2,  "name": "Dramabox",   "tagline": "头部短剧平台 · CPS 分佣",        "icon": "https://www.google.com/s2/favicons?domain=dramabox.com&sz=128" },
+  { "id": 3,  "name": "Shortmax",   "tagline": "北美爆款 · 高转化 · CPS 分佣",    "icon": "https://www.google.com/s2/favicons?domain=shortmax.com&sz=128" },
+  { "id": 4,  "name": "moboreels",  "tagline": "多区域覆盖 · 稳定结算 · CPS 分佣", "icon": "https://www.google.com/s2/favicons?domain=moboreels.com&sz=128" },
+  { "id": 5,  "name": "Starshort",  "tagline": "东南亚强势 · 量大 · CPS 分佣",    "icon": "https://www.google.com/s2/favicons?domain=starshort.com&sz=128" },
+  { "id": 6,  "name": "Touchshort", "tagline": "欧洲市场 · 优质流量 · CPS 分佣",  "icon": "https://www.google.com/s2/favicons?domain=touchshort.com&sz=128" },
+  { "id": 7,  "name": "Goodshort",  "tagline": "日韩爆款 · 高单价 · CPS 分佣",    "icon": "https://www.google.com/s2/favicons?domain=goodshort.com&sz=128" },
+  { "id": 8,  "name": "KalosTV",    "tagline": "拉美主力 · CPS 分佣",            "icon": "https://www.google.com/s2/favicons?domain=kalostv.com&sz=128" },
+  { "id": 9,  "name": "FlareFlow",  "tagline": "中东新兴市场 · 蓝海 · CPS 分佣",  "icon": "https://www.google.com/s2/favicons?domain=flareflow.com&sz=128" },
+  { "id": 10, "name": "reelshort",  "tagline": "全球头部 · CPS 分佣",            "icon": "https://www.google.com/s2/favicons?domain=reelshort.com&sz=128" }
+]

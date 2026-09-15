@@ -2239,11 +2239,11 @@ document.addEventListener("keydown", e => {
 // TODO(merlin): replace with the real WeChat ID before deploy
 const DRAMA_WECHAT = "-XU027";
 
-// 每个平台可填 icon：本地路径（放到项目根目录 drama-icons/ 下，例如 "drama-icons/flickreels.png"）
-// 或任意图片 URL（例如 "https://..."）。留空 "" 则自动显示首字母渐变头像。
-// 当前先用各平台官网 favicon（通过 Google favicon 服务在浏览器端实时加载）作为真实品牌图标；
-// 若某个图标加载失败会自动回退到字母头像。想换成官方高清 logo，把图片放进 drama-icons/ 并改这里即可。
-const DRAMA_PLATFORMS = [
+// 平台数据改由后台管理：图标在 /admin 里按 URL 修改（与 Offers 一致）。
+// 列表从 /api/drama-platforms 拉取；DRAMA_PLATFORMS_FALLBACK 仅作接口不可用时兜底。
+let DRAMA_PLATFORMS = [];
+
+const DRAMA_PLATFORMS_FALLBACK = [
   { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣", icon: "https://www.google.com/s2/favicons?domain=flickreels.com&sz=128" },
   { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣",        icon: "https://www.google.com/s2/favicons?domain=dramabox.com&sz=128" },
   { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=shortmax.com&sz=128" },
@@ -2255,6 +2255,19 @@ const DRAMA_PLATFORMS = [
   { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣",  icon: "https://www.google.com/s2/favicons?domain=flareflow.com&sz=128" },
   { name: "reelshort",  tagline: "全球头部 · CPS 分佣",            icon: "https://www.google.com/s2/favicons?domain=reelshort.com&sz=128" }
 ];
+
+// 从后台拉取平台数据并渲染（图标可在 /admin 里改）
+async function loadDramaPlatforms() {
+  try {
+    const res = await fetch("/api/drama-platforms");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    DRAMA_PLATFORMS = await res.json();
+  } catch (e) {
+    console.warn("⚠️ 加载短剧平台失败，使用兜底数据:", e);
+    DRAMA_PLATFORMS = DRAMA_PLATFORMS_FALLBACK;
+  }
+  renderDramaGrid();
+}
 
 // 图标加载失败时的回退：替换为首字母渐变头像
 function dramaIconFallback(img, grad, letter) {
@@ -2367,7 +2380,7 @@ document.getElementById("wx-copy").addEventListener("click", () => {
   }).catch(() => { alert("复制失败，请手动复制：" + DRAMA_WECHAT); });
 });
 
-renderDramaGrid();
+loadDramaPlatforms();
 
 // ─────────────────────────────────────────────
 //  HOME MESSAGE FORM

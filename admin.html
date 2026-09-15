@@ -705,6 +705,9 @@
       <div class="sidebar-item" data-tab="offers" onclick="switchTab('offers')">
         <span class="sidebar-icon">📋</span> Offers
       </div>
+      <div class="sidebar-item" data-tab="drama-platforms" onclick="switchTab('drama-platforms')">
+        <span class="sidebar-icon">🎬</span> 短剧平台
+      </div>
       <div class="sidebar-item" data-tab="applications" onclick="switchTab('applications')">
         <span class="sidebar-icon">📨</span> Applications
         <span class="notif-badge" id="apps-notif-badge" style="display:none">0</span>
@@ -834,6 +837,33 @@
           <button class="btn-secondary btn-xs" id="offers-next-btn" onclick="offersNextPage()">下一页</button>
         </div>
         <div class="empty" id="offers-empty">${t("noOffers")}</div>
+      </div>
+    </div>
+
+    <!-- ── DRAMA PLATFORMS TAB ── -->
+    <div class="tab-content" id="content-drama-platforms" style="display:none">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2>短剧推广平台</h2>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn-primary" onclick="openDramaPlatformModal()">+ 新建平台</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:64px">图标</th>
+                <th>平台名称</th>
+                <th>标语</th>
+                <th style="width:340px">图标 URL</th>
+                <th style="width:80px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="drama-platforms-tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="drama-platforms-empty" style="display:none">暂无平台，点右上角新建</div>
       </div>
     </div>
 
@@ -1173,6 +1203,37 @@
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeOfferModal()">取消</button>
           <button type="submit" class="btn-save" id="of-save-btn">保存 Offer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── DRAMA PLATFORM MODAL ── -->
+<div class="overlay" id="drama-platform-overlay">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3 id="dp-modal-title">新建短剧平台</h3>
+      <button class="modal-close" onclick="closeDramaPlatformModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="drama-platform-form" onsubmit="return false">
+        <div class="form-group">
+          <label>平台名称</label>
+          <input class="form-input" id="dp-name" placeholder="例如 Flickreels" />
+        </div>
+        <div class="form-group">
+          <label>标语</label>
+          <input class="form-input" id="dp-tagline" placeholder="例如 爆款短剧 · CPS 分佣" />
+        </div>
+        <div class="form-group">
+          <label>图标 URL</label>
+          <input class="form-input" id="dp-icon" placeholder="https://... 留空则显示首字母" />
+          <div class="form-hint">可填任意图片链接（官网 favicon 或品牌 logo 地址），与修改 Offer 图标方式一致</div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeDramaPlatformModal()">取消</button>
+          <button type="submit" class="btn-save" id="dp-save-btn" onclick="saveDramaPlatform()">保存</button>
         </div>
       </form>
     </div>
@@ -2499,10 +2560,12 @@ function switchTab(tab) {
   document.getElementById("content-pub-bills").style.display = tab === "pub-bills" ? "block" : "none";
   document.getElementById("content-audit").style.display = tab === "audit" ? "block" : "none";
   document.getElementById("content-email-templates").style.display = tab === "email-templates" ? "block" : "none";
+  document.getElementById("content-drama-platforms").style.display = tab === "drama-platforms" ? "block" : "none";
   if (tab === "accounts") loadAccounts();
   if (tab === "managed-orders") loadManagedOrders();
   if (tab === "audit") loadAuditLog();
   if (tab === "email-templates") loadEmailTemplates();
+  if (tab === "drama-platforms") loadDramaPlatformsAdmin();
   if (tab === "dashboard") loadDashboard();
   closeSidebar();
 }
@@ -2738,6 +2801,101 @@ async function deleteOffer(id) {
     if (res.ok) { showToast(t("offerDeleted"), "success"); loadOffers(); }
     else { showToast(t("deleteFailed"), "error"); }
   });
+}
+
+// ── Drama Platforms (admin) ──
+let dramaPlatformsAdmin = [];
+
+async function loadDramaPlatformsAdmin() {
+  const tbody = document.getElementById("drama-platforms-tbody");
+  if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="skel-cell">加载中…</td></tr>`;
+  try {
+    const res = await fetch("/api/drama-platforms");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    dramaPlatformsAdmin = await res.json();
+  } catch (e) {
+    console.warn("加载短剧平台失败:", e);
+    dramaPlatformsAdmin = [];
+  }
+  renderDramaPlatformsAdmin();
+}
+
+function renderDramaPlatformsAdmin() {
+  const tbody = document.getElementById("drama-platforms-tbody");
+  const empty = document.getElementById("drama-platforms-empty");
+  if (!tbody) return;
+  if (!dramaPlatformsAdmin.length) {
+    tbody.innerHTML = "";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+  if (empty) empty.style.display = "none";
+  tbody.innerHTML = dramaPlatformsAdmin.map(p => {
+    const preview = p.icon
+      ? `<img src="${esc(p.icon)}" alt="" style="width:40px;height:40px;border-radius:10px;object-fit:cover" onerror="this.style.visibility='hidden'" />`
+      : `<span style="display:inline-flex;width:40px;height:40px;border-radius:10px;background:#6366f1;color:#020617;align-items:center;justify-content:center;font-weight:800">${esc((p.name || "?")[0])}</span>`;
+    return `<tr data-id="${p.id}">
+      <td>${preview}</td>
+      <td><input class="inline-input" type="text" value="${esc(p.name || "")}" onchange="quickUpdateDrama(${p.id},'name',this.value)" /></td>
+      <td><input class="inline-input" type="text" value="${esc(p.tagline || "")}" onchange="quickUpdateDrama(${p.id},'tagline',this.value)" /></td>
+      <td><input class="inline-input" type="text" value="${esc(p.icon || "")}" placeholder="https://..." onchange="quickUpdateDrama(${p.id},'icon',this.value)" /></td>
+      <td><button class="btn-danger btn-sm" onclick="deleteDramaPlatform(${p.id})" title="删除">×</button></td>
+    </tr>`;
+  }).join("");
+}
+
+async function quickUpdateDrama(id, field, value) {
+  const res = await fetch(`/api/drama-platforms/${id}`, {
+    method: "PUT", headers: authHeaders(),
+    body: JSON.stringify({ [field]: value })
+  });
+  if (res.ok) {
+    const idx = dramaPlatformsAdmin.findIndex(p => p.id === id);
+    if (idx !== -1) dramaPlatformsAdmin[idx][field] = value;
+    showToast("已保存", "success");
+    renderDramaPlatformsAdmin();
+  } else {
+    showToast("保存失败", "error");
+  }
+}
+
+function openDramaPlatformModal() {
+  document.getElementById("dp-modal-title").textContent = "新建短剧平台";
+  document.getElementById("dp-name").value = "";
+  document.getElementById("dp-tagline").value = "";
+  document.getElementById("dp-icon").value = "";
+  document.getElementById("drama-platform-overlay").classList.add("open");
+}
+function closeDramaPlatformModal() {
+  document.getElementById("drama-platform-overlay").classList.remove("open");
+}
+
+async function saveDramaPlatform() {
+  const name = document.getElementById("dp-name").value.trim();
+  if (!name) { showToast("请填写平台名称", "error"); return; }
+  const body = {
+    name,
+    tagline: document.getElementById("dp-tagline").value.trim(),
+    icon: document.getElementById("dp-icon").value.trim()
+  };
+  const res = await fetch("/api/drama-platforms", {
+    method: "POST", headers: authHeaders(),
+    body: JSON.stringify(body)
+  });
+  if (res.ok) {
+    closeDramaPlatformModal();
+    showToast("已创建", "success");
+    loadDramaPlatformsAdmin();
+  } else {
+    showToast("创建失败", "error");
+  }
+}
+
+async function deleteDramaPlatform(id) {
+  if (!await customConfirm("确定删除该平台？")) return;
+  const res = await fetch(`/api/drama-platforms/${id}`, { method: "DELETE", headers: authHeaders() });
+  if (res.ok) { showToast("已删除", "success"); loadDramaPlatformsAdmin(); }
+  else { showToast("删除失败", "error"); }
 }
 
 // ── Offers: Sort ──
