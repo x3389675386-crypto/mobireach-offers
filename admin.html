@@ -2831,9 +2831,10 @@ function renderDramaPlatformsAdmin() {
   }
   if (empty) empty.style.display = "none";
   tbody.innerHTML = dramaPlatformsAdmin.map(p => {
+    const letter = esc((p.name || "?")[0]);
     const preview = p.icon
-      ? `<img src="${esc(p.icon)}" alt="" style="width:40px;height:40px;border-radius:10px;object-fit:cover" onerror="this.style.visibility='hidden'" />`
-      : `<span style="display:inline-flex;width:40px;height:40px;border-radius:10px;background:#6366f1;color:#020617;align-items:center;justify-content:center;font-weight:800">${esc((p.name || "?")[0])}</span>`;
+      ? `<img src="${esc(p.icon)}" alt="" style="width:40px;height:40px;border-radius:10px;object-fit:cover" onerror="this.outerHTML='<span style=\\'display:inline-flex;width:40px;height:40px;border-radius:10px;background:#6366f1;color:#020617;align-items:center;justify-content:center;font-weight:800\\'>${letter}</span>'" />`
+      : `<span style="display:inline-flex;width:40px;height:40px;border-radius:10px;background:#6366f1;color:#020617;align-items:center;justify-content:center;font-weight:800">${letter}</span>`;
     return `<tr data-id="${p.id}">
       <td>${preview}</td>
       <td><input class="inline-input" type="text" value="${esc(p.name || "")}" onchange="quickUpdateDrama(${p.id},'name',this.value)" /></td>
