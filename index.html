@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en" data-theme="dark" data-page-node-id="t516KtGtyb1ACxNmJTZ8Qi">
+<head data-page-node-id="80eTpTFk09K1prdOxk1ROG">
+  <meta charset="UTF-8" data-page-node-id="bmmtaF5H4X2FIS1yNpSkIZ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="8qFDp5GeVe7lgdOBtifLY7" />
   <title>Mobireach · Direct Offers</title>
   <!-- #18: SVG inline favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%23d4af37'/></linearGradient></defs><rect rx='22' width='100' height='100' fill='%23070b16'/><path d='M26 72 L50 28 L74 72' fill='none' stroke='url(%23g)' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><circle cx='50' cy='28' r='7' fill='%23f5d98b'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' data-page-node-id="KBtVMIDO8rWvpVcVKDnlps"><defs data-page-node-id="77v4SGBD8gjTYmm1s2VEns"><linearGradient id='g' x1='0' y1='0' x2='1' y2='1' data-page-node-id="42fCnqS4DgvSh4fl2Dy64t"><stop offset='0' stop-color='%232563eb' data-page-node-id="ObUul37EDCNKLMVQzA7o2x"/><stop offset='1' stop-color='%23d4af37' data-page-node-id="TEmnafONv3CGXiecKXFJTp"/></linearGradient></defs><rect rx='22' width='100' height='100' fill='%23070b16' data-page-node-id="eVnwWTmJIqDlfOL4RHLvyP"/><path d='M26 72 L50 28 L74 72' fill='none' stroke='url(%23g)' stroke-width='9' stroke-linecap='round' stroke-linejoin='round' data-page-node-id="d5fbRUXIwFbNSfzBSgjF9M"/><circle cx='50' cy='28' r='7' fill='%23f5d98b' data-page-node-id="aMOjmpDdVvnWvxPHgCs4qf"/></svg>" />
   <!-- #23: OG tags -->
-  <meta property="og:title" content="Mobireach · Direct Offers" />
-  <meta property="og:description" content="Direct mobile offers ready to scale." />
-  <meta name="description" content="Browse and apply for direct mobile CPI/CPA offers on iOS and Android. Global GEOs, competitive payouts." />
-  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Mobireach · Direct Offers" data-page-node-id="W4hYwr4zYL49ECVu3rK90S" />
+  <meta property="og:description" content="Direct mobile offers ready to scale." data-page-node-id="f3QrHnAo4imnqkOqzyrXGK" />
+  <meta name="description" content="Browse and apply for direct mobile CPI/CPA offers on iOS and Android. Global GEOs, competitive payouts." data-page-node-id="BtnrIS5fQRSDpanROFOyfE" />
+  <meta property="og:type" content="website" data-page-node-id="fIWT6ZbpsAB9ZmwiKcGVhK" />
   <!-- 字体改用系统字体栈（移除外部字体请求，首屏即渲染，不再卡在 Google Fonts） -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -782,7 +782,10 @@
     .hero-home::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(2,6,23,0.35) 0%, transparent 45%, rgba(2,6,23,0.85) 100%);
+      /* 顶部轻微压暗保证导航可读性；底部必须淡出到 0——
+         背景星云是 body::before fixed 全屏连续的，
+         若 hero 底边仍带 0.85 暗色会与下方未压暗区域形成一条硬缝（黑边） */
+      background: linear-gradient(180deg, rgba(2,6,23,0.35) 0%, transparent 40%, transparent 100%);
       pointer-events: none;
     }
     @keyframes heroGlowPulse {
@@ -1329,7 +1332,7 @@
     .drama-card-link:hover { background: var(--accent); color: #fff; }
 </style>
 </head>
-<body>
+<body data-page-node-id="L7DOTqTM6DBCAUu16eie1B">
 
 <!-- ── I18N FRAMEWORK ── -->
 <script>
@@ -1654,160 +1657,160 @@ applyLang(currentLang);
 </script>
 
 <!-- ── NAV ── -->
-<nav>
-  <div class="nav-left">
-    <a class="nav-brand" onclick="showPage('home')">Mobireach</a>
-    <div class="nav-links">
-      <a href="#" class="active" data-page="home" data-i18n="nav.home" onclick="showPage('home');return false;">Home</a>
-      <a href="#" data-page="offers" data-i18n="nav.offers" onclick="showPage('offers');return false;">Offers</a>
-      <a href="#" data-page="drama" data-i18n="nav.drama" onclick="showPage('drama');return false;">Drama</a>
-      <a href="#" data-page="about" data-i18n="nav.about" onclick="showPage('about');return false;">About</a>
+<nav data-page-node-id="spfbFyN0D1JouvWvWN1Yqh">
+  <div class="nav-left" data-page-node-id="EINlk8LFCV7PlDFKRlLSVU">
+    <a class="nav-brand" onclick="showPage('home')" data-page-node-id="NutKucWiB3Bi2OdCXtI1sc">Mobireach</a>
+    <div class="nav-links" data-page-node-id="DXF1kqEVtOXGs1Jt1enPF0">
+      <a href="#" class="active" data-page="home" data-i18n="nav.home" onclick="showPage('home');return false;" data-page-node-id="l3n94aaAAmEAYOAP2qr3qj">Home</a>
+      <a href="#" data-page="offers" data-i18n="nav.offers" onclick="showPage('offers');return false;" data-page-node-id="A3eyFSw5he9eKAvHZPchcI">Offers</a>
+      <a href="#" data-page="drama" data-i18n="nav.drama" onclick="showPage('drama');return false;" data-page-node-id="CiRXQE15xR3p0QCLwv8kTB">Drama</a>
+      <a href="#" data-page="about" data-i18n="nav.about" onclick="showPage('about');return false;" data-page-node-id="83V165zuzR5L3hjh8w2Xav">About</a>
     </div>
   </div>
-  <span class="nav-tag" data-i18n="nav.tag">Direct Offers · Mobile Advertising</span>
-  <div class="lang-toggle" id="lang-toggle">
-    <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中文</button>
+  <span class="nav-tag" data-i18n="nav.tag" data-page-node-id="P9tIGfccQbXstBmIVSG6zL">Direct Offers · Mobile Advertising</span>
+  <div class="lang-toggle" id="lang-toggle" data-page-node-id="0KoBmhTBOemiyKpJFeTN0B">
+    <button class="lang-btn active" data-lang="en" onclick="setLang('en')" data-page-node-id="R3pdY0w9LmaAfpAb7QrNZo">EN</button>
+    <button class="lang-btn" data-lang="zh" onclick="setLang('zh')" data-page-node-id="RpFMJzru2OdV6iNGonByEE">中文</button>
   </div>
 </nav>
 
 <!-- ── HOME PAGE ── -->
-<div class="page active" id="page-home">
+<div class="page active" id="page-home" data-page-node-id="sVCydMSOsxqGTmKXWChkrp">
 
   <!-- Hero -->
-  <section class="hero-home">
-    <div class="hero-home-tag" data-i18n="home.tag">MOBILE ADVERTISING · CPI / CPA</div>
-    <div class="hero-home-title-wrap">
-      <h1 class="hero-home-title">
-        <span class="letter" style="--i:0">M</span><span class="letter" style="--i:1">e</span><span class="letter" style="--i:2">r</span><span class="letter" style="--i:3">l</span><span class="letter" style="--i:4">i</span><span class="letter" style="--i:5">n</span><span class="shine" aria-hidden="true">Merlin</span>
+  <section class="hero-home" data-page-node-id="pYnXnWEw3FURdQBhApMRIm">
+    <div class="hero-home-tag" data-i18n="home.tag" data-page-node-id="LoIVDJbSRFTEfUzzm5baC9">MOBILE ADVERTISING · CPI / CPA</div>
+    <div class="hero-home-title-wrap" data-page-node-id="IkwFGq4xoPoTrV3Qa68KA3">
+      <h1 class="hero-home-title" data-page-node-id="nmAcEP1PK8H2UOeC7JC6Sm">
+        <span class="letter" style="--i:0" data-page-node-id="SllQ9TXVrEySZ7oGhVIufk">M</span><span class="letter" style="--i:1" data-page-node-id="vjYBjNJrC5BQmh0aM0J4rs">e</span><span class="letter" style="--i:2" data-page-node-id="62uuEEPDMdsj76339VOGdF">r</span><span class="letter" style="--i:3" data-page-node-id="gGNc5NzFOSnZSZtwHfT9F3">l</span><span class="letter" style="--i:4" data-page-node-id="cTNrW8AY5x22MCdSIqh7Z3">i</span><span class="letter" style="--i:5" data-page-node-id="DA5XMMoIIPZ5TKZEwJX6bb">n</span><span class="shine" aria-hidden="true" data-page-node-id="ZXYbOkGdoLHtKMmnsYUbQ5">Merlin</span>
       </h1>
     </div>
-    <p class="hero-home-subtitle" data-i18n="home.subtitle">Account Manager @ Mobireach</p>
-    <p class="hero-home-desc" data-i18n="home.desc">Helping advertisers and affiliates grow through CPI / CPA mobile campaigns. If you have offers or traffic, let's talk.</p>
-    <a href="mailto:merlin@mobirich.online" class="hero-home-cta">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
-      <span data-i18n="home.contact">Contact Us</span>
+    <p class="hero-home-subtitle" data-i18n="home.subtitle" data-page-node-id="JlCMl7BxQrEvws0lnetQ9d">Account Manager @ Mobireach</p>
+    <p class="hero-home-desc" data-i18n="home.desc" data-page-node-id="H3GWtPnXt7MhIw4La0Gu7S">Helping advertisers and affiliates grow through CPI / CPA mobile campaigns. If you have offers or traffic, let's talk.</p>
+    <a href="mailto:merlin@mobirich.online" class="hero-home-cta" data-page-node-id="ukyM9vmkmQWrhwZEJYFmEr">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="PeTJtx2OPMTJYBlwf68PBw"><rect x="2" y="4" width="20" height="16" rx="2" data-page-node-id="lKqO12ZPaw9zaAfHmWJZma"/><path d="M22 4L12 13 2 4" data-page-node-id="80BE55oh07qpCvaoLB9pek"/></svg>
+      <span data-i18n="home.contact" data-page-node-id="9tJ5BX5aheRSBkdqwTeHlT">Contact Us</span>
     </a>
   </section>
 
   <!-- Quick Message -->
-  <section class="message-home">
-    <div class="message-home-inner">
-      <h2 data-i18n="msg.title">Leave a Message</h2>
-      <p class="message-home-subtitle" data-i18n="msg.subtitle">Tell me about your offers or traffic needs. I'll get back to you within one business day.</p>
-      <form class="message-form" id="home-message-form" onsubmit="sendHomeMessage(event)">
-        <div class="message-form-row">
-          <div>
-            <label for="hm-name" data-i18n="msg.name">Name</label>
-            <input type="text" id="hm-name" data-i18n-ph="msg.name_ph" placeholder="Your name" required />
+  <section class="message-home" data-page-node-id="VvueWd8G9xq8m4NX7SQWlJ">
+    <div class="message-home-inner" data-page-node-id="EUjrR24EDKHGVPos70JvU3">
+      <h2 data-i18n="msg.title" data-page-node-id="MA572jTBe2caafVWWCDbF6">Leave a Message</h2>
+      <p class="message-home-subtitle" data-i18n="msg.subtitle" data-page-node-id="uB45Kw0dN70BAjXkuoja7j">Tell me about your offers or traffic needs. I'll get back to you within one business day.</p>
+      <form class="message-form" id="home-message-form" onsubmit="sendHomeMessage(event)" data-page-node-id="sBsElVYr7iIA3gDLCB2dgb">
+        <div class="message-form-row" data-page-node-id="oEVUQ778s9T1uO6u1AWF3I">
+          <div data-page-node-id="qKyWkSwoTGIiPz2aPfUL7q">
+            <label for="hm-name" data-i18n="msg.name" data-page-node-id="g63n3BXRV2BSzJvZ8y5dQl">Name</label>
+            <input type="text" id="hm-name" data-i18n-ph="msg.name_ph" placeholder="Your name" required data-page-node-id="cje2Lb2z0QUFE46OPqMBV1" />
           </div>
-          <div>
-            <label for="hm-email" data-i18n="msg.email">Email</label>
-            <input type="email" id="hm-email" data-i18n-ph="msg.email_ph" placeholder="you@company.com" required />
+          <div data-page-node-id="IAJKkXQExDaEqymfkcJM5K">
+            <label for="hm-email" data-i18n="msg.email" data-page-node-id="PHuDm8fMAXcJCsD4uVMvGH">Email</label>
+            <input type="email" id="hm-email" data-i18n-ph="msg.email_ph" placeholder="you@company.com" required data-page-node-id="4ebt6YdZz4FopPgvYipZfz" />
           </div>
         </div>
-        <div>
-          <label for="hm-subject" data-i18n="msg.subject">Subject</label>
-          <input type="text" id="hm-subject" data-i18n-ph="msg.subject_ph" placeholder="Offer inquiry / Traffic request / Partnership" required />
+        <div data-page-node-id="H6baBUeJvMEvmkc0unt5LR">
+          <label for="hm-subject" data-i18n="msg.subject" data-page-node-id="8wx4YUsfFm2i8b6tsf1SMY">Subject</label>
+          <input type="text" id="hm-subject" data-i18n-ph="msg.subject_ph" placeholder="Offer inquiry / Traffic request / Partnership" required data-page-node-id="lXN1O5BjsTecttw6usUdET" />
         </div>
-        <div>
-          <label for="hm-body" data-i18n="msg.message">Message</label>
+        <div data-page-node-id="1FVvl4VAZganWuuCNu83Sy">
+          <label for="hm-body" data-i18n="msg.message" data-page-node-id="vhkJxAMlpKfyrlerIkvV4O">Message</label>
           <textarea id="hm-body" data-i18n-ph="msg.body_ph" placeholder="Hi Merlin, I have..." required></textarea>
         </div>
-        <button type="submit" data-i18n="msg.send">Send Message</button>
-        <p class="message-form-note" data-i18n-html="msg.note">This will open your email client. You can also reach me directly at <a href="mailto:merlin@mobirich.online" style="color:var(--accent)">merlin@mobirich.online</a>.</p>
+        <button type="submit" data-i18n="msg.send" data-page-node-id="hqazg0wotMV2TD0nbTWAoI">Send Message</button>
+        <p class="message-form-note" data-i18n-html="msg.note" data-page-node-id="3lSdQgsMp74DrRCKb9OEM4">This will open your email client. You can also reach me directly at <a href="mailto:merlin@mobirich.online" style="color:var(--accent)" data-page-node-id="Qz2XDQaX4QV7kmnKerYrr1">merlin@mobirich.online</a>.</p>
       </form>
     </div>
   </section>
 
 
   <!-- What I Do -->
-  <section class="section-home">
-    <div class="section-home-inner">
-      <h2 class="section-home-title" data-i18n="whatido.title">What I Do</h2>
-      <p class="section-home-subtitle" data-i18n="whatido.subtitle">Driving performance and partnerships across the mobile advertising ecosystem</p>
-      <div class="cards-home-grid">
-        <div class="card-home">
-          <div class="card-home-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+  <section class="section-home" data-page-node-id="Px9FMedodvnX9kNP3FKMKq">
+    <div class="section-home-inner" data-page-node-id="rkvOoGL6OH3WOx4tHUQ7e5">
+      <h2 class="section-home-title" data-i18n="whatido.title" data-page-node-id="11sHpRM7NN2bZpX0PCVF8A">What I Do</h2>
+      <p class="section-home-subtitle" data-i18n="whatido.subtitle" data-page-node-id="NgLue4vCzoz3yvlNkE7fX9">Driving performance and partnerships across the mobile advertising ecosystem</p>
+      <div class="cards-home-grid" data-page-node-id="RAxG0CJSggIwSiw2kiRnxR">
+        <div class="card-home" data-page-node-id="hyDiRdAfn7CnrMS2Jwgo7n">
+          <div class="card-home-icon" data-page-node-id="Rt1RmCLR1rCKEmtVonC2X4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="5mmqUeOC9zyJRS3PADUZHr"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" data-page-node-id="TvTA6Sh7yVWGvCs5lSOlqT"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" data-page-node-id="gLIBGJGNXEuQ5oB5FOT8qx"/><line x1="12" y1="22.08" x2="12" y2="12" data-page-node-id="7nA1QzcjG31TODrKgKSr96"/></svg>
           </div>
-          <h3 class="card-home-title" data-i18n="card1.title">Affiliate Analytics &amp; Optimization</h3>
-          <p class="card-home-desc" data-i18n="card1.desc">Deep campaign analytics and continuous optimization to maximize ROI across all traffic sources and GEOs.</p>
+          <h3 class="card-home-title" data-i18n="card1.title" data-page-node-id="B2EFfjNw5xtgUR8MHTvPaJ">Affiliate Analytics &amp; Optimization</h3>
+          <p class="card-home-desc" data-i18n="card1.desc" data-page-node-id="xHoSgf24URKlDVWCySBO6X">Deep campaign analytics and continuous optimization to maximize ROI across all traffic sources and GEOs.</p>
         </div>
-        <div class="card-home">
-          <div class="card-home-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <div class="card-home" data-page-node-id="wlxyqIgAtQEdFoaQyceHFR">
+          <div class="card-home-icon" data-page-node-id="GrjH4EC9ieOrs3Sc1rxI0o">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="QnQmj795mn4OFK0HcV1eq9"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" data-page-node-id="Go1oPFeXBnlnhBIMPCks8q"/><polyline points="17 6 23 6 23 12" data-page-node-id="JCPdmsnwpm3037SJHoxE2t"/></svg>
           </div>
-          <h3 class="card-home-title" data-i18n="card2.title">Performance-Driven Growth</h3>
-          <p class="card-home-desc" data-i18n="card2.desc">Scaling campaigns with data-backed strategies, ensuring every dollar delivers measurable results and sustainable growth.</p>
+          <h3 class="card-home-title" data-i18n="card2.title" data-page-node-id="SbfiEDNVFpqOLcoeX0EzQE">Performance-Driven Growth</h3>
+          <p class="card-home-desc" data-i18n="card2.desc" data-page-node-id="b27xX1QQtAUXSVwSeGLGNS">Scaling campaigns with data-backed strategies, ensuring every dollar delivers measurable results and sustainable growth.</p>
         </div>
-        <div class="card-home">
-          <div class="card-home-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <div class="card-home" data-page-node-id="qr6YhLeBkSqGSw1FhK76M9">
+          <div class="card-home-icon" data-page-node-id="BvAqvAPtgADpAcORealQDh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="fxD6zB6NGL4SuJHBpriUAw"><circle cx="12" cy="12" r="10" data-page-node-id="WhQ46M0HK2iIHxAh2wcDkH"/><line x1="2" y1="12" x2="22" y2="12" data-page-node-id="4cXgD4zQTjnocHbKyQmKZg"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" data-page-node-id="Law56d6Cxv31ml3GfklFTo"/></svg>
           </div>
-          <h3 class="card-home-title" data-i18n="card3.title">Global Traffic Access</h3>
-          <p class="card-home-desc" data-i18n="card3.desc">Direct access to DSP and developer traffic across key markets including US, BR, MX, IN, ID and RU.</p>
+          <h3 class="card-home-title" data-i18n="card3.title" data-page-node-id="BFMC8VCQ6WJZLXj1VlR9rh">Global Traffic Access</h3>
+          <p class="card-home-desc" data-i18n="card3.desc" data-page-node-id="y2JHSiwQoGBrhSfwPVLxhU">Direct access to DSP and developer traffic across key markets including US, BR, MX, IN, ID and RU.</p>
         </div>
-        <div class="card-home">
-          <div class="card-home-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="20" y1="14" x2="20" y2="20"/><line x1="20" y1="14" x2="16" y2="14"/></svg>
+        <div class="card-home" data-page-node-id="MdBVc2bMIgpGbCdO54NPuG">
+          <div class="card-home-icon" data-page-node-id="mdghiFUPFH3u8TNc0a3NoE">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="gPCDpEAYCCZQTqAAsUe7Hm"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" data-page-node-id="BRYW4NBlEJq7gfxWBuojxM"/><circle cx="8.5" cy="7" r="4" data-page-node-id="8ii3P28w1CzCvPp14CYxlh"/><line x1="20" y1="8" x2="20" y2="14" data-page-node-id="kiOhUEeatMvInRunPwi79M"/><line x1="20" y1="14" x2="20" y2="20" data-page-node-id="xIksgGW4txsb3N946rxOd5"/><line x1="20" y1="14" x2="16" y2="14" data-page-node-id="s4IhaRGCPHQT2HPXdif46m"/></svg>
           </div>
-          <h3 class="card-home-title" data-i18n="card4.title">Premium Advertiser Partnerships</h3>
-          <p class="card-home-desc" data-i18n="card4.desc">Curated relationships with top-tier advertisers, ensuring exclusive offers and competitive payouts for partners.</p>
+          <h3 class="card-home-title" data-i18n="card4.title" data-page-node-id="WXGCLWgmRXGgdccDBYGa4S">Premium Advertiser Partnerships</h3>
+          <p class="card-home-desc" data-i18n="card4.desc" data-page-node-id="m5eGgZdr7EIaQiQ6E1RMAJ">Curated relationships with top-tier advertisers, ensuring exclusive offers and competitive payouts for partners.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Short Drama Intro -->
-  <section class="drama-intro">
-    <div class="drama-intro-inner">
-      <span class="drama-intro-badge" data-i18n="drama.introBadge">SHORT DRAMA</span>
-      <h2 data-i18n="drama.introTitle">Short Drama, Global Reach</h2>
-      <p class="drama-intro-desc" data-i18n="drama.introDesc">Merlin partners with the world's top short-drama platforms (Flickreels / Dramabox / Shortmax and more), offering creators and buyers a full pipeline from selection and creative to distribution. Whether you want traffic or want to monetize, you'll find the right partner here.</p>
-      <div class="drama-intro-points">
-        <div class="drama-intro-point"><span class="dot"></span><span><strong data-i18n="drama.introPoint1">Top-tier platform access</strong></span></div>
-        <div class="drama-intro-point"><span class="dot"></span><span><strong data-i18n="drama.introPoint2">CPS commission · reliable payout</strong></span></div>
-        <div class="drama-intro-point"><span class="dot"></span><span><strong data-i18n="drama.introPoint3">Full pipeline: from picking to distribution</strong></span></div>
+  <section class="drama-intro" data-page-node-id="hVRW48ZVcQ4rnQIBFBJryu">
+    <div class="drama-intro-inner" data-page-node-id="DmAUFbD9A9SIqcDWEKFX2y">
+      <span class="drama-intro-badge" data-i18n="drama.introBadge" data-page-node-id="3PabgcEbMjGu9NlOVpSHAZ">SHORT DRAMA</span>
+      <h2 data-i18n="drama.introTitle" data-page-node-id="lQ2FSBmAniBUFoFHNzxThG">Short Drama, Global Reach</h2>
+      <p class="drama-intro-desc" data-i18n="drama.introDesc" data-page-node-id="aAa62E5elVBSLFl76RghaU">Merlin partners with the world's top short-drama platforms (Flickreels / Dramabox / Shortmax and more), offering creators and buyers a full pipeline from selection and creative to distribution. Whether you want traffic or want to monetize, you'll find the right partner here.</p>
+      <div class="drama-intro-points" data-page-node-id="rlDfhFwGHWlUw3giUfcw20">
+        <div class="drama-intro-point" data-page-node-id="uipGtmcOonXGl58UtJuwSG"><span class="dot" data-page-node-id="d16lpMypfbaw4yQV5kF6wz"></span><span data-page-node-id="QPgDiizgs9jVP2Fb3WQlu6"><strong data-i18n="drama.introPoint1" data-page-node-id="2dW49f2hycaUSrIApslc5q">Top-tier platform access</strong></span></div>
+        <div class="drama-intro-point" data-page-node-id="ap9oGt9kcUEbzKTwqUOkza"><span class="dot" data-page-node-id="YFj9K2D4Fg9ERAO9iTf38X"></span><span data-page-node-id="kBzRAZqdk8cIgHIrX8oUmm"><strong data-i18n="drama.introPoint2" data-page-node-id="VzR6VqUqj1TpwapW69dKtn">CPS commission · reliable payout</strong></span></div>
+        <div class="drama-intro-point" data-page-node-id="RkVnJc0R71kC0XTxEvyW8g"><span class="dot" data-page-node-id="57ODRH6IZfFAEZvFZdnKOk"></span><span data-page-node-id="Y9lkKOPQAgqmFMH7aQZJ0O"><strong data-i18n="drama.introPoint3" data-page-node-id="KWQ7yepgoTt3jQGRUG12wS">Full pipeline: from picking to distribution</strong></span></div>
       </div>
-      <a class="drama-intro-btn" onclick="showPage('drama')" data-i18n="drama.introBtn">View partner platforms →</a>
+      <a class="drama-intro-btn" onclick="showPage('drama')" data-i18n="drama.introBtn" data-page-node-id="JVCvFxlAFyN4jaKnufDMnV">View partner platforms →</a>
     </div>
   </section>
 
   <!-- About Merlin -->
-  <section class="about-merlin">
-    <div class="about-merlin-inner">
-      <div class="about-merlin-left">
-        <h2 data-i18n="about.title">About Merlin</h2>
-        <p data-i18n="about.p1">Hi, I'm Merlin — an Account Manager at Mobireach. I help advertisers find the right traffic, and help publishers find offers that actually convert.</p>
-        <p style="margin-top:16px" data-i18n="about.p2">My job is mostly listening: tell me what you're running, where you're stuck, and what your KPI looks like. Then I'll do my best to match you with something that makes sense.</p>
-        <p style="margin-top:16px" data-i18n="about.p3">No big claims — just clear communication, fast replies, and a team behind me that knows how to keep campaigns running.</p>
+  <section class="about-merlin" data-page-node-id="Qk2hjTeyigB4qXIgDemgAl">
+    <div class="about-merlin-inner" data-page-node-id="hPX8YEe56jgnKlxWf3QaZf">
+      <div class="about-merlin-left" data-page-node-id="Rup13FAK69Xq7tqtT5Ge6k">
+        <h2 data-i18n="about.title" data-page-node-id="rrH3Cv2RNBVRHqYvDajIXL">About Merlin</h2>
+        <p data-i18n="about.p1" data-page-node-id="YAxVFC8CqDZuH7OnDTAHQy">Hi, I'm Merlin — an Account Manager at Mobireach. I help advertisers find the right traffic, and help publishers find offers that actually convert.</p>
+        <p style="margin-top:16px" data-i18n="about.p2" data-page-node-id="xsEghw3UN8qSdRWUcCqIHb">My job is mostly listening: tell me what you're running, where you're stuck, and what your KPI looks like. Then I'll do my best to match you with something that makes sense.</p>
+        <p style="margin-top:16px" data-i18n="about.p3" data-page-node-id="6yXCA9wC8Ej14BovgkaawT">No big claims — just clear communication, fast replies, and a team behind me that knows how to keep campaigns running.</p>
       </div>
-      <div class="about-merlin-right">
-        <div class="about-merlin-card">
-          <h3 data-i18n="about.infoTitle">Quick Info</h3>
-          <div class="about-merlin-info">
-            <div class="about-merlin-info-row"><strong>Role</strong> Account Manager</div>
-            <div class="about-merlin-info-row"><strong>Company</strong> Mobireach</div>
-            <div class="about-merlin-info-row"><strong>Focus</strong> CPI / CPA / Affiliate</div>
-            <div class="about-merlin-info-row"><strong>Traffic</strong> DSP + Developer</div>
-            <div class="about-merlin-info-row"><strong>Markets</strong> US, BR, MX, IN, ID, RU</div>
+      <div class="about-merlin-right" data-page-node-id="8JIJxeyhDsqwLUJ9thPbcs">
+        <div class="about-merlin-card" data-page-node-id="VWgzAAHfxhuDYHGMZyXnTT">
+          <h3 data-i18n="about.infoTitle" data-page-node-id="Ir3zYHCPBpSPQNYW3RCUBt">Quick Info</h3>
+          <div class="about-merlin-info" data-page-node-id="ftR69cW5UcA8U1U6D9srT1">
+            <div class="about-merlin-info-row" data-page-node-id="qb47M3YOYPKcYgE0zM6Fmu"><strong data-page-node-id="pcH0oVwoiVaCDN2unwd9hp">Role</strong> Account Manager</div>
+            <div class="about-merlin-info-row" data-page-node-id="YC0RG7ViUP5nSWbFElrooT"><strong data-page-node-id="VgJwHH5a8rGbosfe21Ovpj">Company</strong> Mobireach</div>
+            <div class="about-merlin-info-row" data-page-node-id="aHTtTyutQtL52ZBFqVVHOX"><strong data-page-node-id="O0MwJPALcYAbSSBUJstaQM">Focus</strong> CPI / CPA / Affiliate</div>
+            <div class="about-merlin-info-row" data-page-node-id="jngsAK1H3wwPq0TNRMLLoa"><strong data-page-node-id="OjSX4eGxu7whUYerAe1UO8">Traffic</strong> DSP + Developer</div>
+            <div class="about-merlin-info-row" data-page-node-id="OpUBIHbp0kXMcgyMVXRlTx"><strong data-page-node-id="v98DREpTgNaZFSMnjycFmJ">Markets</strong> US, BR, MX, IN, ID, RU</div>
           </div>
         </div>
-        <div class="about-merlin-card">
-          <h3 data-i18n="about.connectTitle">Connect</h3>
-          <div class="about-merlin-links">
-            <a href="mailto:merlin@mobirich.online" class="about-merlin-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+        <div class="about-merlin-card" data-page-node-id="aOoWPvBnf5ybnsUMJ11yYg">
+          <h3 data-i18n="about.connectTitle" data-page-node-id="EuEh49AYvOTx5HS7VVglA0">Connect</h3>
+          <div class="about-merlin-links" data-page-node-id="1ChRIFtKWVkWIGezyVchxp">
+            <a href="mailto:merlin@mobirich.online" class="about-merlin-link" data-page-node-id="S2woiehwr1khx3b1xKFWQB">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="A9Hk4GX9jLNFqa4FZ0hI1y"><rect x="2" y="4" width="20" height="16" rx="2" data-page-node-id="kHAzbNrdAfEF5W7mXM4K8X"/><path d="M22 4L12 13 2 4" data-page-node-id="1jsBm5pzY8sSZPFWJhtgyE"/></svg>
               merlin@mobirich.online
             </a>
-            <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="about-merlin-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              <span data-i18n="about.linkedinProfile">LinkedIn Profile</span>
+            <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="about-merlin-link" data-page-node-id="g63yZnH8CtMCLo1eWSLuCx">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-page-node-id="lvsfzF4t4x6rSFjd5neivY"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" data-page-node-id="ATz4zQDCx9KuLnXFlS1ubl"/></svg>
+              <span data-i18n="about.linkedinProfile" data-page-node-id="HyKowVlZjQTCaUdlfGnh5t">LinkedIn Profile</span>
             </a>
-            <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="about-merlin-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              <span data-i18n="about.mobireachLinkedin">Mobireach on LinkedIn</span>
+            <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="about-merlin-link" data-page-node-id="DUCwzaxWk3YDUuSwXT2EVk">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-page-node-id="WGId3lWOyHvcCDIjGOdR80"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" data-page-node-id="nCoYKFbC0tseXt9POxuIyK"/></svg>
+              <span data-i18n="about.mobireachLinkedin" data-page-node-id="9O2G4fgGLXfsy2AQ0HJHYD">Mobireach on LinkedIn</span>
             </a>
           </div>
         </div>
@@ -1816,18 +1819,18 @@ applyLang(currentLang);
   </section>
 
   <!-- Contact -->
-  <section class="contact-home">
-    <div class="contact-home-inner">
-      <h2 data-i18n="contact.title">Let's Work Together</h2>
-      <p data-i18n="contact.desc">Ready to scale your affiliate campaigns? Reach out and let's discuss how Mobireach can drive growth for your business.</p>
-      <div class="contact-home-links">
-        <a href="mailto:merlin@mobirich.online" class="contact-home-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
-          <span data-i18n="contact.emailMe">Email Me</span>
+  <section class="contact-home" data-page-node-id="7s1gYJH2s6Qu6ZabQ832lC">
+    <div class="contact-home-inner" data-page-node-id="DzQyofHgbRNleTLDVzxCmi">
+      <h2 data-i18n="contact.title" data-page-node-id="ufjrmAkAQHYTXvS2AHAqc6">Let's Work Together</h2>
+      <p data-i18n="contact.desc" data-page-node-id="RYGQymoeB0O61C6ecrKAgC">Ready to scale your affiliate campaigns? Reach out and let's discuss how Mobireach can drive growth for your business.</p>
+      <div class="contact-home-links" data-page-node-id="wFozYPu0V9VekYCW4ZLgef">
+        <a href="mailto:merlin@mobirich.online" class="contact-home-btn" data-page-node-id="4JRYpUclkEUKpZ4ZVUHBNN">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="G8TSYeIEJb7qC9icS51McZ"><rect x="2" y="4" width="20" height="16" rx="2" data-page-node-id="RyYDZMe8HAvyvhGn5432rG"/><path d="M22 4L12 13 2 4" data-page-node-id="YzznrZckUZGRxoGW213x4o"/></svg>
+          <span data-i18n="contact.emailMe" data-page-node-id="UkcqCrIfeiAiB4dAFCmWC6">Email Me</span>
         </a>
-        <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="contact-home-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          <span data-i18n="contact.linkedin">Connect on LinkedIn</span>
+        <a href="https://www.linkedin.com/in/merlin-x-8075673b4/" target="_blank" rel="noopener" class="contact-home-btn" data-page-node-id="ISzVkriHm6EFiCzS9AW3D8">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-page-node-id="HHupEFZ8WwZrIKMQmqwAjG"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" data-page-node-id="LNgmvJPCvHrO9HxWe1g6iD"/></svg>
+          <span data-i18n="contact.linkedin" data-page-node-id="tht0Pdolv0QSDGLSwk6SoF">Connect on LinkedIn</span>
         </a>
       </div>
     </div>
@@ -1836,157 +1839,157 @@ applyLang(currentLang);
 </div>
 
 <!-- ── OFFERS PAGE ── -->
-<div class="page" id="page-offers">
-  <section class="hero">
-    <h1 data-i18n-html="offers.h1">Direct mobile offers<br>ready to scale.</h1>
-    <p data-i18n-html="offers.p">
-      Browse the offers below. Click <strong>Details</strong> on any card for full event, flow
-      and integration info — or <strong>Apply</strong> to submit a request.
+<div class="page" id="page-offers" data-page-node-id="TGwa1jSbVrlq0Rc10MzYBS">
+  <section class="hero" data-page-node-id="LkgzjA0AEEXKwAJgwtstxE">
+    <h1 data-i18n-html="offers.h1" data-page-node-id="bolcxaIXjXDV9YJdz3XsWr">Direct mobile offers<br data-page-node-id="Ehc3QkuPzvLLeYejDFXDpv">ready to scale.</h1>
+    <p data-i18n-html="offers.p" data-page-node-id="7V1GD36IX7r87UbTgG8EXj">
+      Browse the offers below. Click <strong data-page-node-id="DNGBhmojbHK6uWsnwrwGeF">Details</strong> on any card for full event, flow
+      and integration info — or <strong data-page-node-id="XpF44ICpC5S1awD8KhX49D">Apply</strong> to submit a request.
     </p>
   </section>
 
-  <div class="stats-bar">
-    <div class="stats-inner">
-      <div class="stat-item">
-        <span class="stat-value" id="stat-live">—</span>
-        <span class="stat-label" data-i18n="stat.live">Live Offers</span>
+  <div class="stats-bar" data-page-node-id="x8Nql7FKDcQLAjEMIyTaRu">
+    <div class="stats-inner" data-page-node-id="eEv7WRdgBVTtVrd2dzMPwQ">
+      <div class="stat-item" data-page-node-id="G7d477xw7AusEDQYchxfWo">
+        <span class="stat-value" id="stat-live" data-page-node-id="CH9VPSPZKL7Ggt40gZHymu">—</span>
+        <span class="stat-label" data-i18n="stat.live" data-page-node-id="sUKBIVgfr024svk6t9pNgm">Live Offers</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-value">iOS &amp; Android</span>
-        <span class="stat-label" data-i18n="stat.platforms">Platforms</span>
+      <div class="stat-item" data-page-node-id="eT2I12B5u6FfYihclfJn42">
+        <span class="stat-value" data-page-node-id="PlJgB6CKYPxVgH3vf2ymHT">iOS &amp; Android</span>
+        <span class="stat-label" data-i18n="stat.platforms" data-page-node-id="sB7cAa8GLeIn450S6LYoPP">Platforms</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-value" id="stat-geos">—</span>
-        <span class="stat-label" data-i18n="stat.geos">GEOs Covered</span>
+      <div class="stat-item" data-page-node-id="zjT23vV8j044NihKRohWGd">
+        <span class="stat-value" id="stat-geos" data-page-node-id="CPkaa3aBXC5sYVkGAH3qRX">—</span>
+        <span class="stat-label" data-i18n="stat.geos" data-page-node-id="gu0kKZcngJqb4YCZkKwyqV">GEOs Covered</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-value" id="stat-top">—</span>
-        <span class="stat-label" data-i18n="stat.top">Top Payout</span>
+      <div class="stat-item" data-page-node-id="27O6GJXWHEXrwosqNoMvoN">
+        <span class="stat-value" id="stat-top" data-page-node-id="44tySg3CjcwTjgyvKKQZGM">—</span>
+        <span class="stat-label" data-i18n="stat.top" data-page-node-id="XkWCL3ZMtB6nMJUctDeVzu">Top Payout</span>
       </div>
     </div>
   </div>
 
-  <main class="main">
-    <div class="toolbar">
-      <div class="filter-tabs">
-        <button class="tab-btn active" data-filter="all" data-i18n="filter.all">All</button>
-        <button class="tab-btn" data-filter="ios" data-i18n="filter.ios">iOS</button>
-        <button class="tab-btn" data-filter="android" data-i18n="filter.android">Android</button>
+  <main class="main" data-page-node-id="wbCihstiygw1Dn07v4GAG1">
+    <div class="toolbar" data-page-node-id="3Y0p67HYSC6BVcMscny90w">
+      <div class="filter-tabs" data-page-node-id="Q1Bq3Rc6DGzDoUZpbEC2xa">
+        <button class="tab-btn active" data-filter="all" data-i18n="filter.all" data-page-node-id="569Y39SZj9A5hjjcbF3TVE">All</button>
+        <button class="tab-btn" data-filter="ios" data-i18n="filter.ios" data-page-node-id="WWdBc4MLWthtixzQz5qayB">iOS</button>
+        <button class="tab-btn" data-filter="android" data-i18n="filter.android" data-page-node-id="oXVy7SGsD08uyy73Cjuwoe">Android</button>
       </div>
-      <div class="search-wrap">
+      <div class="search-wrap" data-page-node-id="ykSCes4tiKZHkeBzpEplCX">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="VaWCGcRIUFomrjvyV5V09V">
+          <circle cx="11" cy="11" r="8" data-page-node-id="CKKah4DyA3aTqLfQaEaMEf"/><line x1="21" y1="21" x2="16.65" y2="16.65" data-page-node-id="1DPPK8e8vAHnBa24CoJGoT"/>
         </svg>
         <input class="search-input" type="search" id="search-input" data-i18n-ph="search.ph"
-               placeholder="Search offers, apps, GEOs, payout…" />
+               placeholder="Search offers, apps, GEOs, payout…" data-page-node-id="9Y5GHsGFRfefjUGWAA0yDq" />
       </div>
     </div>
 
-    <div class="offers-grid" id="offers-grid">
+    <div class="offers-grid" id="offers-grid" data-page-node-id="vwBMpYjb7RuxutpDBSeLZj">
       <!-- Skeleton placeholders shown while loading -->
-      <div class="skeleton-card" id="sk1"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
-      <div class="skeleton-card" id="sk2"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
-      <div class="skeleton-card" id="sk3"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
-      <div class="skeleton-card" id="sk4"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
-      <div class="skeleton-card" id="sk5"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
-      <div class="skeleton-card" id="sk6"><div style="display:flex;align-items:center;gap:12px"><div class="sk-line sk-icon"></div><div><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div><div class="sk-line sk-payout"></div><div class="sk-line sk-tags"></div><div class="sk-line sk-btns"></div></div>
+      <div class="skeleton-card" id="sk1" data-page-node-id="RiDh8HEUDjUCYH3LsuGXYX"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="yyYytFFfHXBh4Lqg7qw6iK"><div class="sk-line sk-icon" data-page-node-id="wL6GEL47lCoNEqIu607RfQ"></div><div data-page-node-id="SBfpOOdTQYD0eBJmua9w7l"><div class="sk-line sk-title" data-page-node-id="Rup7dSiXkuAQtCzFHZ8n2Z"></div><div class="sk-line sk-sub" data-page-node-id="ZEpHVmGf2fZ94vNse3HLeC"></div></div></div><div class="sk-line sk-payout" data-page-node-id="gy4BC7TFfqZmgKY7jru4Li"></div><div class="sk-line sk-tags" data-page-node-id="MVjkUUyCwolUeARCa9TJxI"></div><div class="sk-line sk-btns" data-page-node-id="6K6ZlVVHn4j9Bp4gwb9ZKt"></div></div>
+      <div class="skeleton-card" id="sk2" data-page-node-id="XEAfukgCtkqEreVy9xI1br"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="azvy4TYLU0ptL6N2KLigdK"><div class="sk-line sk-icon" data-page-node-id="FVkpJxOEssdExUGffrFydD"></div><div data-page-node-id="JIKEq9oZBgDYLQA2fRzKIH"><div class="sk-line sk-title" data-page-node-id="tXNReFB072YIw5eGAsTSHj"></div><div class="sk-line sk-sub" data-page-node-id="MVWz0TDpJadA8kTnMqEB4H"></div></div></div><div class="sk-line sk-payout" data-page-node-id="J1LCZbmKNWyIz0D4xlm4Rw"></div><div class="sk-line sk-tags" data-page-node-id="jrBf3W7yGNRo6OZjjXeURk"></div><div class="sk-line sk-btns" data-page-node-id="wWpoVMz8xY72AnWZZnUwAK"></div></div>
+      <div class="skeleton-card" id="sk3" data-page-node-id="inTSWpVEYhA0DAp8b360WW"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="qRbvbu65FbRoDsto3U0ynn"><div class="sk-line sk-icon" data-page-node-id="xPiooUXaboGamNO3kLAkLO"></div><div data-page-node-id="tZjd7bjap5cbv2c0DxwpoH"><div class="sk-line sk-title" data-page-node-id="cpaFs6baHFHUBL6Bezo2lN"></div><div class="sk-line sk-sub" data-page-node-id="HIieE3DXcI8rId0KgiQsSq"></div></div></div><div class="sk-line sk-payout" data-page-node-id="cBfTfYbLp2z8ATEmX3LGIT"></div><div class="sk-line sk-tags" data-page-node-id="sHDZ8LFINDLsCddNI4CPSW"></div><div class="sk-line sk-btns" data-page-node-id="oxKC8OQyfNvhbZvxkvWas7"></div></div>
+      <div class="skeleton-card" id="sk4" data-page-node-id="WoBAF2ssNWYD9QCcMuwEH8"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="4IvY65DPbeE6aNN6hmwVaq"><div class="sk-line sk-icon" data-page-node-id="KKc9TuJrB99dhegSQBeE4Z"></div><div data-page-node-id="WfARxbBm1CbBONcs2rtO80"><div class="sk-line sk-title" data-page-node-id="gvNr1VzFPLEfzLYm1gqw3J"></div><div class="sk-line sk-sub" data-page-node-id="mqOWbCsKHzhtzE0YSZCHej"></div></div></div><div class="sk-line sk-payout" data-page-node-id="t0uOHMNHULNr0Sese7p5AQ"></div><div class="sk-line sk-tags" data-page-node-id="jySvAcssEh8AKV01Ypl6GT"></div><div class="sk-line sk-btns" data-page-node-id="LVLwh5jpRMOnHzsSrOeqDJ"></div></div>
+      <div class="skeleton-card" id="sk5" data-page-node-id="06bMU1FnmL6MeLkEJ5IOcZ"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="n1BCEH8tidqOb53hRT5uOf"><div class="sk-line sk-icon" data-page-node-id="6GkZALrLp8UBTtmAGX8BMo"></div><div data-page-node-id="ulxPIVZskkjs94VS8OlzpO"><div class="sk-line sk-title" data-page-node-id="wCgOS19uDFj9zyE2qJ4gtX"></div><div class="sk-line sk-sub" data-page-node-id="usesFZH8RT6LPRIICxnoIW"></div></div></div><div class="sk-line sk-payout" data-page-node-id="9KUv3PuoKFofZI6tzfKC2Z"></div><div class="sk-line sk-tags" data-page-node-id="4oSXofsTNFSEXcoHhJq5Ec"></div><div class="sk-line sk-btns" data-page-node-id="gXOp7e7yRDGk0RPWda98rg"></div></div>
+      <div class="skeleton-card" id="sk6" data-page-node-id="FFqAFWhNsQYpZ1RviYAF6m"><div style="display:flex;align-items:center;gap:12px" data-page-node-id="2zcxZ7OtQqwaXVB7pfHF1Z"><div class="sk-line sk-icon" data-page-node-id="U1enOnSmLogA51BkA06F0x"></div><div data-page-node-id="BXnq4XoJukoHPZgUlUyPZt"><div class="sk-line sk-title" data-page-node-id="mAiwOasyetKp8KHP3AFHFA"></div><div class="sk-line sk-sub" data-page-node-id="kuD3x0BvNU1JEHfkaHCS1S"></div></div></div><div class="sk-line sk-payout" data-page-node-id="fqC3d9Oz65DJa1CEhPsdTD"></div><div class="sk-line sk-tags" data-page-node-id="NP0sG3dUEbF8OZnMQlmFGx"></div><div class="sk-line sk-btns" data-page-node-id="sAYXCzfB7zexf2plWKTTgC"></div></div>
     </div>
 
-    <div class="empty-state" id="empty-state">
+    <div class="empty-state" id="empty-state" data-page-node-id="CAAsgPCd4sz98iOAYbww0r">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="1.5" style="color:#ccc">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+           fill="none" stroke="currentColor" stroke-width="1.5" style="color:#ccc" data-page-node-id="v3fCC99zjfpXycNpv8hO3N">
+        <circle cx="11" cy="11" r="8" data-page-node-id="TopBwOwSRjemBWXuztp28d"/><line x1="21" y1="21" x2="16.65" y2="16.65" data-page-node-id="fg7Q1tpKGVSXN1vOil3QJ0"/>
       </svg>
-      <p data-i18n-html="empty.title">No offers match your search.<br>Try a different keyword or platform filter.</p>
+      <p data-i18n-html="empty.title" data-page-node-id="i94K9bCGXEpaaG6JTfNqr8">No offers match your search.<br data-page-node-id="qB9GBJIVod5IFCnR9y9yi2">Try a different keyword or platform filter.</p>
     </div>
   </main>
 </div>
 
 <!-- ── DRAMA PAGE ── -->
-<div class="page" id="page-drama">
-  <div class="drama-page">
-    <div class="drama-hero">
-      <h1 class="drama-title" data-i18n="drama.title">Short Drama Promotion</h1>
-      <p class="drama-sub" data-i18n="drama.sub">爆款短剧全球投放 · 10+ 头部平台推广预算开放中</p>
+<div class="page" id="page-drama" data-page-node-id="xAyoRFBqV8p6bC2TMrEtHK">
+  <div class="drama-page" data-page-node-id="vWxnjFAA5S6mNCAWHJSqR6">
+    <div class="drama-hero" data-page-node-id="OV3jRhQ6pIAe4rdVW3e9oz">
+      <h1 class="drama-title" data-i18n="drama.title" data-page-node-id="5f2o4kkfdB9SB9UGlhMm9B">Short Drama Promotion</h1>
+      <p class="drama-sub" data-i18n="drama.sub" data-page-node-id="Pq0T9daglRTi9HF1stBVUL">爆款短剧全球投放 · 10+ 头部平台推广预算开放中</p>
     </div>
-    <div class="drama-top-cta">
-      <div class="drama-top-cta-text">
-        <h3 data-i18n="drama.ctaTitle">I have traffic — let's collaborate</h3>
-        <p data-i18n="drama.ctaDesc">Have short-drama traffic? Contact Merlin directly to connect with dedicated budgets.</p>
+    <div class="drama-top-cta" data-page-node-id="6lnZppXxgi1mPFsyojMGcG">
+      <div class="drama-top-cta-text" data-page-node-id="4qq9Psk7WtPlxMbgJQTKN5">
+        <h3 data-i18n="drama.ctaTitle" data-page-node-id="6wUlXCSOJXmmYr2CmLO7MY">I have traffic — let's collaborate</h3>
+        <p data-i18n="drama.ctaDesc" data-page-node-id="aExCZpdzUsiPN3IJmOGMDI">Have short-drama traffic? Contact Merlin directly to connect with dedicated budgets.</p>
       </div>
-      <button class="drama-top-cta-btn" onclick="openWechat()" data-i18n="drama.ctaBtn">Collaborate with me</button>
+      <button class="drama-top-cta-btn" onclick="openWechat()" data-i18n="drama.ctaBtn" data-page-node-id="Ge948IMZ5zmRwDvUMVkCrA">Collaborate with me</button>
     </div>
-    <div class="drama-grid" id="drama-grid"></div>
-    <div class="drama-cta">
-      <h2 data-i18n="drama.ctaBottomTitle">我有流量，我想合作</h2>
-      <p data-i18n="drama.ctaBottomDesc">如果你手上有短剧推广流量，直接联系 Merlin 对接专属预算。</p>
-      <button class="drama-cta-btn" onclick="openWechat()" data-i18n="drama.ctaBottomBtn">我有流量我想合作</button>
+    <div class="drama-grid" id="drama-grid" data-page-node-id="byFjZpZ5K3xOJ5WOjK0poC"></div>
+    <div class="drama-cta" data-page-node-id="BRu6y2zRowDBUl1578dR5p">
+      <h2 data-i18n="drama.ctaBottomTitle" data-page-node-id="vfWdEzQXvDTibNVyPqwFjx">我有流量，我想合作</h2>
+      <p data-i18n="drama.ctaBottomDesc" data-page-node-id="6tJbI9sISS9DACXxkrHHbF">如果你手上有短剧推广流量，直接联系 Merlin 对接专属预算。</p>
+      <button class="drama-cta-btn" onclick="openWechat()" data-i18n="drama.ctaBottomBtn" data-page-node-id="kqPn4HbGqv2b6myfhkvBdn">我有流量我想合作</button>
     </div>
   </div>
 </div>
 
 <!-- ── ABOUT PAGE ── -->
-<div class="page" id="page-about">
-  <div class="about-page">
-    <h1 data-i18n="aboutpage.title">About Mobireach</h1>
-    <p class="intro" data-i18n="aboutpage.intro">
+<div class="page" id="page-about" data-page-node-id="jZPomfCRX7vTC32Z3JBHLf">
+  <div class="about-page" data-page-node-id="4q7OeFNBCJi2LHWkAtV3cG">
+    <h1 data-i18n="aboutpage.title" data-page-node-id="5DCW89TDfZ3ZzvSxcrJRJo">About Mobireach</h1>
+    <p class="intro" data-i18n="aboutpage.intro" data-page-node-id="2ZDtJMMHg0oIaAxmvvDKkk">
       At Mobireach, we specialize in mobile advertising solutions designed to drive growth and performance for our partners through cost-per-install (CPI) and cost-per-action (CPA) models.
     </p>
 
-    <div class="about-section">
-      <h2 data-i18n="aboutpage.geoTitle">Global Reach with Top GEOs</h2>
-      <p data-i18n="aboutpage.geoP">Our traffic spans worldwide, with a strong focus on top-performing regions, including:</p>
-      <ul style="margin-top:8px">
-        <li>United States (US)</li>
-        <li>Brazil (BR)</li>
-        <li>Mexico (MX)</li>
-        <li>India (IN)</li>
-        <li>Indonesia (ID)</li>
-        <li>Russia (RU)</li>
+    <div class="about-section" data-page-node-id="CqW0Y2nxqqxnMEpD9eM2CI">
+      <h2 data-i18n="aboutpage.geoTitle" data-page-node-id="ILPYPB8pPTc8GpITyhA0T3">Global Reach with Top GEOs</h2>
+      <p data-i18n="aboutpage.geoP" data-page-node-id="DzHlCr9JYvT4Uw0FfwogV2">Our traffic spans worldwide, with a strong focus on top-performing regions, including:</p>
+      <ul style="margin-top:8px" data-page-node-id="u2GkXeTZYsXOgC3mzF4vSU">
+        <li data-page-node-id="20pVLnTuFIfn1ANB04xcBN">United States (US)</li>
+        <li data-page-node-id="jssgdSAlAZfXt2HtRiLf1J">Brazil (BR)</li>
+        <li data-page-node-id="daaIpUYn55VbQDDl7p3QYb">Mexico (MX)</li>
+        <li data-page-node-id="VHhjsKdR7mFTupktxvpLjY">India (IN)</li>
+        <li data-page-node-id="XCaqeGqVK2BpqDcGrtme4W">Indonesia (ID)</li>
+        <li data-page-node-id="eZwTykeOcJ7X3yHYrMNsjJ">Russia (RU)</li>
       </ul>
     </div>
 
-    <div class="about-section">
-      <h2 data-i18n="aboutpage.trafficTitle">Diverse Traffic Types</h2>
-      <p data-i18n="aboutpage.trafficP">We leverage two primary sources of traffic to deliver high-quality results:</p>
-      <ul style="margin-top:8px">
-        <li><strong>Demand-Side Platform (DSP):</strong> Access to premium programmatic inventory ensuring scale, precision targeting, and measurable ROI.</li>
-        <li><strong>Developer Traffic:</strong> Direct partnerships with app developers, providing authentic and engaged audiences.</li>
+    <div class="about-section" data-page-node-id="UtCGBQ75Ah9aYXjJcqTIzn">
+      <h2 data-i18n="aboutpage.trafficTitle" data-page-node-id="gPETfGlw39gkBYZYDYkmtv">Diverse Traffic Types</h2>
+      <p data-i18n="aboutpage.trafficP" data-page-node-id="P0tH2Lvt7SxBsEo0VICQV5">We leverage two primary sources of traffic to deliver high-quality results:</p>
+      <ul style="margin-top:8px" data-page-node-id="Z1q6j8HB6wjfsXLrbIYo1b">
+        <li data-page-node-id="ISirTrwk32GCZaTIo2MtN2"><strong data-page-node-id="3vZlliraoTMJTwXitka4Py">Demand-Side Platform (DSP):</strong> Access to premium programmatic inventory ensuring scale, precision targeting, and measurable ROI.</li>
+        <li data-page-node-id="3EDkadTm7iSG6EtnycBxfQ"><strong data-page-node-id="ZqAW6uLn5w0kPYHVCLuSKM">Developer Traffic:</strong> Direct partnerships with app developers, providing authentic and engaged audiences.</li>
       </ul>
     </div>
 
-    <div class="what-we-deliver">
-      <h2 data-i18n="aboutpage.deliverTitle">What We Deliver</h2>
-      <div class="deliver-grid">
-        <div class="deliver-card">
-          <h3 data-i18n="deliver1.title">Scalable Solutions</h3>
-          <p data-i18n="deliver1.desc">Tailored to meet performance goals across verticals and markets.</p>
+    <div class="what-we-deliver" data-page-node-id="bUtBF1Lp8r8P7YbCGIP0Cr">
+      <h2 data-i18n="aboutpage.deliverTitle" data-page-node-id="zHhetf2xXkRRyqWgaliuLM">What We Deliver</h2>
+      <div class="deliver-grid" data-page-node-id="LhUtgtUcZTOJgaCHTnrLan">
+        <div class="deliver-card" data-page-node-id="db9ZAVjr46HiRkXo1ea9ti">
+          <h3 data-i18n="deliver1.title" data-page-node-id="2ko9LvZNSB7iCZPeuy9VUV">Scalable Solutions</h3>
+          <p data-i18n="deliver1.desc" data-page-node-id="Akwf7BnUlL4RMigdvrKNB0">Tailored to meet performance goals across verticals and markets.</p>
         </div>
-        <div class="deliver-card">
-          <h3 data-i18n="deliver2.title">Campaign Expertise</h3>
-          <p data-i18n="deliver2.desc">Deep optimization experience for diverse verticals and global markets.</p>
+        <div class="deliver-card" data-page-node-id="Y8KvSWP4DhDOQp57QBvqLz">
+          <h3 data-i18n="deliver2.title" data-page-node-id="WhlTLQWK049rETQFcjUdqT">Campaign Expertise</h3>
+          <p data-i18n="deliver2.desc" data-page-node-id="GHNm4e2K56ajBfsxN9ZHZI">Deep optimization experience for diverse verticals and global markets.</p>
         </div>
-        <div class="deliver-card">
-          <h3 data-i18n="deliver3.title">Dedicated Team</h3>
-          <p data-i18n="deliver3.desc">Focused on maximizing ROI and fostering long-term partnerships.</p>
+        <div class="deliver-card" data-page-node-id="Lsl3XUI6kVb0LhCMeOaGpq">
+          <h3 data-i18n="deliver3.title" data-page-node-id="yDjjGZ7HjPIcSSP4v9ASqm">Dedicated Team</h3>
+          <p data-i18n="deliver3.desc" data-page-node-id="jdZPHyqC1s3GBXJREREOtz">Focused on maximizing ROI and fostering long-term partnerships.</p>
         </div>
       </div>
     </div>
 
-    <p style="color:var(--text-secondary);font-size:15px;line-height:1.8" data-i18n="aboutpage.closing">
+    <p style="color:var(--text-secondary);font-size:15px;line-height:1.8" data-i18n="aboutpage.closing" data-page-node-id="i0oYDaGt1eNFDlMXFhviyn">
       Mobireach is committed to delivering innovation, transparency, and excellence in mobile advertising.
     </p>
 
-    <div class="about-contact">
-      <h2 data-i18n="aboutpage.contactTitle">Contact Us</h2>
-      <div class="contact-links">
-        <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    <div class="about-contact" data-page-node-id="dcqBndH60ZIf24MIUFfUHC">
+      <h2 data-i18n="aboutpage.contactTitle" data-page-node-id="qn05Wrvb7HV57gGD8PAN3F">Contact Us</h2>
+      <div class="contact-links" data-page-node-id="KibPdaHZpOupBNfxiYhfAR">
+        <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" class="contact-link" data-page-node-id="HfgisDxrLCiMpFT27DAwh5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-page-node-id="7BobXsPhXKVlDC14KEa2tD"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" data-page-node-id="GHlm2V7NYhH6w7EoL0DpMa"/></svg>
           LinkedIn
         </a>
-        <a href="mailto:merlin@mobirich.online" class="contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+        <a href="mailto:merlin@mobirich.online" class="contact-link" data-page-node-id="smenTIOglPrMWaDuAX4gLn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="k3Hwer4aO8UjWoz47rwXEH"><rect x="2" y="4" width="20" height="16" rx="2" data-page-node-id="q1alf3WGldz6bf2AaASLCh"/><path d="M22 4L12 13 2 4" data-page-node-id="2GqoC4klQzBIrBHxaogW1V"/></svg>
           merlin@mobirich.online
         </a>
       </div>
@@ -1995,218 +1998,218 @@ applyLang(currentLang);
 </div>
 
 <!-- ── FOOTER ── -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <a class="footer-logo" onclick="showPage('home');return false;" href="#" style="cursor:pointer">Mobireach</a>
-      <div class="footer-tagline" data-i18n="footer.tagline">Mobile advertising</div>
+<footer data-page-node-id="LASsVOo8iYZQCq7kj1AouR">
+  <div class="footer-inner" data-page-node-id="9v9FWDfKC9RwvL75Y5H3JD">
+    <div class="footer-brand" data-page-node-id="iOSqr5x7v3qSbe4RGVEQVp">
+      <a class="footer-logo" onclick="showPage('home');return false;" href="#" style="cursor:pointer" data-page-node-id="c3RqHVFWX2sgHKWo0E2k7u">Mobireach</a>
+      <div class="footer-tagline" data-i18n="footer.tagline" data-page-node-id="YJc96Y8eM9UO8oHeejcojL">Mobile advertising</div>
     </div>
-    <div class="footer-contact">
-      <a href="mailto:merlin@mobirich.online">merlin@mobirich.online</a>
-      <span style="color:var(--text-muted); margin:0 6px;">·</span>
-      <a href="mailto:admin@mobirich.online">admin@mobirich.online</a>
+    <div class="footer-contact" data-page-node-id="qAErI3ZFWYeAGHB2VlIByQ">
+      <a href="mailto:merlin@mobirich.online" data-page-node-id="OOZjfmC3EI3BrlwQIgGCKo">merlin@mobirich.online</a>
+      <span style="color:var(--text-muted); margin:0 6px;" data-page-node-id="ZjSCQsljy9upa4Igp53NX7">·</span>
+      <a href="mailto:admin@mobirich.online" data-page-node-id="W4lwZkF1xl64uMZfvXJRdb">admin@mobirich.online</a>
     </div>
-    <div class="footer-links">
-      <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request" data-i18n="footer.privacy">Privacy Policy</a>
-      <a href="#" id="cookie-settings-link" data-i18n="footer.cookie">Cookie Settings</a>
+    <div class="footer-links" data-page-node-id="kgtVLGwexFhZEXRMIJHcoX">
+      <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request" data-i18n="footer.privacy" data-page-node-id="5u642wuHiqQX25f699rEGw">Privacy Policy</a>
+      <a href="#" id="cookie-settings-link" data-i18n="footer.cookie" data-page-node-id="jnNzSnRZjB8udl1IeCfwss">Cookie Settings</a>
     </div>
   </div>
-  <div class="footer-inner">
-    <div class="footer-copy">
-      <span data-i18n-html="footer.copy">© 2026 <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Mobireach</a> · Mobile advertising</span>
+  <div class="footer-inner" data-page-node-id="Mnv3aj2GhMEwRK6tSsHvab">
+    <div class="footer-copy" data-page-node-id="gnt8iLIr8wmMA2eBYQB7Fq">
+      <span data-i18n-html="footer.copy" data-page-node-id="BSrHdAGJAec3xPdi79vpAm">© 2026 <a href="https://www.linkedin.com/company/mobireach/" target="_blank" rel="noopener" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-page-node-id="WZNQnUyRlDeu8VgXVH2npw">Mobireach</a> · Mobile advertising</span>
     </div>
   </div>
 </footer>
 
 <!-- ── COOKIE BANNER ── -->
-<div id="cookie-banner">
-  <h3 data-i18n="cookie.title">We value your privacy</h3>
-  <p data-i18n="cookie.p">We use cookies to enhance your browsing experience, serve personalised content, and analyse our traffic. You can choose which categories you allow.</p>
-  <div class="cookie-toggles">
-    <div class="cookie-row">
-      <div>
-        <div class="cookie-row-label" data-i18n="cookie.necessary">Strictly necessary</div>
-        <div class="cookie-row-desc" data-i18n="cookie.necessaryDesc">Required for the site to function</div>
+<div id="cookie-banner" data-page-node-id="0ZPxmsWUfdJ0tQBBsrbkmp">
+  <h3 data-i18n="cookie.title" data-page-node-id="c2Uv4bMMmmmN6WSQOttERl">We value your privacy</h3>
+  <p data-i18n="cookie.p" data-page-node-id="BCU5Nrhgz9z810JYSmkvLA">We use cookies to enhance your browsing experience, serve personalised content, and analyse our traffic. You can choose which categories you allow.</p>
+  <div class="cookie-toggles" data-page-node-id="8dOvI6dFbWLT8CxjIIvOAF">
+    <div class="cookie-row" data-page-node-id="tKvMOozFlRyez9D6o2G3Ua">
+      <div data-page-node-id="QW1LO3C1szvRQc4HyRs8pN">
+        <div class="cookie-row-label" data-i18n="cookie.necessary" data-page-node-id="LyJ2w2LDcBBnBUzSvNwNd2">Strictly necessary</div>
+        <div class="cookie-row-desc" data-i18n="cookie.necessaryDesc" data-page-node-id="XfEDR31HrVlUmbbaGgxiCs">Required for the site to function</div>
       </div>
-      <button class="toggle-switch locked" title="Always active"></button>
+      <button class="toggle-switch locked" title="Always active" data-page-node-id="R5diHWaehaNkhAUxFuE4IU"></button>
     </div>
-    <div class="cookie-row">
-      <div>
-        <div class="cookie-row-label" data-i18n="cookie.analytics">Analytics</div>
-        <div class="cookie-row-desc" data-i18n="cookie.analyticsDesc">Help us understand how you use the site</div>
+    <div class="cookie-row" data-page-node-id="NOOIYaPjSfUEzlirmOVA2v">
+      <div data-page-node-id="2afqTt3cOJHQi5R8qZSmTJ">
+        <div class="cookie-row-label" data-i18n="cookie.analytics" data-page-node-id="z33PDOWVETHVBDaHCLtZPV">Analytics</div>
+        <div class="cookie-row-desc" data-i18n="cookie.analyticsDesc" data-page-node-id="puIdKSifXmpW86zhigUlkf">Help us understand how you use the site</div>
       </div>
-      <button class="toggle-switch off" id="toggle-analytics"></button>
+      <button class="toggle-switch off" id="toggle-analytics" data-page-node-id="etrBdgxcgCHSWCJOmrM8AM"></button>
     </div>
-    <div class="cookie-row">
-      <div>
-        <div class="cookie-row-label" data-i18n="cookie.marketing">Marketing</div>
-        <div class="cookie-row-desc" data-i18n="cookie.marketingDesc">Used to deliver relevant advertisements</div>
+    <div class="cookie-row" data-page-node-id="d0CfqLHJjwGhoBM4VVVawb">
+      <div data-page-node-id="7cJ07diz7EmM0bxobvsRqG">
+        <div class="cookie-row-label" data-i18n="cookie.marketing" data-page-node-id="pc9hKTcQHq7zFu1qSZfqyH">Marketing</div>
+        <div class="cookie-row-desc" data-i18n="cookie.marketingDesc" data-page-node-id="COh7KUlYN8t40ZSE0yEAUn">Used to deliver relevant advertisements</div>
       </div>
-      <button class="toggle-switch off" id="toggle-marketing"></button>
+      <button class="toggle-switch off" id="toggle-marketing" data-page-node-id="otyaB1DJDYIgLhWLlXWKsD"></button>
     </div>
   </div>
-  <div class="cookie-actions">
-    <button class="btn-cookie btn-cookie-save" id="cookie-save" data-i18n="cookie.customise">Customise</button>
-    <button class="btn-cookie btn-cookie-reject" id="cookie-reject" data-i18n="cookie.reject">Reject optional</button>
-    <button class="btn-cookie btn-cookie-accept" id="cookie-accept" data-i18n="cookie.accept">Accept all</button>
+  <div class="cookie-actions" data-page-node-id="9VA97sO16mONhZK5W7IEdt">
+    <button class="btn-cookie btn-cookie-save" id="cookie-save" data-i18n="cookie.customise" data-page-node-id="PFNwhAUADumiEpkq249T4Q">Customise</button>
+    <button class="btn-cookie btn-cookie-reject" id="cookie-reject" data-i18n="cookie.reject" data-page-node-id="BdzGEUeBP6eDBjhcfjiave">Reject optional</button>
+    <button class="btn-cookie btn-cookie-accept" id="cookie-accept" data-i18n="cookie.accept" data-page-node-id="HL5BYuktUJEZBR235sDXTJ">Accept all</button>
   </div>
 </div>
 
 <!-- ── DRAMA MODALS ── -->
-<div class="overlay" id="drama-apply-overlay" role="dialog" aria-modal="true">
-  <div class="modal" id="drama-apply-modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" id="da-title">填写需求</div>
-        <div class="modal-subtitle" id="da-subtitle"></div>
+<div class="overlay" id="drama-apply-overlay" role="dialog" aria-modal="true" data-page-node-id="kpYE05LtR0Gg0XnNGfRlBm">
+  <div class="modal" id="drama-apply-modal" data-page-node-id="31zJ7LtJIBb5SSqmoCkpmc">
+    <div class="modal-header" data-page-node-id="uVQrjHOcr4YnF7UvMNPcki">
+      <div data-page-node-id="C0lOH5n1hKh4m32AUqM9GZ">
+        <div class="modal-title" id="da-title" data-page-node-id="zczlUp55HCfUWqk6xBgknn">填写需求</div>
+        <div class="modal-subtitle" id="da-subtitle" data-page-node-id="CxfW3LCtizDa4RlAHqvHTP"></div>
       </div>
-      <button class="modal-close" id="da-close" aria-label="Close">×</button>
+      <button class="modal-close" id="da-close" aria-label="Close" data-page-node-id="qScyrODksF0o3vJ7MTYcsN">×</button>
     </div>
-    <div class="modal-body">
-      <form id="drama-form">
-        <div class="drama-form-row">
-          <label><span data-i18n="drama.labelName">剧名</span> <span class="req">*</span></label>
-          <input type="text" id="da-dramaName" data-i18n-ph="drama.phName" placeholder="例如：The Billionaire's Mask" />
+    <div class="modal-body" data-page-node-id="cfcNwm94dDr4JI2B86EnfR">
+      <form id="drama-form" data-page-node-id="xeP8FpeaTL6s68lGsnncsz">
+        <div class="drama-form-row" data-page-node-id="wLR58fgrRQtgVhapC4rTqY">
+          <label data-page-node-id="U3gMMIGx9wl2aCA38SRKAf"><span data-i18n="drama.labelName" data-page-node-id="vF7dET3t3QMUmoplzhhQlF">剧名</span> <span class="req" data-page-node-id="2QWpUMeKK9nUUIKp8FR6Al">*</span></label>
+          <input type="text" id="da-dramaName" data-i18n-ph="drama.phName" placeholder="例如：The Billionaire's Mask" data-page-node-id="7ey44xXhhMzqX8WOria9ET" />
         </div>
-        <div class="drama-form-row">
-          <label><span data-i18n="drama.labelLang">语言</span> <span class="req">*</span></label>
-          <select id="da-language">
-            <option value="">请选择</option>
-            <option value="中文">中文</option>
-            <option value="English">English</option>
-            <option value="Español">Español</option>
-            <option value="Português">Português</option>
-            <option value="其他">其他</option>
+        <div class="drama-form-row" data-page-node-id="VJGGnHxbuZYCPfcoXFUxUm">
+          <label data-page-node-id="aWZeOEKvYgqHYPkp5S7PTz"><span data-i18n="drama.labelLang" data-page-node-id="A4xdMCiMBo1fuwnEHMKsUH">语言</span> <span class="req" data-page-node-id="Uk1SZvL5LkOuaK4jgKBOFa">*</span></label>
+          <select id="da-language" data-page-node-id="aGrXdT2Y7mWJNn5ZqJg1RT">
+            <option value="" data-page-node-id="Ar9URABL09r9WPshZaaquh">请选择</option>
+            <option value="中文" data-page-node-id="QI67MkSFrWpJXuwbdH7l21">中文</option>
+            <option value="English" data-page-node-id="1hDEqQX21VgXa1HcY9CMKf">English</option>
+            <option value="Español" data-page-node-id="YiJFrf0ko1DWMH2Iz1hBOW">Español</option>
+            <option value="Português" data-page-node-id="B2lScq4q3pGku0IxXlXP7O">Português</option>
+            <option value="其他" data-page-node-id="DPZiSnRwwniRXGTbjvFCoq">其他</option>
           </select>
         </div>
-        <div class="drama-form-row">
-          <label data-i18n="drama.labelGeo">GEO / 地区</label>
-          <input type="text" id="da-geo" data-i18n-ph="drama.phGeo" placeholder="例如：US, BR, ID" />
+        <div class="drama-form-row" data-page-node-id="bjn9akmw8SslFRuirF2N4J">
+          <label data-i18n="drama.labelGeo" data-page-node-id="uQKqvYqQNGnDp4v2kLfvN3">GEO / 地区</label>
+          <input type="text" id="da-geo" data-i18n-ph="drama.phGeo" placeholder="例如：US, BR, ID" data-page-node-id="hRXsFqUl1vPuPCNTKTYJZR" />
         </div>
-        <div class="drama-form-row">
-          <label data-i18n="drama.labelComment">备注</label>
+        <div class="drama-form-row" data-page-node-id="l3aDrYAsebzmzHSJ5QjCJG">
+          <label data-i18n="drama.labelComment" data-page-node-id="iF8ZW2Y5nTQlMROYCqMMOd">备注</label>
           <textarea id="da-comment" rows="3" data-i18n-ph="drama.phComment" placeholder="其他需求或说明"></textarea>
         </div>
-        <div class="error-msg" id="da-err" style="display:none;color:#d4af37;font-size:13px;margin-bottom:12px"></div>
-        <button type="submit" class="btn-apply" id="da-submit" style="width:100%;justify-content:center" data-i18n="drama.submit">提交需求</button>
+        <div class="error-msg" id="da-err" style="display:none;color:#d4af37;font-size:13px;margin-bottom:12px" data-page-node-id="04zDyS727RlBZUBeWrgnUg"></div>
+        <button type="submit" class="btn-apply" id="da-submit" style="width:100%;justify-content:center" data-i18n="drama.submit" data-page-node-id="s1kJrI9SGDAPiPF7n3UGLh">提交需求</button>
       </form>
-      <div id="da-success" style="display:none;text-align:center;padding:20px 0">
-        <div style="font-size:40px;color:#4f8cff">✓</div>
-        <p style="color:var(--text-secondary);margin-top:8px" data-i18n="drama.success">需求已提交，我们会尽快联系你。</p>
+      <div id="da-success" style="display:none;text-align:center;padding:20px 0" data-page-node-id="IBiAKzd7EPeHFSu9gF3mpD">
+        <div style="font-size:40px;color:#4f8cff" data-page-node-id="Brv95wc93bFp51QWHYv7eD">✓</div>
+        <p style="color:var(--text-secondary);margin-top:8px" data-i18n="drama.success" data-page-node-id="GsEvDfaJFNB03nHGikXABq">需求已提交，我们会尽快联系你。</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="overlay" id="wechat-overlay" role="dialog" aria-modal="true">
-  <div class="modal" id="wechat-modal" style="max-width:420px">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" data-i18n="wx.title">合作对接</div>
-        <div class="modal-subtitle" data-i18n="wx.subtitle">添加 Merlin 微信，对接短剧流量预算</div>
+<div class="overlay" id="wechat-overlay" role="dialog" aria-modal="true" data-page-node-id="fVqvDBv28XXimKM39phspo">
+  <div class="modal" id="wechat-modal" style="max-width:420px" data-page-node-id="FVBtZ9PzrnTfbIYMmWAQaa">
+    <div class="modal-header" data-page-node-id="M9Hz5K62JyRmpTOgK4Vjvy">
+      <div data-page-node-id="nh0KeuqLQF6WNAwi4uL4gC">
+        <div class="modal-title" data-i18n="wx.title" data-page-node-id="abCitCWSsf1F1kOZQvetGs">合作对接</div>
+        <div class="modal-subtitle" data-i18n="wx.subtitle" data-page-node-id="NeTYxHwudN9BPdmMYU4iH8">添加 Merlin 微信，对接短剧流量预算</div>
       </div>
-      <button class="modal-close" id="wx-close" aria-label="Close">×</button>
+      <button class="modal-close" id="wx-close" aria-label="Close" data-page-node-id="pMgfxobIABqK751k0m3Pqs">×</button>
     </div>
-    <div class="modal-body">
-      <div class="wx-box">
-        <div style="font-size:14px;color:var(--text-muted)" data-i18n="wx.idLabel">我的微信号</div>
-        <div class="wx-id" id="wx-id"></div>
-        <button class="wx-copy" id="wx-copy" data-i18n="wx.copy">复制微信号</button>
-        <div class="wx-hint" data-i18n="wx.hint">添加时备注：短剧流量合作</div>
+    <div class="modal-body" data-page-node-id="T7k4X6KVEOGdwgh4BIOBbx">
+      <div class="wx-box" data-page-node-id="usl1C98IbTW3gDP2CwNgAK">
+        <div style="font-size:14px;color:var(--text-muted)" data-i18n="wx.idLabel" data-page-node-id="hCaBatByvBN6Tc4GfwhENg">我的微信号</div>
+        <div class="wx-id" id="wx-id" data-page-node-id="cHO5WwffchorBZ9w6zJHXD"></div>
+        <button class="wx-copy" id="wx-copy" data-i18n="wx.copy" data-page-node-id="jzJkfDiOWebePg1A7Q34YA">复制微信号</button>
+        <div class="wx-hint" data-i18n="wx.hint" data-page-node-id="G38mP7QGoPgA6G4vT72v1j">添加时备注：短剧流量合作</div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ── DETAILS MODAL ── -->
-<div class="overlay" id="details-overlay" role="dialog" aria-modal="true">
-  <div class="modal" id="details-modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" id="dm-title">Offer Details</div>
-        <div class="modal-subtitle" id="dm-subtitle"></div>
+<div class="overlay" id="details-overlay" role="dialog" aria-modal="true" data-page-node-id="pH87IPxREKM2kgdWbH1jNv">
+  <div class="modal" id="details-modal" data-page-node-id="39OjFmYwcLHjADXZpZo4Wd">
+    <div class="modal-header" data-page-node-id="JQyOWiDJTCTXXw9WSGgjQo">
+      <div data-page-node-id="LrkQnIscbIuerVErVBAUxR">
+        <div class="modal-title" id="dm-title" data-page-node-id="VVAmzwAN99TrjE2uP60pmv">Offer Details</div>
+        <div class="modal-subtitle" id="dm-subtitle" data-page-node-id="fhngG1PVHbvbxTM7vZHa1O"></div>
       </div>
-      <button class="modal-close" id="dm-close" aria-label="Close">
+      <button class="modal-close" id="dm-close" aria-label="Close" data-page-node-id="PvjHghLHmdgvr6aSFH0aRt">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+             fill="none" stroke="currentColor" stroke-width="2.5" data-page-node-id="5yZvtGhpHEXTTlYLe5o2ke">
+          <line x1="18" y1="6" x2="6" y2="18" data-page-node-id="MTCveENMS8g8tk0TRA3Dma"/><line x1="6" y1="6" x2="18" y2="18" data-page-node-id="Bb4ZmPQ48Yi58rzu0siBfg"/>
         </svg>
       </button>
     </div>
-    <div class="modal-body">
-      <table class="detail-table" id="dm-table"></table>
-      <button class="detail-apply-btn" id="dm-apply-btn" data-i18n="details.applyBtn">Apply for this offer</button>
+    <div class="modal-body" data-page-node-id="UTCF2X1GBuhltlOxMg5JRG">
+      <table class="detail-table" id="dm-table" data-page-node-id="3ZWtKMHe2AjEwbjVmC963G"></table>
+      <button class="detail-apply-btn" id="dm-apply-btn" data-i18n="details.applyBtn" data-page-node-id="PqXDyQU0zb29wQoq9vrh4I">Apply for this offer</button>
     </div>
   </div>
 </div>
 
 <!-- ── APPLY MODAL ── -->
-<div class="overlay" id="apply-overlay" role="dialog" aria-modal="true">
-  <div class="modal" id="apply-modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" data-i18n="apply.title">Apply for Offer</div>
-        <div class="modal-subtitle" id="am-subtitle"></div>
+<div class="overlay" id="apply-overlay" role="dialog" aria-modal="true" data-page-node-id="lYXpBYtBT7ceoid2HzWY9g">
+  <div class="modal" id="apply-modal" data-page-node-id="XH1HBaZHJbgNpJoCYOlkEN">
+    <div class="modal-header" data-page-node-id="PZIhm11qxCwAy1yAizFyBr">
+      <div data-page-node-id="BFi1VdlSKudLG5kxWcAo4B">
+        <div class="modal-title" data-i18n="apply.title" data-page-node-id="QKs0c8YPePBf2w6YdsyfyH">Apply for Offer</div>
+        <div class="modal-subtitle" id="am-subtitle" data-page-node-id="JfyYfeTriDE3szkJ1ptmAi"></div>
       </div>
-      <button class="modal-close" id="am-close" aria-label="Close">
+      <button class="modal-close" id="am-close" aria-label="Close" data-page-node-id="n5HWwz1XVhlG99btpmYLie">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+             fill="none" stroke="currentColor" stroke-width="2.5" data-page-node-id="8dxFycNoQD94yBc2cVZ1k9">
+          <line x1="18" y1="6" x2="6" y2="18" data-page-node-id="IBeehdEGaXne0Y9LXQq5UF"/><line x1="6" y1="6" x2="18" y2="18" data-page-node-id="dcJlHWY2BoH3kANUrrzTVE"/>
         </svg>
       </button>
     </div>
-    <div class="modal-body">
-      <div class="success-box" id="am-success">
-        <div class="success-icon">✓</div>
-        <h3 data-i18n="apply.successTitle">Request registered!</h3>
-        <p data-i18n-html="apply.successP">A confirmation email was sent to your mailbox.<br>Links will be processed within the next 3 business days.</p>
+    <div class="modal-body" data-page-node-id="fYtq3PiB5gOAvdydVyyi8h">
+      <div class="success-box" id="am-success" data-page-node-id="2Rbw7LqzniiyXtCxfbExKT">
+        <div class="success-icon" data-page-node-id="v3WiUYSui3VsFjAk0VUeiM">✓</div>
+        <h3 data-i18n="apply.successTitle" data-page-node-id="4v1m0MKqGDQllRCv8Bh5dx">Request registered!</h3>
+        <p data-i18n-html="apply.successP" data-page-node-id="AkcUcjvyQJYKnK1dBkudpE">A confirmation email was sent to your mailbox.<br data-page-node-id="4TFWoilxHhdaifGEQlUZ1b">Links will be processed within the next 3 business days.</p>
       </div>
-      <form id="apply-form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="f-publisher"><span data-i18n="apply.publisher">Publisher</span> <span>*</span></label>
+      <form id="apply-form" novalidate data-page-node-id="2pEU5OJI0i9PZ2D2JBHZm0">
+        <div class="form-group" data-page-node-id="91v5nsHyx8KDsfYFGcsjWq">
+          <label class="form-label" for="f-publisher" data-page-node-id="MILyacMo7xD1oKjqgfDkXW"><span data-i18n="apply.publisher" data-page-node-id="TyLMoHs0NIx8QmAHnPVWsD">Publisher</span> <span data-page-node-id="zN1DtubfpzeS0Cw4AEpJ2c">*</span></label>
           <input class="form-input" id="f-publisher" type="text" data-i18n-ph="apply.publisherPh"
-                 placeholder="Your publisher / company name" autocomplete="organization" />
-          <div class="error-msg" id="err-publisher" data-i18n="apply.errPublisher">Publisher name is required.</div>
+                 placeholder="Your publisher / company name" autocomplete="organization" data-page-node-id="4YsfpEaz9CUmhLqoWdeFb9" />
+          <div class="error-msg" id="err-publisher" data-i18n="apply.errPublisher" data-page-node-id="eQ54GShdExugg2rJPv1HnV">Publisher name is required.</div>
         </div>
-        <div class="form-group">
-          <label class="form-label"><span data-i18n="apply.pids">PIDs</span> <span>*</span></label>
-          <div class="tag-input-wrap" id="pid-wrap">
+        <div class="form-group" data-page-node-id="lHBJBptD745JUhOf4q1kKV">
+          <label class="form-label" data-page-node-id="WBjJRywv2uOZHUNkR2AtXb"><span data-i18n="apply.pids" data-page-node-id="BLXHFWxyuSGEdXuzXZWqDV">PIDs</span> <span data-page-node-id="YmgOuXBMtyzQ4wP5xdsfps">*</span></label>
+          <div class="tag-input-wrap" id="pid-wrap" data-page-node-id="xnricDo8TbLzOUCcSCdNSQ">
             <input class="tag-text-input" id="pid-input" data-i18n-ph="apply.pidsPh"
-                   placeholder="Type a PID and press Enter or comma" />
+                   placeholder="Type a PID and press Enter or comma" data-page-node-id="ux55Ebo3IKzVUiKzoiFnvz" />
           </div>
-          <div class="form-hint" data-i18n="apply.pidsHint">Press Enter or comma to add each PID</div>
-          <div class="error-msg" id="err-pids" data-i18n="apply.errPids">At least one PID is required.</div>
+          <div class="form-hint" data-i18n="apply.pidsHint" data-page-node-id="VkBGUCmoUemcQhrpygAHDZ">Press Enter or comma to add each PID</div>
+          <div class="error-msg" id="err-pids" data-i18n="apply.errPids" data-page-node-id="hbLzc0maisn79q9wWYG5Cx">At least one PID is required.</div>
         </div>
-        <div class="form-group">
-          <label class="form-label"><span data-i18n="apply.emails">Your email(s)</span> <span>*</span></label>
-          <div class="tag-input-wrap" id="email-wrap">
+        <div class="form-group" data-page-node-id="yy2INDPDCARFiGzAsGxKG9">
+          <label class="form-label" data-page-node-id="3EjQNbaNtGzP4szSGRUhrm"><span data-i18n="apply.emails" data-page-node-id="xbq8KEdfvsVXAYWnAVcFEF">Your email(s)</span> <span data-page-node-id="ZOaET978lQsDrLTh2wOQS0">*</span></label>
+          <div class="tag-input-wrap" id="email-wrap" data-page-node-id="GvVkZADX7mSCihLRD5VHiQ">
             <input class="tag-text-input" id="email-input" data-i18n-ph="apply.emailsPh"
                    placeholder="Type an email and press Enter or comma"
-                   type="email" autocomplete="email" />
+                   type="email" autocomplete="email" data-page-node-id="80EzExi0uCG8bvrSvbUPfr" />
           </div>
-          <div class="form-hint" data-i18n="apply.emailsHint">Press Enter or comma to add each email</div>
-          <div class="error-msg" id="err-emails" data-i18n="apply.errEmails">At least one valid email is required.</div>
+          <div class="form-hint" data-i18n="apply.emailsHint" data-page-node-id="z512F8jPGMuxH7BYTr1hQW">Press Enter or comma to add each email</div>
+          <div class="error-msg" id="err-emails" data-i18n="apply.errEmails" data-page-node-id="3rucLvsleUYARxlqEUdEyR">At least one valid email is required.</div>
         </div>
-        <div class="form-group">
-          <div class="checkbox-row">
-            <input type="checkbox" id="f-handshake" />
-            <label class="checkbox-label" for="f-handshake" data-i18n-html="apply.handshakeDesc">
-              <strong>Handshake done</strong> — I confirm the handshake has been completed
+        <div class="form-group" data-page-node-id="Fk2gOrX6OJ8XA5yerbwpGw">
+          <div class="checkbox-row" data-page-node-id="NVVEtxDW2rcfgMGIh5AcDe">
+            <input type="checkbox" id="f-handshake" data-page-node-id="s3XsEKX0jxkI54DoGuxKEm" />
+            <label class="checkbox-label" for="f-handshake" data-i18n-html="apply.handshakeDesc" data-page-node-id="suR1MuW9GSv2BbIaC9N1pl">
+              <strong data-page-node-id="VwqBKyV8HPXfQPoFZaodiB">Handshake done</strong> — I confirm the handshake has been completed
               and I'm authorised to apply for this offer.
             </label>
           </div>
-          <div class="error-msg" id="err-handshake" data-i18n="apply.errHandshake">Please confirm the handshake.</div>
+          <div class="error-msg" id="err-handshake" data-i18n="apply.errHandshake" data-page-node-id="ubGh9E8T2QrLAOKH5OKgGi">Please confirm the handshake.</div>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="f-comment" data-i18n="apply.comment">Additional comment</label>
+        <div class="form-group" data-page-node-id="i0qIjPMsqaBgGWFVnceX3b">
+          <label class="form-label" for="f-comment" data-i18n="apply.comment" data-page-node-id="FDdqSjLdrOOB3jdtHRB97f">Additional comment</label>
           <textarea class="form-textarea" id="f-comment" data-i18n-ph="apply.commentPh"
                     placeholder="Any notes, traffic sources, or questions…"></textarea>
         </div>
-        <button type="submit" class="submit-btn" id="submit-btn">
-          <span id="submit-label" data-i18n="apply.submit">Submit application</span>
+        <button type="submit" class="submit-btn" id="submit-btn" data-page-node-id="9oIPAPq28bTl6QJTWQPW1J">
+          <span id="submit-label" data-i18n="apply.submit" data-page-node-id="18IFfHGOoqPzVapJP1FBwj">Submit application</span>
         </button>
-        <div class="form-footer" data-i18n-html="apply.footer">
-          By submitting, you agree to our <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request">Privacy Policy</a> &amp; <a href="mailto:admin@mobirich.online?subject=Terms of Service Request">Terms of Service</a>.
+        <div class="form-footer" data-i18n-html="apply.footer" data-page-node-id="nkUvQ5dO2XM3PnRgMiC5Fe">
+          By submitting, you agree to our <a href="mailto:admin@mobirich.online?subject=Privacy Policy Request" data-page-node-id="Elv6eyvwKMRj9JO8uw66fr">Privacy Policy</a> &amp; <a href="mailto:admin@mobirich.online?subject=Terms of Service Request" data-page-node-id="aE0LelCCSHFHzTN56fXQcq">Terms of Service</a>.
         </div>
       </form>
     </div>
