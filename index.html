@@ -1221,6 +1221,11 @@
       font-size: 20px; font-weight: 800; color: #020617;
       box-shadow: 0 4px 14px rgba(0,0,0,0.3);
     }
+    .drama-icon-img {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      object-fit: cover; background: rgba(255,255,255,0.08);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    }
     .drama-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
     .drama-card .btn-apply {
       margin-top: auto; width: 100%; justify-content: center;
@@ -2234,18 +2239,31 @@ document.addEventListener("keydown", e => {
 // TODO(merlin): replace with the real WeChat ID before deploy
 const DRAMA_WECHAT = "-XU027";
 
+// 每个平台可填 icon：本地路径（放到项目根目录 drama-icons/ 下，例如 "drama-icons/flickreels.png"）
+// 或任意图片 URL（例如 "https://..."）。留空 "" 则自动显示首字母渐变头像。
+// 当前先用各平台官网 favicon（通过 Google favicon 服务在浏览器端实时加载）作为真实品牌图标；
+// 若某个图标加载失败会自动回退到字母头像。想换成官方高清 logo，把图片放进 drama-icons/ 并改这里即可。
 const DRAMA_PLATFORMS = [
-  { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣" },
-  { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣" },
-  { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣" },
-  { name: "moboreels",  tagline: "多区域覆盖 · 稳定结算 · CPS 分佣" },
-  { name: "Starshort",  tagline: "东南亚强势 · 量大 · CPS 分佣" },
-  { name: "Touchshort", tagline: "欧洲市场 · 优质流量 · CPS 分佣" },
-  { name: "Goodshort",  tagline: "日韩爆款 · 高单价 · CPS 分佣" },
-  { name: "KalosTV",    tagline: "拉美主力 · CPS 分佣" },
-  { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣" },
-  { name: "reelshort",  tagline: "全球头部 · CPS 分佣" }
+  { name: "Flickreels", tagline: "爆款短剧 · 全球投放 · CPS 分佣", icon: "https://www.google.com/s2/favicons?domain=flickreels.com&sz=128" },
+  { name: "Dramabox",   tagline: "头部短剧平台 · CPS 分佣",        icon: "https://www.google.com/s2/favicons?domain=dramabox.com&sz=128" },
+  { name: "Shortmax",   tagline: "北美爆款 · 高转化 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=shortmax.com&sz=128" },
+  { name: "moboreels",  tagline: "多区域覆盖 · 稳定结算 · CPS 分佣", icon: "https://www.google.com/s2/favicons?domain=moboreels.com&sz=128" },
+  { name: "Starshort",  tagline: "东南亚强势 · 量大 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=starshort.com&sz=128" },
+  { name: "Touchshort", tagline: "欧洲市场 · 优质流量 · CPS 分佣",  icon: "https://www.google.com/s2/favicons?domain=touchshort.com&sz=128" },
+  { name: "Goodshort",  tagline: "日韩爆款 · 高单价 · CPS 分佣",    icon: "https://www.google.com/s2/favicons?domain=goodshort.com&sz=128" },
+  { name: "KalosTV",    tagline: "拉美主力 · CPS 分佣",            icon: "https://www.google.com/s2/favicons?domain=kalostv.com&sz=128" },
+  { name: "FlareFlow",  tagline: "中东新兴市场 · 蓝海 · CPS 分佣",  icon: "https://www.google.com/s2/favicons?domain=flareflow.com&sz=128" },
+  { name: "reelshort",  tagline: "全球头部 · CPS 分佣",            icon: "https://www.google.com/s2/favicons?domain=reelshort.com&sz=128" }
 ];
+
+// 图标加载失败时的回退：替换为首字母渐变头像
+function dramaIconFallback(img, grad, letter) {
+  const div = document.createElement("div");
+  div.className = "drama-icon";
+  div.style.background = grad;
+  div.textContent = letter;
+  if (img.parentNode) img.replaceWith(div);
+}
 
 const DRAMA_ICON_GRADIENTS = [
   "linear-gradient(135deg,#22d3ee,#0ea5e9)",
@@ -2258,15 +2276,22 @@ const DRAMA_ICON_GRADIENTS = [
 function renderDramaGrid() {
   const grid = document.getElementById("drama-grid");
   if (!grid) return;
-  grid.innerHTML = DRAMA_PLATFORMS.map((p, i) => `
+  grid.innerHTML = DRAMA_PLATFORMS.map((p, i) => {
+    const grad = DRAMA_ICON_GRADIENTS[i % DRAMA_ICON_GRADIENTS.length];
+    const letter = escHtml(p.name[0].toUpperCase());
+    const iconHtml = p.icon
+      ? `<img class="drama-icon-img" src="${escHtml(p.icon)}" alt="${escHtml(p.name)}" loading="lazy" onerror="dramaIconFallback(this,'${grad}','${letter}')" />`
+      : `<div class="drama-icon" style="background:${grad}">${letter}</div>`;
+    return `
     <div class="drama-card">
       <div class="drama-card-head">
-        <div class="drama-icon" style="background:${DRAMA_ICON_GRADIENTS[i % DRAMA_ICON_GRADIENTS.length]}">${escHtml(p.name[0].toUpperCase())}</div>
+        ${iconHtml}
         <div class="drama-name">${escHtml(p.name)}</div>
       </div>
       <div class="drama-tagline">${escHtml(p.tagline)}</div>
       <button class="btn-apply" onclick="openDramaApply(${i})">填写需求</button>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 }
 
 function openDramaApply(idx) {
