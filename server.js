@@ -62,6 +62,7 @@ const LOCAL_EMAIL_TEMPLATES = path.join(DATA_DIR, "email_templates.json"); // #1
 const OFFERS_SEED = path.join(__dirname, "offers-seed.json");
 const LOCAL_DRAMA_PLATFORMS = path.join(DATA_DIR, "drama_platforms.json");
 const DRAMA_PLATFORMS_SEED = path.join(__dirname, "drama-platforms-seed.json");
+const LOCAL_HOME_MESSAGES = path.join(DATA_DIR, "home_messages.json");
 
 // Seed drama platforms from the committed seed file on first run
 function seedDramaPlatformsIfNeeded() {
@@ -161,6 +162,9 @@ if (GH_TOKEN && GH_OWNER) {
     normalizeDramaIconsIfNeeded();
   if (!fs.existsSync(LOCAL_SUBMISSIONS)) {
     fs.writeFileSync(LOCAL_SUBMISSIONS, "[]", "utf-8");
+  }
+  if (!fs.existsSync(LOCAL_HOME_MESSAGES)) {
+    fs.writeFileSync(LOCAL_HOME_MESSAGES, "[]", "utf-8");
   }
   if (!fs.existsSync(LOCAL_ACCOUNTS)) {
     // Create default super admin with bcrypt hash (#1)
@@ -395,6 +399,44 @@ async function writeSubmissions(data) {
       await ghWrite("submissions.json", data);
     } else {
       fs.writeFileSync(LOCAL_SUBMISSIONS, JSON.stringify(data, null, 2), "utf-8");
+    }
+  });
+}
+
+// ── Home Messages (需求留言) ──
+let homeMessagesCache = null;
+let homeMessagesCacheTime = 0;
+
+async function readHomeMessages() {
+  if (homeMessagesCache && homeMessagesCacheTime && (Date.now() - homeMessagesCacheTime < 5 * 60 * 1000)) {
+    return homeMessagesCache;
+  }
+  homeMessagesCache = null;
+  if (useGitHub) {
+    const data = await ghRead("home_messages.json");
+    if (data) { homeMessagesCache = data; homeMessagesCacheTime = Date.now(); return data; }
+    await ghWrite("home_messages.json", []);
+    homeMessagesCache = []; homeMessagesCacheTime = Date.now();
+    return [];
+  }
+  try {
+    const data = JSON.parse(fs.readFileSync(LOCAL_HOME_MESSAGES, "utf-8"));
+    homeMessagesCache = data; homeMessagesCacheTime = Date.now();
+    return data;
+  } catch (e) {
+    console.error("❌ readHomeMessages failed:", e.message);
+    return [];
+  }
+}
+
+async function writeHomeMessages(data) {
+  homeMessagesCache = data;
+  homeMessagesCacheTime = Date.now();
+  await withWriteLock("home_messages", async () => {
+    if (useGitHub) {
+      await ghWrite("home_messages.json", data);
+    } else {
+      fs.writeFileSync(LOCAL_HOME_MESSAGES, JSON.stringify(data, null, 2), "utf-8");
     }
   });
 }
@@ -1007,6 +1049,31 @@ app.post("/api/drama-apply", async (req, res) => {
   res.json({ success: true, id: rec.id });
 });
 
+app.post("/api/home-messages", async (req, res) => {
+  const { name, email, subject, message } = req.body || {};
+  if (!name || !name.trim() || !email || !email.trim() || !message || !message.trim()) {
+    return res.status(400).json({ error: "请填写姓名、邮箱和留言内容" });
+  }
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRe.test(email.trim())) {
+    return res.status(400).json({ error: "邮箱格式不正确" });
+  }
+  const rec = {
+    id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+    name: name.trim().slice(0, 200),
+    email: email.trim().slice(0, 200),
+    subject: (subject || "").trim().slice(0, 300),
+    message: message.trim().slice(0, 5000),
+    status: "new"
+  };
+  const list = await readHomeMessages();
+  list.unshift(rec);
+  await writeHomeMessages(list);
+  writeAudit("create", "home_messages", rec.id, { email: rec.email }, req);
+  res.json({ success: true, id: rec.id });
+});
+
 // Get All Drama Platforms (public)
 app.get("/api/drama-platforms", async (req, res) => {
   const list = await readDramaPlatforms();
@@ -1201,6 +1268,60 @@ app.delete("/api/submissions/:id", async (req, res) => {
   await writeSubmissions(submissions);
   // #12: Audit
   writeAudit("delete", "submissions", req.params.id, {}, req);
+  res.json({ success: true });
+});
+
+// ── Home Messages (admin) ──
+app.get("/api/home-messages", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const list = await readHomeMessages();
+  res.json(list);
+});
+
+app.patch("/api/home-messages/:id/status", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { status } = req.body || {};
+  if (!["new", "read"].includes(status)) return res.status(400).json({ error: "invalid status" });
+  let list = await readHomeMessages();
+  const item = list.find(x => x.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  item.status = status;
+  await writeHomeMessages(list);
+  writeAudit("update", "home_messages", req.params.id, { status }, req);
+  res.json({ success: true });
+});
+
+app.delete("/api/home-messages/:id", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  let list = await readHomeMessages();
+  list = list.filter(x => x.id !== req.params.id);
+  await writeHomeMessages(list);
+  writeAudit("delete", "home_messages", req.params.id, {}, req);
+  res.json({ success: true });
+});
+
+app.patch("/api/home-messages/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids, status } = req.body || {};
+  if (!Array.isArray(ids) || !["new", "read"].includes(status)) return res.status(400).json({ error: "invalid" });
+  let list = await readHomeMessages();
+  let updated = 0;
+  for (const x of list) {
+    if (ids.includes(x.id)) { x.status = status; updated++; }
+  }
+  await writeHomeMessages(list);
+  writeAudit("batch_update", "home_messages", ids.length + " items", { status, updated }, req);
+  res.json({ success: true, updated });
+});
+
+app.delete("/api/home-messages/batch", async (req, res) => {
+  if (!(await checkAuth(req, res))) return;
+  const { ids } = req.body || {};
+  if (!Array.isArray(ids)) return res.status(400).json({ error: "invalid" });
+  let list = await readHomeMessages();
+  list = list.filter(x => !ids.includes(x.id));
+  await writeHomeMessages(list);
+  writeAudit("batch_delete", "home_messages", ids.length + " items", {}, req);
   res.json({ success: true });
 });
 
@@ -1995,7 +2116,8 @@ app.get("/api/backup", async (req, res) => {
       submissions: await readSubmissions(),
       managed_orders: await readManagedOrders(),
       accounts: (await readAccounts()).map(a => ({ ...a, password: "[REDACTED]" })),
-      audit: await readAuditLog()
+      audit: await readAuditLog(),
+      homeMessages: await readHomeMessages()
     };
 
     // #12: Audit

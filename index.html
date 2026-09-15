@@ -1358,7 +1358,7 @@ const I18N = {
     "msg.subject_ph": "Offer inquiry / Traffic request / Partnership",
     "msg.body_ph": "Hi Merlin, I have...",
     "msg.send": "Send Message",
-    "msg.note": "This will open your email client. You can also reach me directly at <a href=\"mailto:merlin@mobirich.online\" style=\"color:var(--accent)\">merlin@mobirich.online</a>.",
+    "msg.note": "Your message is delivered straight to Merlin's backend inbox — no email app needed. You'll get a reply within one business day.",
     "whatido.title": "What I Do",
     "whatido.subtitle": "Driving performance and partnerships across the mobile advertising ecosystem",
     "card1.title": "Affiliate Analytics & Optimization",
@@ -1509,7 +1509,7 @@ const I18N = {
     "msg.subject_ph": "Offer 咨询 / 流量合作 / 商务合作",
     "msg.body_ph": "你好 Merlin，我有...",
     "msg.send": "发送留言",
-    "msg.note": "这将打开你的邮件客户端。你也可以直接联系我：<a href=\"mailto:merlin@mobirich.online\" style=\"color:var(--accent)\">merlin@mobirich.online</a>。",
+    "msg.note": "留言将直接送达 Merlin 的后台收件箱，无需打开邮件客户端。我们会在一个工作日内回复你。",
     "whatido.title": "我能做什么",
     "whatido.subtitle": "在移动广告生态中驱动效果与合作伙伴关系",
     "card1.title": "联盟数据分析与优化",
@@ -1719,6 +1719,7 @@ applyLang(currentLang);
         </div>
         <button type="submit" data-i18n="msg.send" data-page-node-id="hqazg0wotMV2TD0nbTWAoI">Send Message</button>
         <p class="message-form-note" data-i18n-html="msg.note" data-page-node-id="3lSdQgsMp74DrRCKb9OEM4">This will open your email client. You can also reach me directly at <a href="mailto:merlin@mobirich.online" style="color:var(--accent)" data-page-node-id="Qz2XDQaX4QV7kmnKerYrr1">merlin@mobirich.online</a>.</p>
+        <p class="message-form-result" id="hm-result" style="display:none"></p>
       </form>
     </div>
   </section>
@@ -2783,19 +2784,49 @@ loadDramaPlatforms();
 // ─────────────────────────────────────────────
 function sendHomeMessage(e) {
   e.preventDefault();
-  const name = document.getElementById("hm-name").value.trim();
-  const email = document.getElementById("hm-email").value.trim();
-  const subject = document.getElementById("hm-subject").value.trim();
-  const body = document.getElementById("hm-body").value.trim();
+  const resultEl = document.getElementById("hm-result");
+  const setResult = (msg, ok) => {
+    if (!resultEl) return;
+    resultEl.textContent = msg;
+    resultEl.style.display = "block";
+    resultEl.style.color = ok ? "#22c55e" : "#ef4444";
+  };
+  const name = (document.getElementById("hm-name").value || "").trim();
+  const email = (document.getElementById("hm-email").value || "").trim();
+  const subject = (document.getElementById("hm-subject").value || "").trim();
+  const body = (document.getElementById("hm-body").value || "").trim();
   if (!name || !email || !subject || !body) {
-    alert("Please fill in all fields.");
+    setResult(currentLang === "zh" ? "请填写所有必填项。" : "Please fill in all required fields.", false);
     return;
   }
-  const mailtoSubject = encodeURIComponent("[Mobireach Contact] " + subject);
-  const mailtoBody = encodeURIComponent(
-    "Name: " + name + "\nEmail: " + email + "\n\n" + body
-  );
-  window.location.href = "mailto:merlin@mobirich.online?subject=" + mailtoSubject + "&body=" + mailtoBody;
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRe.test(email)) {
+    setResult(currentLang === "zh" ? "邮箱格式不正确。" : "Invalid email format.", false);
+    return;
+  }
+  const btn = e.target.querySelector('button[type="submit"]');
+  const original = btn ? btn.textContent : "";
+  if (btn) { btn.disabled = true; btn.textContent = currentLang === "zh" ? "发送中…" : "Sending…"; }
+  fetch("/api/home-messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, subject, message: body })
+  })
+    .then(r => r.json().then(d => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+      if (ok && d && d.success) {
+        setResult(currentLang === "zh" ? "✅ 留言已送达，Merlin 会尽快回复你！" : "✅ Message delivered! Merlin will get back to you soon.", true);
+        e.target.reset();
+      } else {
+        setResult((d && d.error) || (currentLang === "zh" ? "发送失败，请稍后重试。" : "Failed to send. Please try again."), false);
+      }
+    })
+    .catch(() => {
+      setResult(currentLang === "zh" ? "网络错误，请稍后重试。" : "Network error. Please try again.", false);
+    })
+    .finally(() => {
+      if (btn) { btn.disabled = false; btn.textContent = original; }
+    });
 }
 
 

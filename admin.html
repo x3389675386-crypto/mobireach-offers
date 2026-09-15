@@ -727,6 +727,10 @@
       <div class="sidebar-item" data-tab="email-templates" onclick="switchTab('email-templates')">
         <span class="sidebar-icon">✉️</span> <span data-i18n="tabEmailTemplates">邮件模板</span>
       </div>
+      <div class="sidebar-item" data-tab="home-messages" onclick="switchTab('home-messages')">
+        <span class="sidebar-icon">💬</span> 需求留言
+        <span class="notif-badge" id="hm-notif-badge" style="display:none">0</span>
+      </div>
     </nav>
     <div class="sidebar-bottom">
       <div class="settings-wrap">
@@ -913,6 +917,52 @@
           <button class="btn-secondary btn-xs" id="apps-next-btn" onclick="appsNextPage()">下一页</button>
         </div>
         <div class="empty" id="apps-empty">暂无申请。</div>
+      </div>
+    </div>
+
+    <!-- ── HOME MESSAGES TAB (需求留言) ── -->
+    <div class="tab-content" id="content-home-messages" style="display:none">
+      <div class="stats-row" id="hm-stats"></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h2>需求留言</h2>
+          <button class="btn-secondary" id="refresh-hm-btn" onclick="loadHomeMessages()" title="刷新">↻ 刷新</button>
+        </div>
+        <div class="status-tabs" id="hm-status-tabs">
+          <button class="status-tab active" data-status="" onclick="filterHomeMessagesByStatus('')">全部 <span class="count" id="hm-count-all">0</span></button>
+          <button class="status-tab" data-status="new" onclick="filterHomeMessagesByStatus('new')">新留言 <span class="count" id="hm-count-new">0</span></button>
+          <button class="status-tab" data-status="read" onclick="filterHomeMessagesByStatus('read')">已读 <span class="count" id="hm-count-read">0</span></button>
+        </div>
+        <div class="batch-bar" id="hm-batch-bar">
+          <span>已选 <span class="batch-count" id="hm-selected-count">0</span> 项</span>
+          <button class="btn-secondary btn-sm" onclick="batchHomeMessageStatus('read')">✅ 标为已读</button>
+          <button class="btn-secondary btn-sm" onclick="batchHomeMessageStatus('new')">🆕 标为新</button>
+          <button class="btn-danger btn-sm" onclick="batchDeleteHomeMessages()">🗑 删除</button>
+          <button class="btn-secondary btn-sm" onclick="clearHomeMessagesSelection()" style="margin-left:auto">取消选择</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th class="cb-col"><input type="checkbox" id="hm-select-all" onchange="toggleAllHomeMessages(this.checked)" /></th>
+                <th>日期</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>主题</th>
+                <th>留言</th>
+                <th>状态</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="hm-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar" id="hm-pagination" style="display:none">
+          <button class="btn-secondary btn-xs" id="hm-prev-btn" onclick="hmPrevPage()">上一页</button>
+          <span id="hm-page-info">1 / 1</span>
+          <button class="btn-secondary btn-xs" id="hm-next-btn" onclick="hmNextPage()">下一页</button>
+        </div>
+        <div class="empty" id="hm-empty">暂无留言。</div>
       </div>
     </div>
 
@@ -2561,12 +2611,14 @@ function switchTab(tab) {
   document.getElementById("content-audit").style.display = tab === "audit" ? "block" : "none";
   document.getElementById("content-email-templates").style.display = tab === "email-templates" ? "block" : "none";
   document.getElementById("content-drama-platforms").style.display = tab === "drama-platforms" ? "block" : "none";
+  document.getElementById("content-home-messages").style.display = tab === "home-messages" ? "block" : "none";
   if (tab === "accounts") loadAccounts();
   if (tab === "managed-orders") loadManagedOrders();
   if (tab === "audit") loadAuditLog();
   if (tab === "email-templates") loadEmailTemplates();
   if (tab === "drama-platforms") loadDramaPlatformsAdmin();
   if (tab === "dashboard") loadDashboard();
+  if (tab === "home-messages") loadHomeMessages();
   closeSidebar();
 }
 
@@ -3294,6 +3346,168 @@ async function deleteSub(id) {
     showToast(t("deleted"), "success");
     loadSubmissions();
   });
+}
+
+// ── Home Messages (需求留言) ──
+let homeMessages = [];
+let homeMessagesStatusFilter = "";
+let homeMessagesCurrentPage = 1;
+const homeMessagesPageSize = 15;
+let homeMessagesSelectedIds = new Set();
+
+async function loadHomeMessages() {
+  showSkeleton("hm-tbody", 8);
+  const res = await fetch("/api/home-messages", { headers: authHeaders() });
+  if (handleAuthError(res)) return;
+  if (!res.ok) return;
+  homeMessages = await res.json();
+  renderHomeMessages();
+}
+
+function getFilteredHomeMessages() {
+  if (!homeMessagesStatusFilter) return homeMessages;
+  return homeMessages.filter(m => m.status === homeMessagesStatusFilter);
+}
+
+function renderHomeMessages() {
+  const tbody = document.getElementById("hm-tbody");
+  const empty = document.getElementById("hm-empty");
+  const stats = document.getElementById("hm-stats");
+  const pagination = document.getElementById("hm-pagination");
+
+  const counts = { new: 0, read: 0 };
+  homeMessages.forEach(m => counts[m.status] = (counts[m.status] || 0) + 1);
+
+  const badge = document.getElementById("hm-notif-badge");
+  if (badge) {
+    if (counts.new > 0) { badge.textContent = counts.new > 99 ? "99+" : counts.new; badge.style.display = "inline-block"; }
+    else badge.style.display = "none";
+  }
+
+  document.getElementById("hm-count-all").textContent = homeMessages.length;
+  document.getElementById("hm-count-new").textContent = counts.new;
+  document.getElementById("hm-count-read").textContent = counts.read;
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num">${homeMessages.length}</div><div class="lbl">总留言</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--accent)">${counts.new}</div><div class="lbl">新留言</div></div></div></div>
+    <div class="stat-card"><div class="stat-card-inner"><div class="stat-text"><div class="num" style="color:var(--green)">${counts.read}</div><div class="lbl">已读</div></div></div></div>
+  `;
+
+  const filtered = getFilteredHomeMessages();
+  if (!filtered.length) {
+    tbody.innerHTML = ""; empty.style.display = "block";
+    pagination.style.display = "none";
+    return;
+  }
+  empty.style.display = "none";
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / homeMessagesPageSize));
+  if (homeMessagesCurrentPage > totalPages) homeMessagesCurrentPage = totalPages;
+  const start = (homeMessagesCurrentPage - 1) * homeMessagesPageSize;
+  const pageMsgs = filtered.slice(start, start + homeMessagesPageSize);
+
+  tbody.innerHTML = pageMsgs.map(m => {
+    const date = new Date(m.timestamp).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    const statusLabels = { new: "新留言", read: "已读" };
+    const statusOpts = ["new", "read"].map(st => `<option value="${st}" ${st === m.status ? "selected" : ""}>${statusLabels[st]}</option>`).join("");
+    const checked = homeMessagesSelectedIds.has(m.id) ? "checked" : "";
+    return `<tr data-id="${escHtml(m.id)}">
+      <td class="cb-col"><input type="checkbox" data-hm-id="${escHtml(m.id)}" ${checked} onchange="toggleHomeMessageSelect('${escHtml(m.id)}', this.checked)" /></td>
+      <td class="mono">${date}</td>
+      <td><strong>${escHtml(m.name || "—")}</strong></td>
+      <td><a href="mailto:${escHtml(m.email || "")}">${escHtml(m.email || "—")}</a></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(m.subject || "")}">${escHtml(m.subject || "—")}</td>
+      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(m.message || "")}">${escHtml(m.message || "—")}</td>
+      <td><select class="status-select" onchange="updateHomeMessageStatus('${escHtml(m.id)}', this.value)">${statusOpts}</select></td>
+      <td style="white-space:nowrap">
+        <button class="btn-danger btn-sm" onclick="deleteHomeMessage('${escHtml(m.id)}')">×</button>
+      </td>
+    </tr>`;
+  }).join("");
+
+  if (filtered.length > homeMessagesPageSize) {
+    pagination.style.display = "flex";
+    document.getElementById("hm-page-info").textContent = `${homeMessagesCurrentPage} / ${totalPages}`;
+    document.getElementById("hm-prev-btn").disabled = homeMessagesCurrentPage <= 1;
+    document.getElementById("hm-next-btn").disabled = homeMessagesCurrentPage >= totalPages;
+  } else {
+    pagination.style.display = "none";
+  }
+  updateHomeMessagesBatchBar();
+}
+
+async function updateHomeMessageStatus(id, status) {
+  await fetch(`/api/home-messages/${id}/status`, { method: "PATCH", headers: authHeaders(), body: JSON.stringify({ status }) });
+  showToast("状态已更新", "success");
+  loadHomeMessages();
+}
+
+async function deleteHomeMessage(id) {
+  if (!await customConfirm("确定删除这条留言吗？")) return;
+  await fetch(`/api/home-messages/${id}`, { method: "DELETE", headers: authHeaders() });
+  showToast("已删除", "success");
+  loadHomeMessages();
+}
+
+function filterHomeMessagesByStatus(status) {
+  homeMessagesStatusFilter = status;
+  homeMessagesCurrentPage = 1;
+  document.querySelectorAll("#hm-status-tabs .status-tab").forEach(tab => tab.classList.toggle("active", tab.dataset.status === status));
+  renderHomeMessages();
+}
+
+function hmPrevPage() { if (homeMessagesCurrentPage > 1) { homeMessagesCurrentPage--; renderHomeMessages(); } }
+function hmNextPage() {
+  const filtered = getFilteredHomeMessages();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / homeMessagesPageSize));
+  if (homeMessagesCurrentPage < totalPages) { homeMessagesCurrentPage++; renderHomeMessages(); }
+}
+
+function toggleHomeMessageSelect(id, checked) {
+  if (checked) homeMessagesSelectedIds.add(id); else homeMessagesSelectedIds.delete(id);
+  updateHomeMessagesBatchBar();
+}
+function toggleAllHomeMessages(checked) {
+  const filtered = getFilteredHomeMessages();
+  const start = (homeMessagesCurrentPage - 1) * homeMessagesPageSize;
+  const pageMsgs = filtered.slice(start, start + homeMessagesPageSize);
+  pageMsgs.forEach(m => { if (checked) homeMessagesSelectedIds.add(m.id); else homeMessagesSelectedIds.delete(m.id); });
+  renderHomeMessages();
+}
+function clearHomeMessagesSelection() {
+  homeMessagesSelectedIds.clear();
+  const sel = document.getElementById("hm-select-all"); if (sel) sel.checked = false;
+  renderHomeMessages();
+}
+function updateHomeMessagesBatchBar() {
+  const bar = document.getElementById("hm-batch-bar");
+  const count = homeMessagesSelectedIds.size;
+  document.getElementById("hm-selected-count").textContent = count;
+  if (count > 0) bar.classList.add("show"); else bar.classList.remove("show");
+}
+
+async function batchHomeMessageStatus(status) {
+  const ids = Array.from(homeMessagesSelectedIds);
+  if (!ids.length) return;
+  const label = status === "read" ? "已读" : "新留言";
+  if (!await customConfirm(`确定将选中的 ${ids.length} 条留言标记为「${label}」吗？`)) return;
+  const res = await fetch("/api/home-messages/batch", {
+    method: "PATCH", headers: authHeaders(), body: JSON.stringify({ ids, status })
+  });
+  if (res.ok) { showToast("批量更新成功", "success"); homeMessagesSelectedIds.clear(); loadHomeMessages(); }
+  else showToast("更新失败", "error");
+}
+
+async function batchDeleteHomeMessages() {
+  const ids = Array.from(homeMessagesSelectedIds);
+  if (!ids.length) return;
+  if (!await customConfirm(`确定删除选中的 ${ids.length} 条留言吗？`)) return;
+  const res = await fetch("/api/home-messages/batch", {
+    method: "DELETE", headers: authHeaders(), body: JSON.stringify({ ids })
+  });
+  if (res.ok) { showToast("批量删除成功", "success"); homeMessagesSelectedIds.clear(); loadHomeMessages(); }
+  else showToast("删除失败", "error");
 }
 
 // ── Applications: Status Filter Tabs ──
